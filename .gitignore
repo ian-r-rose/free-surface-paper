@@ -1,0 +1,7 @@
+doc/*
+free-surface-paper.pdf
+*.spl
+*.bbl
+*.blg
+*.aux
+*.log
