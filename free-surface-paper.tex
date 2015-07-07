@@ -38,6 +38,12 @@
 
 %% The amssymb package provides various useful mathematical symbols
 \usepackage{amssymb}
+\usepackage{amsmath}
+
+\newif\ifdetail
+\detailfalse
+%\detailtrue
+
 %% The amsthm package provides extended theorem environments
 %% \usepackage{amsthm}
 
@@ -115,8 +121,409 @@ Goal: provide for free surface computations in mantle convection simulations tha
 \item agnostic to mesh geometry
 \end{itemize}
 
-\section{Methodology}
-\cite{kronbichler2012high}
+\section{Stability}
+\subsection{Eigenvalue analysis}
+\label{sec:eigenvalue}
+
+We begin with the homogeneous Stokes equations for incompressible creeping flow:
+\begin{equation}
+\nabla \cdot \left( 2 \eta \varepsilon( \mathbf{u} ) \right) - \nabla p = 0
+\label{eq:stokes}
+\end{equation}
+
+\begin{equation}
+\nabla \cdot \mathbf{u} = 0
+\label{eq:incompressible}
+\end{equation}
+where $\mathbf{u}$ is the velocity, $p$ is the pressure, $\eta$ is the viscosity, and 
+$\varepsilon(\mathbf{u}) = \frac{1}{2}(\nabla \mathbf{u} + (\nabla \mathbf{u} )^T )$ is the strain-rate tensor.
+
+We will proceed with this analysis within a finite element framework, though similar arguments should 
+work for other discrete methods.
+We transform the governing equations into the weak form amenable to finite elements by standard procedures \citep[e.g.][]{zienkiewicz1977finite} to get
+
+\begin{equation}
+-\int_\Omega 2 \eta \varepsilon( \mathbf{w} ) \colon \varepsilon( \mathbf{u} ) + \int_\Omega p \nabla \cdot \mathbf{w} 
++ \int_{\partial \Omega_N} \mathbf{w} \cdot \mathbf{T} \cdot \mathbf{n} = 0 
+\label{eq:weak_stokes}
+\end{equation}
+
+\begin{equation}
+\int_\Omega q \nabla \cdot \mathbf{u} = 0
+\label{eq:weak_incompressible}
+\end{equation}
+where $\mathbf{w}$ and $q$ are suitably chosen test functions and the integrals over 
+$\Omega$ and $\partial \Omega_N$ are over the volume of the domain and the part of the boundary with stress boundary conditions, respectively.
+$\mathbf{T}$ is the stress tensor, defined by
+\begin{equation}
+\mathbf{T} = 2 \eta \varepsilon(\mathbf{u}) - p \mathbf{I}
+\end{equation}
+The integral over the surface in Equation~\eqref{eq:weak_stokes} accounts for boundary stresses, 
+which should be zero when evaluated on a true free surface.
+We will find it analytically useful to evaluate the integrals in Equation~\eqref{eq:weak_stokes} 
+over the hydrostatic reference surface and introduce an auxilliary variable $\zeta$ which 
+represents the topography of the free surface relative to that reference surface.
+The equation for time evolution of the free surface is then
+\begin{equation}
+\frac{d \zeta}{dt} = \mathbf{u \cdot n}
+\label{eq:surface_evolution}
+\end{equation}
+where $\mathbf{u}$ is evaluated at the free surface.
+The stress on this reference surface can be approximated by the hydrostatic pressure
+\begin{equation}
+\mathbf{T} \approx \rho g \zeta \mathbf{I}
+\label{eq:hydrostatic}
+\end{equation}
+where $\rho$ is the density and $g$ is gravity. Equation~\eqref{eq:weak_stokes} then becomes
+
+\begin{equation}
+-\int_\Omega 2 \eta \varepsilon( \mathbf{w} ) \colon \varepsilon( \mathbf{u} ) + \int_\Omega p \nabla \cdot \mathbf{w} 
++ \int_{\partial \Omega_N} \rho g \zeta  \mathbf{w} \cdot \mathbf{n} = 0 
+\end{equation}
+
+We would like to analyze the time evolution of the normal modes of this system: each mode 
+is the relaxation of topography with a characteristic relaxation time.  
+We denote the normal modes by $\left[ \mathbf{u}_i, p_i, \zeta_i \right]^T$, with
+relaxation times $\tau_i$, where the subscript corresponds to the $i$th normal mode.
+
+The equations decouple for the normal modes, and Equation~\eqref{eq:surface_evolution} then becomes
+
+\begin{equation}
+\frac {d}{d t} \zeta_i(\mathbf{x},t) = \frac{d}{dt} \zeta_i(\mathbf{x})e^{-t/\tau_i} = -\frac{\zeta_i(\mathbf{x},t)}{\tau_i} = \mathbf{u}_i \cdot \mathbf{n}
+\end{equation}
+This can then be used to eliminate $\zeta$ from the Stokes system:
+\begin{equation}
+-\int_\Omega 2 \eta \varepsilon( \mathbf{w} ) \colon \varepsilon( \mathbf{u}_i ) + \int_\Omega p_i \nabla \cdot \mathbf{w} 
+= \tau_i \int_{\partial \Omega_N} \rho g (\mathbf{u}_i \cdot \mathbf{n} ) (\mathbf{w} \cdot \mathbf{n})
+\label{eq:weak_eigen}
+\end{equation}
+When these equations are discretized \citep[e.g.][]{kronbichler2012high} we get
+\begin{equation}
+\begin{bmatrix}
+A & B^T \\
+B & 0 \\
+\end{bmatrix}
+\begin{bmatrix}
+\mathbf{u}^n_i \\
+p^n_i
+\end{bmatrix}
+=
+\tau_i
+\begin{bmatrix}
+M & 0 \\
+0 & 0
+\end{bmatrix}
+\begin{bmatrix}
+\mathbf{u}^n_i \\
+p^n_i
+\end{bmatrix}
+\label{eq:generalized_eigenvalue}
+\end{equation}
+where $\mathbf{u}^n_i$ and $p^n_i$ are finite-dimensional representations of $\mathbf{u}_i$ and $p_i$,
+and $M$ is the discretization of the bilinear form on the right-hand side of Equation~\eqref{eq:weak_eigen}.
+
+Equation~\eqref{eq:generalized_eigenvalue} is a generalized eigenvalue problem for the normal modes of the system.
+It is rather more difficult to solve than a standard eigenvalue problem because the matrix on the right-hand-side 
+is not invertible. It may, however, be transformed into a standard eigenvalue problem.
+Define
+\begin{equation}
+\begin{aligned}
+C &= 
+\begin{bmatrix}
+A & B^T \\
+B & 0 \\
+\end{bmatrix} \\
+D &= 
+\begin{bmatrix}
+M & 0 \\
+0 & 0
+\end{bmatrix} \\
+\mathbf{y}_i &= 
+\begin{bmatrix}
+\mathbf{u}^n_i \\
+p^n_i
+\end{bmatrix} \\
+\end{aligned}
+\end{equation}
+Then multiplying both sides by $C^{-1}$ we get
+\begin{equation}
+\tau_i (C^{-1}D)\mathbf{y}_i = \mathbf{y}_i
+\end{equation}
+
+This eigenvalue equation can be solved for the normal modes and relaxation times of the Stokes system with 
+a free surface.
+
+\subsection{Time integration of the free surface}
+\label{sec:timestepping}
+
+Armed with the normal modes and relaxation times of the Stokes system, we can write down the
+formal solution to Equation~\ref{eq:surface_evolution}. Let the initial surface topography be 
+represented by a linear combination of its normal modes
+\begin{equation}
+\zeta(\mathbf{x}, t=0) = \displaystyle \sum_i a_i \zeta_i(\mathbf{x})
+\end{equation}
+then the time evolution of the free surface is given by
+\begin{equation}
+\zeta( \mathbf{x}, t) = \displaystyle \sum_i a_i \zeta_i(\mathbf{x}) e^{-t/\tau_i}
+\end{equation}
+
+Of course, most finite element (or finite difference, or finite volume) geodynamic simulations do not resolve 
+the solution and surface topography into its normal modes and integrate those separately. 
+Indeed, analytical solutions for the normal modes are only known for simple geometries and rheologies.
+Instead, they attain a velocity solution and simply advect the free surface with the local velocity.
+The normal mode solution is instructive, however. 
+Each mode has the form of a decay equation with characteristic decay time $\tau_i$.
+The decay equation is the archetypical example of a stiff ordinary differential equation.
+If we were to numerically integrate this in time with a forward Euler method, we would find the 
+time-step criterion for stability \citep[e.g.][]{leveque2007finite} to be
+\begin{equation}
+\Delta t  \le 2 \tau_{\mathrm{min}}
+\label{eq:cfl_euler}
+\end{equation}
+The maximum allowable timestep is limited by the minimum relaxation timescale.
+If a larger timestep than this is taken then those modes will go unstable.
+The modes with the smallest relaxation times are usually those with the largest lengthscales \citep{schubert2001mantle}, 
+and so it will be those which go unstable first, a phenomenon which has been called 
+a ``sloshing'', or ``drunken sailor'' instability \citep{kaus2010stabilization}.
+
+\subsection{Quasi-implicit stabilization}
+\label{sec:kmm}
+
+The relaxation timescales for surface topography tend to be considerably longer than those for 
+convection or tectonic deformation, so the stability requirements for a forward Euler scheme
+are quite onerous.  On the other hand, an implicit time marching scheme requires solving 
+a nonlinear system for the new surface position, or assembling a larger system with surface
+topography unknowns \citep[e.g.][]{kramer2012implicit}.
+
+\citet{kaus2010stabilization} proposed a scheme whereby the body forces on the domain are 
+evaluated on a prediction of the shape of the domain at a later time.
+The weak form of the right-hand-side body forces in the finite element discretization is then
+
+\begin{equation}
+\mathbf{f}_{\mathrm{body}} = \int_{\Omega + \Delta \Omega} \rho \mathbf{w} \cdot \mathbf{g}
+\label{eq:predict}
+\end{equation}
+
+The shape prediction can be approximated by integration of the velocity:
+\begin{equation}
+\Delta \Omega \approx \theta \Delta t \mathbf{u}
+\end{equation}
+where $\theta$ is a free parameter that corresponds to the magnitude of the 
+correction, where zero is no stabilization and one is fully (quasi) implicit.
+
+One can approximately expand the integral in Equation~\eqref{eq:predict} using 
+Reynold's transport theorem to find
+
+\begin{equation}
+\int_{\Omega + \Delta \Omega} \rho  \mathbf{w} \cdot \mathbf{g} \approx
+\int_{\Omega} \rho  \mathbf{w} \cdot \mathbf{g} + \theta \Delta t \int_{\partial \Omega} \rho ( \mathbf{w \cdot g}) (\mathbf{u \cdot n} )
+\label{eq:kmm}
+\end{equation}
+The volume integral is the same as that of the unstabilized problem, but now there is a surface integral.
+The surface integral has the form of a velocity-dependent surface stress pushing down on the 
+domain, and can be thought of as an artificial viscous damping of the surface.
+Since it depends on the velocity, it can no longer go on the right-hand side of the 
+equation, and must be added as a stabilization term in the system matrix.  
+Empirically it has been found to be successful at damping instabilities \citep{kaus2010stabilization, quinquis2011role, crameri2012comparison}.
+
+Indeed, using the formalism in Section~\ref{sec:eigenvalue} we can see the effect of this 
+stabilization term. In the reference state we note that $\mathbf{g} = g \mathbf{n}$, which
+allows us to write the stabilization term as
+\begin{equation}
+\theta \Delta t \int_{\partial \Omega} \rho g ( \mathbf{w \cdot n}) (\mathbf{u \cdot n} )
+\end{equation}
+
+The integral here is precisely the same as that on the right hand side of Equation~\eqref{eq:weak_eigen}, which was discretized as the matrix $M$.
+
+Indeed, if we discretize the Stokes system with the quasi-implicit stabilization term, we find
+a new generalized eigenvalue problem:
+
+\begin{equation}
+\begin{bmatrix}
+A + \theta \Delta t M & B^T \\
+B & 0 \\
+\end{bmatrix}
+\begin{bmatrix}
+\mathbf{u}^n_i \\
+p^n_i
+\end{bmatrix}
+=
+\tau^S_i
+\begin{bmatrix}
+M & 0 \\
+0 & 0
+\end{bmatrix}
+\begin{bmatrix}
+\mathbf{u}^n_i \\
+p^n_i
+\end{bmatrix}
+\label{eq:generalized_eigenvalue}
+\end{equation}
+where $\tau^S_i$ indicate the eigenvalues of the stabilized system.
+This system may be rearranged:
+\begin{equation}
+\begin{bmatrix}
+A & B^T \\
+B & 0 \\
+\end{bmatrix}
+\begin{bmatrix}
+\mathbf{u}^n_i \\
+p^n_i
+\end{bmatrix}
+=
+\left(\tau^S_i - \theta \Delta t \right)
+\begin{bmatrix}
+M & 0 \\
+0 & 0
+\end{bmatrix}
+\begin{bmatrix}
+\mathbf{u}^n_i \\
+p^n_i
+\end{bmatrix}
+\label{eq:generalized_eigenvalue}
+\end{equation}
+
+This is precisely the same generalized eigenvalue problem as Equation~\eqref{eq:generalized_eigenvalue},
+so its eigenvalues must be the same.  This allows us to write the eigenvalues of the stabilized problem in
+terms of those of the unstabilized problem:
+\begin{equation}
+\tau^S_i = \tau_i + \theta \Delta t
+\end{equation}
+
+Essentially, the stabilization term lengthens every relaxation time for the system by an amount $\theta \Delta t$.
+This correspondingly lengthens the maximum stable timestep for the forward Euler method:
+\begin{equation}
+\Delta t  \le \frac{2}{1-\theta} \tau_{\mathrm{min}}
+\label{eq:cfl_euler_stabilized}
+\end{equation}
+note that as $\theta$ goes to one this scheme should become unconditionally stable,
+but nonlinear effects and discretization errors due to finite deformation of the surface could 
+prevent that stability.
+
+\subsection{A novel time-integration scheme}
+
+\subsubsection{Nonstandard finite-differences}
+One downside of the quasi-implicit scheme is that it requires a modification of the system matrix, 
+and as we have seen this shifts its spectrum.
+An alternative would be to construct a time-integration scheme with better stability properties.  
+The reason that forward Euler integration performs so badly with the decay of topography is that 
+at larger timesteps it overshoots its equilibrium position. This overshoot causes it to lurch back 
+to the \emph{other} side of equilibrium, overshooting even more.
+We would like to construct an explicit scheme that accounts for following properties which we know the system has:
+\begin{itemize}
+\item In the absence of forcing, topography always decreases.
+\item Relaxation of small amplitude topography takes the form of exponential decay.
+\item The decay mode with the shortest relaxation time is the least stable.
+\end{itemize}
+
+A general expression for the evolution of a free surface from time $t=0$ to time $t=\Delta t$ is 
+\begin{equation}
+\mathbf{x}(\Delta t) = \mathbf{x}(0) + \int_0^{\Delta t} \mathbf{u}(t) dt
+\label{eq:time_integration}
+\end{equation}
+
+where $\mathbf{x}$ is the location of the free surface.  If we approximate $\mathbf{u}(t) \approx \mathbf{u}(0)$, 
+we of course recover the forward Euler scheme.
+However, we can make another choice based on our knowledge of the system behavior. 
+We can approximate $\mathbf{u}(t)$ as
+\begin{equation}
+\mathbf{u}(t) = \mathbf{u}(0) e^{-t/\tau^*}
+\label{eq:velocity_decay}
+\end{equation}
+where $\tau^*$ is some as-yet undetermined positive constant.
+This form of $\mathbf{u}$ automatically decays in time, and as we shall see, has much better 
+stability properties than forward Euler integration.
+Plugging Equation~\eqref{eq:velocity_decay} into Equation~\eqref{eq:time_integration} and integrating, we find
+
+\begin{equation}
+\mathbf{x}(\Delta t) = \mathbf{x}(0) + \mathbf{u}(0) \tau^* \left(1-e^{-\Delta t/\tau^*} \right)
+\label{eq:nsfd}
+\end{equation}
+
+The quantity $\tau^*(1-e^{-\Delta t / \tau^*})$ acts as a pseudo-timestep for advecting the free-surface.
+Equation~\eqref{eq:nsfd} is what is known as a nonstandard finite-difference model, based on
+constructing unusual discrete models for differential equation integration.
+The theory has been developed in, among others, a series of papers by
+\citet{mickens1994nonstandard, mickens2002nonstandard, mickens2005dynamic}.
+
+\subsubsection{Stability of the scheme}
+The parameter $\tau^*$ sets how quickly $\mathbf{u}$ decays in Equation~\eqref{eq:velocity_decay}, and a good 
+choice is crucial for accuracy and stability. A shorter decay time corresponds to more stabilization,
+but if it becomes too short, the surface velocity will become overdamped. In general, we will want 
+to choose $\tau^*$ so that it is as close as possible to the least stable mode, or $\tau_{\mathrm{max}}$.
+
+To investigate the stability of this scheme we consider a velocity solution with power in 
+a single normal mode of the system $\mathbf{u} = a_i \mathbf{u}_i$.
+This will decay exponentially with relaxation time $\tau_i$, or
+\begin{equation}
+\frac{d a_i} {dt} = - \frac{ a_i }{\tau_i} 
+\end{equation}
+Applying the nonstandard finite difference scheme, we find
+\begin{equation}
+a_i^{(1)} = a_i^{(0)} \left[ 1 - \frac{\tau^*}{\tau_i} \left(1-e^{-\Delta t/\tau^*} \right) \right]
+\label{eq:recursion}
+\end{equation}
+In order for the scheme to be stable, the quantity in brackets must not blow up as it is repeatedly 
+multiplied by itself, or 
+\begin{equation}
+\left| 1 - \frac{\tau^*}{\tau_i} \left(1-e^{-\Delta t/\tau^*} \right) \right| \le 1
+\end{equation}
+
+\ifdetail
+Taking the positive value of the absolute value yields the criterion of 
+\begin{equation}
+- \frac{\tau^*}{\tau_i} \left(1-e^{-\Delta t/\tau^*} \right) \le 0
+\end{equation}
+
+which can be rearranged to find
+\begin{equation}
+e^{-\Delta t/\tau^*} \le 1
+\end{equation}
+
+which is simply a statement that the timestep must be postive.
+
+Taking the negative value of the absolute value yields
+\begin{equation}
+  \frac{\tau^*}{\tau_i} \left(1-e^{-\Delta t/\tau^*} \right)  \le 2
+\end{equation}
+
+\begin{equation}
+ 1 - 2 \frac{\tau_i}{\tau^*} \le e^{-\Delta t/\tau^*}
+\end{equation}
+
+if the left hand side is less than zero, then this is true regardless of step size, or
+\begin{equation}
+\tau^* \le 2 \tau_i
+\end{equation}
+
+if the left hand side is between zero and one, the expression is more complicated. 
+Taking the log of both sides:
+
+\begin{equation}
+\Delta t \le -\tau^* \log \left(1 - 2 \frac{\tau_i}{\tau^*} \right)
+\end{equation}
+
+It is convenient to write this in terms of dimensionless times $\Delta t/ \tau_i$ and $\tau^*/\tau_i$.
+
+\begin{equation}
+\frac{\Delta t}{\tau_i} \le -\frac{\tau^*}{\tau_i} \log \left(1 - 2 \frac{\tau_i}{\tau^*} \right)
+\end{equation}
+
+\fi
+
+The stability of this scheme is determined by the choice of $\tau^*$.  
+It has a region of unconditional stability, where
+\begin{equation}
+\tau^* \le 2 \tau_i
+\end{equation}
+Otherwise, the scheme is conditionally stable, with the timestep limited by 
+\begin{equation}
+\Delta t \le -\tau^* \log \left(1 - 2 \frac{\tau_i}{\tau^*} \right)
+\end{equation}
+
+
+
+\section{Implementation in \texttt{Aspect} }
 \subsection{Mass conservation}
 \begin{itemize}
 \item mass conservation requires $\int_\Omega {\bf u \cdot n} = 0$
@@ -137,17 +544,8 @@ Goal: provide for free surface computations in mantle convection simulations tha
 \item mesh vertex positions are stored in a distributed vector
 \item vector is redistributed with p4est on mesh refinement
 \end{itemize}
-\section{Stabilization}
-\subsection{Kaus, M\"ulhaus and May}
-\subsection{Nonstandard finite differences?}
-Is this a good idea?  I think it could be a novel stable way to stabilize free surface
-computations.
-\section{Benchmarking}
 \subsection{Crameri benchmarks}
 more or less good go go
-\subsection{New benchmark?}
-topography over slab with high viscosity?
-3D version of Crameri benchmark?
 \section{Discussion}
 
 %% The Appendices part is started with the command \appendix;
