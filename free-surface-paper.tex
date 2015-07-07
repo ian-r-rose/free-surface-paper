@@ -131,6 +131,8 @@ mantle convection software \texttt{Aspect}.
 \section{Introduction}
 \label{sec:intro}
 
+
+
 Goal: provide for free surface computations in mantle convection simulations that are
 \begin{itemize}
 \item robust, stable, accurate
@@ -179,9 +181,12 @@ $\mathbf{T}$ is the stress tensor, defined by
 \end{equation}
 The integral over the surface in Equation~\eqref{eq:weak_stokes} accounts for boundary stresses, 
 which should be zero when evaluated on a true free surface.
-We will find it analytically useful to evaluate the integrals in Equation~\eqref{eq:weak_stokes} 
+
+Rather than analyzing finite deformation to the free surface, we will make the analytically useful
+approximation of small deformations about the hydrostatic reference surface and analyze their stability.
+We will therefore  evaluate the integrals in Equation~\eqref{eq:weak_stokes} 
 over the hydrostatic reference surface and introduce an auxilliary variable $\zeta$ which 
-represents the topography of the free surface relative to that reference surface.
+represents the (small) topography of the free surface relative to that reference surface.
 The equation for time evolution of the free surface is then
 \begin{equation}
 \frac{d \zeta}{dt} = \mathbf{u \cdot n}
@@ -596,8 +601,13 @@ a_i(\Delta t) - a_i^{(1)} = a_i(0) e^{-\Delta t/\tau_i} - a_i{(0)} \left[ \left(
 \item mesh vertex positions are stored in a distributed vector
 \item vector is redistributed with p4est on mesh refinement
 \end{itemize}
-\subsection{Crameri benchmarks}
-more or less good go go
+
+\section{Results}
+\begin{itemize}
+\item Crameri benchmarks
+\item comparison between stabilization schemes (stability)
+\item comparison between stabilization schemes (accuracy)
+\end{itemize}
 \section{Discussion}
 
 %% The Appendices part is started with the command \appendix;
