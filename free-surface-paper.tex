@@ -90,8 +90,27 @@
 \address{}
 
 \begin{abstract}
-%% Text of abstract
+Geodynamic simulations are increasingly turning to simulations with a true free surface to 
+investigate questions of dynamic topography, tectonic deformation, gravity perturbations, and
+global mantle convection. However, implementations of free surface boundary conditions 
+have proven challenging from a standpoint of accuracy, robustness, and stability.
 
+In particular, free surfaces tend to suffer from sloshing instabilities, also known as 
+the ``drunken sailor'' instability, which severely limit time step sizes. Several 
+schemes have been proposed in the literature to deal with these instabilities.
+
+Here we analyze the problem of creeping viscous flow with a free surface and discuss the 
+origin of these instabilities. We demonstrate their cause and how existing stabilization 
+schemes work to damp them out.
+
+We also propose a new scheme for removing instabilites from free surface calculations. 
+It does not require modifications to the system matrix, nor additional variables, but is instead
+an explicit scheme based on nonstandard finite differences.  It relies on a single 
+stabilization parameter which may be identified with the smallest relaxation timescale of the
+free surface.
+
+Finally, we discuss the implementation of a free surface in the open source, community based
+mantle convection software \texttt{Aspect}.
 \end{abstract}
 
 \begin{keyword}
@@ -520,7 +539,40 @@ Otherwise, the scheme is conditionally stable, with the timestep limited by
 \begin{equation}
 \Delta t \le -\tau^* \log \left(1 - 2 \frac{\tau_i}{\tau^*} \right)
 \end{equation}
+The stability region is plotted in Figure \ref{fig:stability}. 
 
+As discussed above, a full geodynamic simulation will have a spectrum of relaxation times.
+For complete stability, the parameter $\tau^*$ should be chosen such that every mode is stable.
+In practice, this means that a good choice is 
+\begin{equation}
+\tau^* \approx \tau_{\mathrm{min}}
+\label{eq:tau_choice}
+\end{equation}
+
+\begin{figure}
+\includegraphics[width=0.9\textwidth]{figures/stability.pdf}
+\label{fig:stability}
+\caption{Left: stability region for the nonstandard finite difference scheme (green). For $\tau^*\le \tau_{\mathrm{max}}$ it is unconditionally stable.  Right: stability region for the quasi-implicit scheme (green).  For $\theta = 1$ it is unconditionally stable. In both cases the stability region for the forward Euler scheme is also shown in blue.}
+\end{figure}
+
+\subsubsection{Accuracy of the scheme}
+It is important to note that even though we derived the nonstandard finite difference scheme assuming a decaying exponential
+for $\mathbf{u}$, it is formally a first-order accurate scheme. As such, it is capable of capturing arbitrary motions 
+of the free surface, but with good stability properties.
+Again we may take one of the normal modes as an example, differencing the analytical solution from the nonstandard finite-difference scheme:
+
+\begin{equation}
+\begin{aligned}
+a_i(\Delta t) - a_i^{(1)} &= a_i(0) e^{-\Delta t/\tau_i} - a_i{(0)} \left[ 1 - \frac{\tau^*}{\tau_i} \left(1-e^{-\Delta t/\tau^*} \right) \right] \\
+                          &= a_i{(0)} \left[ e^{-\Delta t/\tau_i} - 1 + \frac{\tau^*}{\tau_i} \left(1-e^{-\Delta t/\tau^*} \right) \right] \\
+\end{aligned}
+\end{equation}
+
+Note that when $\tau_i = \tau^*$ the nonstandard finite difference scheme is exact.
+The exponentials may be expanded to find
+\begin{equation}
+a_i(\Delta t) - a_i^{(1)} = a_i(0) e^{-\Delta t/\tau_i} - a_i{(0)} \left[ \left(\frac{\Delta t}{\tau_i}\right)^2 - \frac{\tau^*}{\tau_i} \left(\frac{\Delta t }{\tau^* }\right)^2 \right] 
+\end{equation}
 
 
 \section{Implementation in \texttt{Aspect} }
