@@ -131,17 +131,6 @@ mantle convection software \texttt{Aspect}.
 \section{Introduction}
 \label{sec:intro}
 
-
-
-Goal: provide for free surface computations in mantle convection simulations that are
-\begin{itemize}
-\item robust, stable, accurate
-\item dimension independent
-\item work with adaptive mesh refinement
-\item parallelized
-\item agnostic to mesh geometry
-\end{itemize}
-
 \section{Stability}
 \subsection{Eigenvalue analysis}
 \label{sec:eigenvalue}
@@ -579,28 +568,83 @@ The exponentials may be expanded to find
 a_i(\Delta t) - a_i^{(1)} = a_i(0) e^{-\Delta t/\tau_i} - a_i{(0)} \left[ \left(\frac{\Delta t}{\tau_i}\right)^2 - \frac{\tau^*}{\tau_i} \left(\frac{\Delta t }{\tau^* }\right)^2 \right] 
 \end{equation}
 
-
 \section{Implementation in \texttt{Aspect} }
-\subsection{Mass conservation}
-\begin{itemize}
-\item mass conservation requires $\int_\Omega {\bf u \cdot n} = 0$
-\item not all mesh advection schemes respect this
-\item for short simulations, it is not likely to make a big difference
-\item for long simulations there can be significant changes in domain volume
-\item finite element projections do the best job of conservation of mass
-\end{itemize}
+We have implemented the ability to run free surface simulations in the mantle convection software \texttt{Aspect} \citep{kronbichler2012high}. 
+\texttt{Aspect} is designed to be highly flexible and modular, with the ability for user-defined rheologies, geometries, and gravity models. 
+The implementation of the free surface, therefore, needs to be general enough to work for many combinations of these models, including those 
+which may not have been written yet. In particular, it cannot rely on assumptions regarding the shape of the domain.
+
+Furthermore, \texttt{Aspect} allows for computations in both 2D and 3D, so the implementation must be sufficiently dimension
+independent to work in both cases. We implement the free surface within an arbitrary Lagrangian-Eulerian (ALE) formulation
+\citep[e.g][]{fullsack1995arbitrary,donea2004encyclopedia}.
+
+\texttt{Aspect} is a parallelized, distributed memory code with adaptive mesh refinement.
+The free surface implementation works with these features.  We store the mesh vertex positions 
+in a fully distributed vector. This vector is continually updated and redistributed across 
+processes upon mesh adaptation (which is handled by the adaptive octree library \texttt{p4est}).
+We also provide adaptive refinement indicators based on being near to the free surface or 
+when the free surface slope is steep to allow for accurate interface tracking.
+
+
 \subsection{Remeshing}
-\begin{itemize}
-\item ALE does not specify what happens to interior nodes
-\item primary goal is preserving mesh regularity
-\item we solve a laplace equation for mesh displacements
-\item different boundary conditions for the laplace problem for different velocity boundary conditions
-\end{itemize}
-\subsection{Parallelization}
-\begin{itemize}
-\item mesh vertex positions are stored in a distributed vector
-\item vector is redistributed with p4est on mesh refinement
-\end{itemize}
+In ALE calculations the internal mesh velicity is undetermined.
+In general, one wants to smoothly deform the mesh so as to preserve its regularity, 
+avoiding inverted or otherwise poorly conditioned cells.
+The mesh deformation can be calcluated in many different ways, including algebraic \citep[e.g.][]{thieulot2011fantom} 
+and PDE based approaches.
+
+We choose to implement remeshing based on solving Laplace's equation for the mesh velocity.
+We solve the equation
+\begin{equation}
+\nabla^2 \mathbf{u}_{\mathrm{mesh}} = 0
+\label{eq:laplacian_smoothing}
+\end{equation}
+subject to the boundary conditions
+\begin{equation}
+\begin{aligned}
+&\mathbf{u}_\mathrm{mesh} = \left( \textbf{u} \cdot \textbf{n} \right) \textbf{n} & \qquad & \textrm{on } \partial \Omega_{\textrm{free surface}}, \\
+&\mathbf{u}_\mathrm{mesh} \cdot \textbf{n} = 0 & \qquad & \textrm{on } \partial \Omega_{\textrm{free slip}}, \\
+&\mathbf{u}_\mathrm{mesh} = 0 & \qquad & \textrm{on } \partial \Omega_{\textrm{Dirichlet}}.
+\end{aligned}
+\label{eq:laplacian_bcs}
+\end{equation}
+This scheme has the advantage of working for many different domain geometries and combinations of boundary conditions.
+For moderate mesh deformation, the mesh stays smooth and well conditioned, though it breaks down for large deformations 
+or non-convex domains.
+
+\subsection{Surface advection}
+With a deformable domain there is the danger that small errors in free surface motion can
+result in poor overall mass conservation in time. At worst, the total volume of the mesh can 
+fluctuate significantly over hundreds or thousands of time steps.
+Consistency with the Stokes solution requires 
+\begin{equation}
+\mathbf{u}_{\mathrm{mesh}} \cdot \mathbf{n} = \mathbf{u \cdot n}
+\end{equation}
+
+Unfortunately the normal vectors are not well defined on the mesh vertices, which is 
+where the mesh velocity is defined. One could instead advect the mesh in the direction 
+of the local vertical, or in some weighted average of the cell normals adjacent to a given vertex,
+but we have found that these schemes do not necessarily have excellent mass conservation 
+properties.
+
+A better approach is to perform a finite element projection of the Stokes velocity 
+solution onto the mesh velocity vector. Multiplying the boundary conditions 
+\eqref{eq:laplacian_bcs} by a test function $\mathbf{w}$ and integrating over the free
+surface part of the boundary, we find
+
+\begin{equation}
+\int_{\partial \Omega_{\textrm{free surface}} } \mathbf{w} \cdot \mathbf{u}_\mathrm{mesh} = 
+\int_{\partial \Omega_{\textrm{free surface}} } \left( \mathbf{w \cdot n } \right) \left( \mathbf{u \cdot n} \right)
+\end{equation}
+
+When discretized, this forms a linear system which can be solved for the mesh velocity at the 
+free surface. Of course, a new system to solve is not ideal, but this system, being nonzero 
+over only the free surface, is relatively small and easy to solve.
+
+This weak solution to the boundary conditions~\eqref{eq:laplacian_bcs} is able to borrow
+the accuracy of the Stokes solve for Equation~\eqref{eq:weak_incompressible}, and we have 
+found it to conserve mass more accurately than algebraic techniques for evaluating the mesh-normal velocity.
+Similar results were found by \citet{fullsack1995arbitrary}.
 
 \section{Results}
 \begin{itemize}
