@@ -261,6 +261,7 @@ p^n_i
 Then multiplying both sides by $C^{-1}$ we get
 \begin{equation}
 \tau_i (C^{-1}D)\mathbf{y}_i = \mathbf{y}_i
+\label{eq:standard_eigenvalue}
 \end{equation}
 
 This eigenvalue equation can be solved for the normal modes and relaxation times of the Stokes system with 
@@ -535,14 +536,6 @@ Otherwise, the scheme is conditionally stable, with the timestep limited by
 \end{equation}
 The stability region is plotted in Figure \ref{fig:stability}. 
 
-As discussed above, a full geodynamic simulation will have a spectrum of relaxation times.
-For complete stability, the parameter $\tau^*$ should be chosen such that every mode is stable.
-In practice, this means that a good choice is 
-\begin{equation}
-\tau^* \approx \tau_{\mathrm{min}}
-\label{eq:tau_choice}
-\end{equation}
-
 \begin{figure}
 \includegraphics[width=0.9\textwidth]{figures/stability.pdf}
 \label{fig:stability}
@@ -567,6 +560,34 @@ The exponentials may be expanded to find
 \begin{equation}
 a_i(\Delta t) - a_i^{(1)} = a_i(0) e^{-\Delta t/\tau_i} - a_i{(0)} \left[ \left(\frac{\Delta t}{\tau_i}\right)^2 - \frac{\tau^*}{\tau_i} \left(\frac{\Delta t }{\tau^* }\right)^2 \right] 
 \end{equation}
+
+\subsubsection{Choice of $\tau^*$}
+As discussed above, a full geodynamic simulation will have a spectrum of relaxation times.
+For complete stability, the parameter $\tau^*$ should be chosen such that every mode is stable.
+In practice, this means that a good choice is 
+\begin{equation}
+\tau^* \approx \tau_{\mathrm{min}}
+\label{eq:tau_choice}
+\end{equation}
+
+Unfortunately, for many models the minimum relaxation time will not be known beforehand. 
+In order to use the nonstandard finite difference scheme, the value of $\tau^*$ would need 
+to be calculated or estimated first.  There are several possible ways to determine this value:
+
+\begin{itemize}
+\item Direct solution of Equation~\eqref{eq:generalized_eigenvalue}. This can be expensive, although
+only the minimun relaxation time is required. For certain geometries a simple power iteration on 
+the standard eigenvalue problem~\eqref{eq:standard_eigenvalue} could be enough.
+\item Analytical formulae. Several geometry and viscosity model combinations have analytical solutions
+for relaxation spectra. Even if the user's model is not precisely the same (e.g., has some lateral viscosty
+variations), an analytical approximation may be sufficient.
+\item Scaling. In general, we expect the relaxation times to scale with $\tau \sim \frac{\eta}{\rho g L}$,
+where the density, gravity, viscosity, and lengthscale are all representative values.  A small amount
+of experimentation near this value of $\tau$ can find an appropriate relaxation time.
+\item Observation of instabilities.  The mere act of observing a sloshing instability can furnish 
+an estimate of its relaxation time.
+\end{itemize} 
+
 
 \section{Implementation in \texttt{Aspect} }
 We have implemented the ability to run free surface simulations in the mantle convection software \texttt{Aspect} \citep{kronbichler2012high}. 
