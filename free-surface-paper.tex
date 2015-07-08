@@ -546,7 +546,7 @@ In practice, this means that a good choice is
 \begin{figure}
 \includegraphics[width=0.9\textwidth]{figures/stability.pdf}
 \label{fig:stability}
-\caption{Left: stability region for the nonstandard finite difference scheme (green). For $\tau^*\le \tau_{\mathrm{max}}$ it is unconditionally stable.  Right: stability region for the quasi-implicit scheme (green).  For $\theta = 1$ it is unconditionally stable. In both cases the stability region for the forward Euler scheme is also shown in blue.}
+\caption{Left: stability region for the nonstandard finite difference scheme (green). On the x-axis is the value of the stabilization time, in units of the minimum relaxation time $\tau_{\mathrm{min}}$.  On the y-axis is the value of the timestep, also in units of the minimum relaxation time. For $\tau^*\le \tau_{\mathrm{min}}$ it is unconditionally stable.  Right: stability region for the quasi-implicit scheme (green).  Again, the y axis is in units of the minumum relaxation time.  The x-axis shows the value of the stabilization parameter $\theta$. For $\theta = 1$ it is unconditionally stable. In both cases the stability region for the forward Euler scheme is also shown in blue.}
 \end{figure}
 
 \subsubsection{Accuracy of the scheme}
