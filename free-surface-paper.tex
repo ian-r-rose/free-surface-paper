@@ -282,7 +282,7 @@ then the time evolution of the free surface is given by
 Of course, most finite element (or finite difference, or finite volume) geodynamic simulations do not resolve 
 the solution and surface topography into its normal modes and integrate those separately. 
 Indeed, analytical solutions for the normal modes are only known for simple geometries and rheologies.
-Instead, they attain a velocity solution and simply advect the free surface with the local velocity.
+Instead, they obtain a velocity solution and simply advect the free surface with the local velocity.
 The normal mode solution is instructive, however. 
 Each mode has the form of a decay equation with characteristic decay time $\tau_i$.
 The decay equation is the archetypical example of a stiff ordinary differential equation.
@@ -634,7 +634,7 @@ or on non-convex domains.
 
 \subsection{Surface advection}
 With a deformable domain there is the danger that small errors in free surface motion can
-result in poor overall mass conservation in time. At worst, the total volume of the mesh can 
+result in poor overall mass conservation in time. In some scenarios, the total volume of the mesh can 
 fluctuate significantly over hundreds or thousands of time steps.
 Consistency with the Stokes solution requires 
 \begin{equation}
