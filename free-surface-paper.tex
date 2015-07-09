@@ -94,7 +94,6 @@ Geodynamic simulations are increasingly turning to simulations with a true free 
 investigate questions of dynamic topography, tectonic deformation, gravity perturbations, and
 global mantle convection. However, implementations of free surface boundary conditions 
 have proven challenging from a standpoint of accuracy, robustness, and stability.
-
 In particular, free surfaces tend to suffer from sloshing instabilities, also known as 
 the ``drunken sailor'' instability, which severely limit time step sizes. Several 
 schemes have been proposed in the literature to deal with these instabilities.
@@ -102,7 +101,6 @@ schemes have been proposed in the literature to deal with these instabilities.
 Here we analyze the problem of creeping viscous flow with a free surface and discuss the 
 origin of these instabilities. We demonstrate their cause and how existing stabilization 
 schemes work to damp them out.
-
 We also propose a new scheme for removing instabilites from free surface calculations. 
 It does not require modifications to the system matrix, nor additional variables, but is instead
 an explicit scheme based on nonstandard finite differences.  It relies on a single 
@@ -131,8 +129,7 @@ mantle convection software \texttt{Aspect}.
 \section{Introduction}
 \label{sec:intro}
 
-\section{Stability}
-\subsection{Eigenvalue analysis}
+\section{Eigenvalue analysis}
 \label{sec:eigenvalue}
 
 We begin with the homogeneous Stokes equations for incompressible creeping flow:
@@ -171,10 +168,11 @@ $\mathbf{T}$ is the stress tensor, defined by
 The integral over the surface in Equation~\eqref{eq:weak_stokes} accounts for boundary stresses, 
 which should be zero when evaluated on a true free surface.
 
-Rather than analyzing finite deformation to the free surface, we will make the analytically useful
-approximation of small deformations about the hydrostatic reference surface and analyze their stability.
+Rather than analyzing finite deformation to the free surface (a nonlinear problem),
+we will make the analytically useful approximation of small deformations about the hydrostatic 
+reference surface and analyze their stability.
 We will therefore  evaluate the integrals in Equation~\eqref{eq:weak_stokes} 
-over the hydrostatic reference surface and introduce an auxilliary variable $\zeta$ which 
+over the hydrostatic reference surface and introduce a temporary auxilliary variable $\zeta$ which 
 represents the (small) topography of the free surface relative to that reference surface.
 The equation for time evolution of the free surface is then
 \begin{equation}
@@ -245,17 +243,17 @@ C &=
 \begin{bmatrix}
 A & B^T \\
 B & 0 \\
-\end{bmatrix} \\
+\end{bmatrix} \quad
 D &= 
 \begin{bmatrix}
 M & 0 \\
 0 & 0
-\end{bmatrix} \\
+\end{bmatrix} \quad
 \mathbf{y}_i &= 
 \begin{bmatrix}
 \mathbf{u}^n_i \\
 p^n_i
-\end{bmatrix} \\
+\end{bmatrix} 
 \end{aligned}
 \end{equation}
 Then multiplying both sides by $C^{-1}$ we get
@@ -267,7 +265,7 @@ Then multiplying both sides by $C^{-1}$ we get
 This eigenvalue equation can be solved for the normal modes and relaxation times of the Stokes system with 
 a free surface.
 
-\subsection{Time integration of the free surface}
+\section{Time integration of the free surface}
 \label{sec:timestepping}
 
 Armed with the normal modes and relaxation times of the Stokes system, we can write down the
@@ -300,7 +298,7 @@ The modes with the smallest relaxation times are usually those with the largest 
 and so it will be those which go unstable first, a phenomenon which has been called 
 a ``sloshing'', or ``drunken sailor'' instability \citep{kaus2010stabilization}.
 
-\subsection{Quasi-implicit stabilization}
+\section{Quasi-implicit stabilization}
 \label{sec:kmm}
 
 The relaxation timescales for surface topography tend to be considerably longer than those for 
@@ -414,9 +412,8 @@ note that as $\theta$ goes to one this scheme should become unconditionally stab
 but nonlinear effects and discretization errors due to finite deformation of the surface could 
 prevent that stability.
 
-\subsection{A novel time-integration scheme}
+\section{A novel time-integration scheme}
 
-\subsubsection{Nonstandard finite-differences}
 One downside of the quasi-implicit scheme is that it requires a modification of the system matrix, 
 and as we have seen this shifts its spectrum.
 An alternative would be to construct a time-integration scheme with better stability properties.  
@@ -429,6 +426,8 @@ We would like to construct an explicit scheme that accounts for following proper
 \item Relaxation of small amplitude topography takes the form of exponential decay.
 \item The decay mode with the shortest relaxation time is the least stable.
 \end{itemize}
+
+\subsection{Nonstandard finite-differences}
 
 A general expression for the evolution of a free surface from time $t=0$ to time $t=\Delta t$ is 
 \begin{equation}
@@ -460,7 +459,7 @@ constructing unusual discrete models for differential equation integration.
 The theory has been developed in, among others, a series of papers by
 \citet{mickens1994nonstandard, mickens2002nonstandard, mickens2005dynamic}.
 
-\subsubsection{Stability of the scheme}
+\subsection{Stability of the scheme}
 The parameter $\tau^*$ sets how quickly $\mathbf{u}$ decays in Equation~\eqref{eq:velocity_decay}, and a good 
 choice is crucial for accuracy and stability. A shorter decay time corresponds to more stabilization,
 but if it becomes too short, the surface velocity will become overdamped. In general, we will want 
@@ -536,13 +535,13 @@ Otherwise, the scheme is conditionally stable, with the timestep limited by
 \end{equation}
 The stability region is plotted in Figure \ref{fig:stability}. 
 
-\begin{figure}
+\begin{figure*}
 \includegraphics[width=0.9\textwidth]{figures/stability.pdf}
 \label{fig:stability}
 \caption{Left: stability region for the nonstandard finite difference scheme (green). On the x-axis is the value of the stabilization time, in units of the minimum relaxation time $\tau_{\mathrm{min}}$.  On the y-axis is the value of the timestep, also in units of the minimum relaxation time. For $\tau^*\le \tau_{\mathrm{min}}$ it is unconditionally stable.  Right: stability region for the quasi-implicit scheme (green).  Again, the y axis is in units of the minumum relaxation time.  The x-axis shows the value of the stabilization parameter $\theta$. For $\theta = 1$ it is unconditionally stable. In both cases the stability region for the forward Euler scheme is also shown in blue.}
-\end{figure}
+\end{figure*}
 
-\subsubsection{Accuracy of the scheme}
+\subsection{Accuracy of the scheme}
 It is important to note that even though we derived the nonstandard finite difference scheme assuming a decaying exponential
 for $\mathbf{u}$, it is formally a first-order accurate scheme. As such, it is capable of capturing arbitrary motions 
 of the free surface, but with good stability properties.
@@ -561,7 +560,7 @@ The exponentials may be expanded to find
 a_i(\Delta t) - a_i^{(1)} = a_i(0) e^{-\Delta t/\tau_i} - a_i{(0)} \left[ \left(\frac{\Delta t}{\tau_i}\right)^2 - \frac{\tau^*}{\tau_i} \left(\frac{\Delta t }{\tau^* }\right)^2 \right] 
 \end{equation}
 
-\subsubsection{Choice of $\tau^*$}
+\subsection{Choice of $\tau^*$}
 As discussed above, a full geodynamic simulation will have a spectrum of relaxation times.
 For complete stability, the parameter $\tau^*$ should be chosen such that every mode is stable.
 In practice, this means that a good choice is 
@@ -584,8 +583,8 @@ variations), an analytical approximation may be sufficient.
 \item Scaling. In general, we expect the relaxation times to scale with $\tau \sim \frac{\eta}{\rho g L}$,
 where the density, gravity, viscosity, and lengthscale are all representative values.  A small amount
 of experimentation near this value of $\tau$ can find an appropriate relaxation time.
-\item Observation of instabilities.  The mere act of observing a sloshing instability can furnish 
-an estimate of its relaxation time.
+\item Observation of instabilities.  The mere act of observing a sloshing instability in an unstabilized
+problem can furnish an estimate of its relaxation time.
 \end{itemize} 
 
 
@@ -631,7 +630,7 @@ subject to the boundary conditions
 \end{equation}
 This scheme has the advantage of working for many different domain geometries and combinations of boundary conditions.
 For moderate mesh deformation, the mesh stays smooth and well conditioned, though it breaks down for large deformations 
-or non-convex domains.
+or on non-convex domains.
 
 \subsection{Surface advection}
 With a deformable domain there is the danger that small errors in free surface motion can
@@ -645,7 +644,7 @@ Consistency with the Stokes solution requires
 Unfortunately the normal vectors are not well defined on the mesh vertices, which is 
 where the mesh velocity is defined. One could instead advect the mesh in the direction 
 of the local vertical, or in some weighted average of the cell normals adjacent to a given vertex,
-but we have found that these schemes do not necessarily have excellent mass conservation 
+but we have found that these schemes do not necessarily have good mass conservation 
 properties.
 
 A better approach is to perform a finite element projection of the Stokes velocity 
