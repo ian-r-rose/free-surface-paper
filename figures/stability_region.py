@@ -3,6 +3,8 @@ import numpy as np
 
 try:
   plt.style.use('ian')
+except AttributeError:
+  print "old matplotlib version?"
 except ValueError:
   print "Cannot find the requested stylesheet"
 
