@@ -1,7 +1,11 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-plt.style.use('ian')
+try:
+  plt.style.use('ian')
+except ValueError:
+  print "Cannot find the requested stylesheet"
+
 plt.figure(figsize=(8,4) )
 
 x_nsfd = np.linspace(1.e-10,5, 1000.)
