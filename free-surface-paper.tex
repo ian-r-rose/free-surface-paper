@@ -129,6 +129,18 @@ mantle convection software \texttt{Aspect}.
 \section{Introduction}
 \label{sec:intro}
 
+Surface topography in simulations of mantle convection and other geodynamic processes is an important observable,
+allowing insights into internal density structure, rheology, and gravity perturbations.
+Historically, most simulations have been performed with free-slip boundary conditions at the surface, 
+with dynamic topography calculated as a postprocessing step.
+
+More recently, the nature of surface boundary conditions have been shown to be important for controlling the 
+dynamics of subduction zone modeling.  \citet{schmeling2008benchmark} performed extensive testing on the effect
+of a free surface on the sinking of a slab. 
+
+\section{Governing Equations}
+\label{sec:governing}
+
 \section{Eigenvalue analysis}
 \label{sec:eigenvalue}
 
@@ -589,6 +601,7 @@ problem can furnish an estimate of its relaxation time.
 
 
 \section{Implementation in \texttt{Aspect} }
+\label{sec:implementation}
 We have implemented the ability to run free surface simulations in the mantle convection software \texttt{Aspect} \citep{kronbichler2012high}. 
 \texttt{Aspect} is designed to be highly flexible and modular, with the ability for user-defined rheologies, geometries, and gravity models. 
 The implementation of the free surface, therefore, needs to be general enough to work for many combinations of these models, including those 
@@ -667,6 +680,17 @@ found it to conserve mass more accurately than algebraic techniques for evaluati
 Similar results were found by \citet{fullsack1995arbitrary}.
 
 \section{Results}
+
+We demonstrate the convergence of the nonstandard finite difference model by comparison 
+with an analytical solution. Following \citet{kramer2012implicit} we model the relaxation
+of sinusoidal surface topography in a two-dimensional Cartesian box with an isoviscous fluid.
+The setup is shown in 
+
+\begin{figure*}
+\includegraphics[width=0.9\textwidth]{figures/benchmark_setup.pdf}
+\caption{Setup for the free surface relaxation benchmark. A 2D box with an isoviscous fluid has sinusoidal initial topography, with amplitude $\zeta_0$. The box has depth $D$ and length $L$. For our tests $\rho = \eta = g = D = L = 1$, and $\zeta_0 = 0.005$.}
+\label{fig:benchmark_setup}
+\end{figure*}
 
 \begin{figure*}
 \includegraphics[width=0.9\textwidth]{figures/timestep_convergence.pdf}
