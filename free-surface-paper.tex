@@ -159,7 +159,7 @@ $\varepsilon(\mathbf{u}) = \frac{1}{2}(\nabla \mathbf{u} + (\nabla \mathbf{u} )^
 
 We will proceed with this analysis within a finite element framework, though similar arguments should 
 work for other discrete methods.
-We transform the governing equations into the weak form amenable to finite elements by standard procedures \citep[e.g.][]{zienkiewicz1977finite} to get
+We transform the governing equations into the weak form amenable to finite elements via standard operations \citep[e.g.][]{zienkiewicz1977finite} to get
 
 \begin{equation}
 -\int_\Omega 2 \eta \varepsilon( \mathbf{w} ) \colon \varepsilon( \mathbf{u} ) + \int_\Omega p \nabla \cdot \mathbf{w} 
@@ -684,13 +684,41 @@ Similar results were found by \citet{fullsack1995arbitrary}.
 We demonstrate the convergence of the nonstandard finite difference model by comparison 
 with an analytical solution. Following \citet{kramer2012implicit} we model the relaxation
 of sinusoidal surface topography in a two-dimensional Cartesian box with an isoviscous fluid.
-The setup is shown in 
+The setup is shown in Figure~\ref{fig:benchmark_setup}.
+
+The initial topography is given by
+\begin{equation}
+\zeta(x,0) = \zeta_0 \cos\left( k x \right)
+\end{equation}
+where $k = 2 \pi / L$.
+
+The time evolution of this topography is then
+\begin{equation}
+\zeta(x, t) = \zeta(x,0) e^{-t/\tau}
+\end{equation}
+where the relaxation time $\tau$ is given by
+\begin{equation}
+\tau = \frac{D k + \sinh(D k) \cosh(D k)}{ \sinh^2 (D k) } \frac{2 k \eta}{\rho g}
+\end{equation}
+where $D$ is the layer depth, $\eta$ is the viscosity, $\rho$ is the density, and $g$ is the force of gravity.
+
+This solution is only valid for infinitesimal topography. However, for small
+initial topography $\zeta_0$ it seems to be sufficiently accurate to test convergence orders up 
+to quadratic \citep{kramer2012implicit, furuichi2015implicit}.
+We evaluate error by time-integrating the L2 difference between the numerical and analytical
+solutions at the center of the domain:
+\begin{equation}
+\mathrm{Error} = \frac{1}{4\tau}\int_0^{4 \tau} \lVert \zeta_\mathrm{numeric}(L/2, t) - \zeta_\mathrm{analytic}(L/2, t) \rVert_2
+\end{equation}
 
 \begin{figure*}
 \includegraphics[width=0.9\textwidth]{figures/benchmark_setup.pdf}
 \caption{Setup for the free surface relaxation benchmark. A 2D box with an isoviscous fluid has sinusoidal initial topography, with amplitude $\zeta_0$. The box has depth $D$ and length $L$. For our tests $\rho = \eta = g = D = L = 1$, and $\zeta_0 = 0.005$.}
 \label{fig:benchmark_setup}
 \end{figure*}
+
+Figure~\ref{fig:timestep_convergence} shows the convergence of the nonstandard finite difference scheme 
+with timestep.
 
 \begin{figure*}
 \includegraphics[width=0.9\textwidth]{figures/timestep_convergence.pdf}
@@ -704,11 +732,6 @@ The setup is shown in
 \label{fig:timestep_convergence_qi}
 \end{figure*}
 
-\begin{itemize}
-\item Crameri benchmarks
-\item comparison between stabilization schemes (stability)
-\item comparison between stabilization schemes (accuracy)
-\end{itemize}
 \section{Discussion}
 
 %% The Appendices part is started with the command \appendix;
