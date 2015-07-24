@@ -39,6 +39,7 @@
 %% The amssymb package provides various useful mathematical symbols
 \usepackage{amssymb}
 \usepackage{amsmath}
+\usepackage{color, soul}
 
 \newif\ifdetail
 \detailfalse
@@ -130,13 +131,53 @@ mantle convection software \texttt{Aspect}.
 \label{sec:intro}
 
 Surface topography in simulations of mantle convection and other geodynamic processes is an important observable,
-allowing insights into internal density structure, rheology, and gravity perturbations.
+allowing insights into Earth's internal density structure, rheology, and geoid perturbations \citep[e.g.][]{richards1984geoid, hager1985lower, baumann2014constraining}.
 Historically, most simulations have been performed with free-slip boundary conditions at the surface, 
-with dynamic topography calculated as a postprocessing step.
+with dynamic topography calculated as a postprocessing step. 
+
+\hl{address pseudo free surface, free surface, sticky air}
 
 More recently, the nature of surface boundary conditions have been shown to be important for controlling the 
-dynamics of subduction zone modeling.  \citet{schmeling2008benchmark} performed extensive testing on the effect
-of a free surface on the sinking of a slab. 
+dynamics of subduction zone modeling.  In a benchmark study \citet{schmeling2008benchmark} performed extensive testing on the effect
+of a free surface on the sinking of a slab. They found that the nature of the free surface had a large effect 
+on the dynamics of the slab, affecting both the shape and the timing of sinking. Most of the 
+participating codes in that benchmark used the `sticky air' approximation for the free surface, where a low viscosity,
+low density layer of fluid (termed `air', though its viscosity is much higher) is placed above the free surface, decoupling 
+it from the boundary. Typically a free-slip boundary condition is used above the stiky air. 
+
+In particular, \citet{schmeling2008benchmark} found that the specific properties of the sticky air layer 
+controlled the shape and timing of the slab, and the viscosity averaging scheme for areas of transitional
+composition was extremely important, as the subducting slab entrained significant amounts of the sticky air.
+\citet{crameri2012comparison} conducted comparisons between sticky air and true free surface models, 
+demonstrating a range of parameters for sticky air which can mitigate some of the difficulties that it 
+introduces.
+
+A study by \citet{quinquis2011role} found that free surface boundary conditions have a large effect on 
+trench migration in a subduction zone, and \citet{crameri2012free} found that a free surface combined 
+with a weak crust is important for producing one-sided subduction zones.
+
+Both true free surface and sticky air calculations have been subject to an instability which has been 
+variously termed a ``sloshing,'' or ``druknen sailor'' instability \citep{kaus2010stabilization, duretz2011discretization}. 
+This instability, arising from the large density contrast typical at a free surface (compared with the much smaller 
+internal density contrasts), severely limits the maximum stable timestep for free surface computations.
+Frequently, the maximum stable timestep is several orders of magnitude smaller than that for an otherwise 
+equivalent model with free-slip boundary conditions.
+
+Several studies have attempted to alleviate the timestepping requirements imposed by the sloshing 
+instability. Since the most expensive part of geodynamic simulations is typically the Stokes solve,
+most free surface calculations have preferred to use explicit time stepping methods for the free 
+surface. \citet{kaus2010stabilization} proposed a quasi-implicit scheme which modifies the discretized 
+Stokes matrix, giving it better stability properties.  \citet{kramer2012implicit} and \citet{furuichi2015implicit}
+explored methods for solving the transport of the free surface implicitly.
+
+Here we analyze the problem of the sloshing instability.  We demonstrate the nature of the instability, 
+as well as clarifying the effect of quasi-implicit stabilization.
+
+The analysis allows us to propose a new time marching scheme for free surface computations with 
+good stability properties. It is an explicit method which requires no modification to the system matrix,
+which makes it extremely simple to implement.
+
+Finally, we describe the implementation of a free surface in the mantle convection software \texttt{Aspect}. 
 
 \section{Governing Equations}
 \label{sec:governing}
@@ -550,7 +591,7 @@ The stability region is plotted in Figure \ref{fig:stability}.
 \begin{figure*}
 \includegraphics[width=0.9\textwidth]{figures/stability.pdf}
 \label{fig:stability}
-\caption{Left: stability region for the nonstandard finite difference scheme (green). On the x-axis is the value of the stabilization time, in units of the minimum relaxation time $\tau_{\mathrm{min}}$.  On the y-axis is the value of the timestep, also in units of the minimum relaxation time. For $\tau^*\le \tau_{\mathrm{min}}$ it is unconditionally stable.  Right: stability region for the quasi-implicit scheme (green).  Again, the y axis is in units of the minumum relaxation time.  The x-axis shows the value of the stabilization parameter $\theta$. For $\theta = 1$ it is unconditionally stable. In both cases the stability region for the forward Euler scheme is also shown in blue.}
+\caption{Left: stability region for the nonstandard finite difference scheme (green). On the x-axis is the value of the stabilization time, in units of the minimum relaxation time $\tau_{\mathrm{min}}$.  On the y-axis is the value of the timestep, also in units of the minimum relaxation time. For $\tau^*\le 2 \tau_{\mathrm{min}}$ it is unconditionally stable.  Right: stability region for the quasi-implicit scheme (green).  Again, the y axis is in units of the minumum relaxation time.  The x-axis shows the value of the stabilization parameter $\theta$. For $\theta = 1$ it is unconditionally stable. In both cases the stability region for the forward Euler scheme is also shown in blue.}
 \end{figure*}
 
 \subsection{Accuracy of the scheme}
