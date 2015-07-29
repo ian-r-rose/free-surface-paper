@@ -1,4 +1,4 @@
-all: stability.pdf timestep_convergence.pdf timestep_convergence_qi.pdf benchmark_setup.pdf
+all: stability.pdf timestep_convergence.pdf timestep_convergence_qi.pdf benchmark_setup.pdf tau_sensitivity.pdf
 
 stability.pdf: stability_region.py
 	python stability_region.py
@@ -11,6 +11,9 @@ timestep_convergence_qi.pdf: timestep_convergence_qi.py
 
 benchmark_setup.pdf: benchmark_setup.py
 	python benchmark_setup.py
+
+tau_sensitivity.pdf: tau_sensitivity.py
+	python tau_sensitivity.py
 
 .PHONY: clean
 clean:
