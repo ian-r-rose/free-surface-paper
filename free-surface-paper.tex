@@ -91,7 +91,7 @@
 \address{}
 
 \begin{abstract}
-Geodynamic simulations are increasingly turning to simulations with a true free surface to 
+Geodynamic simulations increasingly rely on simulations with a true free surface to 
 investigate questions of dynamic topography, tectonic deformation, gravity perturbations, and
 global mantle convection. However, implementations of free surface boundary conditions 
 have proven challenging from a standpoint of accuracy, robustness, and stability.
@@ -145,7 +145,7 @@ participating codes in that benchmark used the `sticky air' approximation for th
 low density layer of fluid (termed `air', though its viscosity is much higher) is placed above the free surface, decoupling 
 it from the boundary. Typically a free-slip boundary condition is used above the stiky air. 
 
-In particular, \citet{schmeling2008benchmark} found that the specific properties of the sticky air layer 
+\citet{schmeling2008benchmark} found that the specific properties of the sticky air layer 
 controlled the shape and timing of the slab, and the viscosity averaging scheme for areas of transitional
 composition was extremely important, as the subducting slab entrained significant amounts of the sticky air.
 \citet{crameri2012comparison} conducted comparisons between sticky air and true free surface models, 
@@ -227,7 +227,7 @@ reference surface and analyze their stability.
 We will therefore  evaluate the integrals in Equation~\eqref{eq:weak_stokes} 
 over the hydrostatic reference surface and introduce a temporary auxilliary variable $\zeta$ which 
 represents the (small) topography of the free surface relative to that reference surface.
-The equation for time evolution of the free surface is then
+The Lagrangian equation for time evolution of the free surface is then
 \begin{equation}
 \frac{d \zeta}{dt} = \mathbf{u \cdot n}
 \label{eq:surface_evolution}
@@ -354,7 +354,7 @@ a ``sloshing'', or ``drunken sailor'' instability \citep{kaus2010stabilization}.
 \section{Quasi-implicit stabilization}
 \label{sec:kmm}
 
-The relaxation timescales for surface topography tend to be considerably longer than those for 
+The relaxation timescales for surface topography tend to be considerably shorter than those for 
 convection or tectonic deformation, so the stability requirements for a forward Euler scheme
 are quite onerous.  On the other hand, an implicit time marching scheme requires solving 
 a nonlinear system for the new surface position, or assembling a larger system with surface
@@ -487,7 +487,6 @@ A general expression for the evolution of a free surface from time $t=0$ to time
 \mathbf{x}(\Delta t) = \mathbf{x}(0) + \int_0^{\Delta t} \mathbf{u}(t) dt
 \label{eq:time_integration}
 \end{equation}
-
 where $\mathbf{x}$ is the location of the free surface.  If we approximate $\mathbf{u}(t) \approx \mathbf{u}(0)$, 
 we of course recover the forward Euler scheme.
 However, we can make another choice based on our knowledge of the system behavior. 
@@ -499,7 +498,7 @@ We can approximate $\mathbf{u}(t)$ as
 where $\tau^*$ is some as-yet undetermined positive constant.
 This form of $\mathbf{u}$ automatically decays in time, and as we shall see, has much better 
 stability properties than forward Euler integration.
-Plugging Equation~\eqref{eq:velocity_decay} into Equation~\eqref{eq:time_integration} and integrating, we find
+Using Equation~\eqref{eq:velocity_decay} in Equation~\eqref{eq:time_integration} and integrating, we find
 
 \begin{equation}
 \mathbf{x}(\Delta t) = \mathbf{x}(0) + \mathbf{u}(0) \tau^* \left(1-e^{-\Delta t/\tau^*} \right)
@@ -518,7 +517,7 @@ choice is crucial for accuracy and stability. A shorter decay time corresponds t
 but if it becomes too short, the surface velocity will become overdamped. In general, we will want 
 to choose $\tau^*$ so that it is as close as possible to the least stable mode, or $\tau_{\mathrm{max}}$.
 
-To investigate the stability of this scheme we consider a velocity solution with power in 
+To investigate the stability of this scheme we consider a velocity solution comprised of 
 a single normal mode of the system $\mathbf{u} = a_i \mathbf{u}_i$.
 This will decay exponentially with relaxation time $\tau_i$, or
 \begin{equation}
@@ -591,7 +590,7 @@ The stability region is plotted in Figure \ref{fig:stability}.
 \begin{figure*}
 \includegraphics[width=0.9\textwidth]{figures/stability.pdf}
 \label{fig:stability}
-\caption{Left: stability region for the nonstandard finite difference scheme (green). On the x-axis is the value of the stabilization time, in units of the minimum relaxation time $\tau_{\mathrm{min}}$.  On the y-axis is the value of the timestep, also in units of the minimum relaxation time. For $\tau^*\le 2 \tau_{\mathrm{min}}$ it is unconditionally stable.  Right: stability region for the quasi-implicit scheme (green).  Again, the y axis is in units of the minumum relaxation time.  The x-axis shows the value of the stabilization parameter $\theta$. For $\theta = 1$ it is unconditionally stable. In both cases the stability region for the forward Euler scheme is also shown in blue.}
+\caption{Left: stability region for the nonstandard finite difference scheme (green). On the x-axis is the value of the stabilization time, in units of the minimum relaxation time $\tau_{\mathrm{min}}$.  On the y-axis is the value of the timestep, also in units of the minimum relaxation time. For $\tau^*\le 2 \tau_{\mathrm{min}}$ the nonstandard finite difference scheme is unconditionally stable.  Right: stability region for the quasi-implicit scheme (green).  Again, the y axis is in units of the minumum relaxation time.  The x-axis shows the value of the stabilization parameter $\theta$. For $\theta = 1$ the quasi-implicit scheme is unconditionally stable. In both cases the stability region for the forward Euler scheme is also shown in blue.}
 \end{figure*}
 
 \subsection{Accuracy of the scheme}
@@ -749,7 +748,7 @@ to quadratic \citep{kramer2012implicit, furuichi2015implicit}.
 We evaluate error by time-integrating the L2 difference between the numerical and analytical
 solutions at the center of the domain:
 \begin{equation}
-\mathrm{Error} = \frac{1}{4\tau}\int_0^{4 \tau} \lVert \zeta_\mathrm{numeric}(L/2, t) - \zeta_\mathrm{analytic}(L/2, t) \rVert_2
+\mathrm{Error} = \frac{1}{4\tau}\int_0^{4 \tau} \lVert \zeta_\mathrm{numeric}(L/2, t) - \zeta_\mathrm{analytic}(L/2, t) \rVert_2 dt
 \end{equation}
 
 \begin{figure*}
