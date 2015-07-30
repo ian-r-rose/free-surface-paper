@@ -172,7 +172,6 @@ explored methods for solving the transport of the free surface implicitly.
 
 Here we analyze the problem of the sloshing instability.  We demonstrate the nature of the instability, 
 as well as clarifying the effect of quasi-implicit stabilization.
-
 The analysis allows us to propose a new time marching scheme for free surface computations with 
 good stability properties. It is an explicit method which requires no modification to the system matrix,
 which makes it extremely simple to implement.
@@ -182,72 +181,107 @@ Finally, we describe the implementation of a free surface in the mantle convecti
 \section{Governing Equations}
 \label{sec:governing}
 
+We begin with the incompressible momentum conservation equations for creeping incompressible flow:
+\begin{equation}
+\begin{aligned}
+\nabla \cdot \mathbf{T} &= \rho \mathbf{g} \\
+\nabla \cdot \mathbf{u} &= 0
+\end{aligned}
+\label{eq:momentum_mass_conservation}
+\end{equation}
+where $\mathbf{u}$ is the fluid velocity, $\rho$ is the fluid density, and $\mathbf{g}$ is the force due to gravity.
+$\mathbf{T}$ is the stress tensor for a Newtonian fluid, defined by
+\begin{equation}
+\mathbf{T} = 2 \eta \varepsilon(\mathbf{u}) - p \mathbf{I}
+\label{eq:stress_tensor}
+\end{equation}
+where $\eta$ is the viscosity and $\varepsilon(\mathbf{u}) = \frac{1}{2}(\nabla \mathbf{u} + (\nabla \mathbf{u} )^T )$ is the strain-rate tensor.
+Substituting the stress tensor into Equation~\eqref{eq:momentum_mass_conservation} gets the familiar form of the Stokes equation:
+\begin{equation}
+\nabla \cdot \left( 2 \eta \varepsilon( \mathbf{u} ) \right) - \nabla p = \rho \mathbf{g}
+\label{eq:stokes}
+\end{equation}
+
+For the purposes of this analysis it is useful to define a hydrostatic reference state where the 
+velocity $\mathbf{u}$ is zero:
+\begin{equation}
+- \nabla p_0 = \rho_0 \mathbf{g}
+\label{eq:hydrostatic_stokes}
+\end{equation}
+where $p_0$ is the reference hydrostatic pressure and $\rho_0$ is a reference density profile (which may vary with depth).
+The total pressure and density can then be decomposed in to variations about their 
+reference values: $\rho = \rho_0 + \rho^\prime$, $p = p_0 + p^\prime$. 
+
+Furthermore, since we are interested in solving these equations for a domain with a free surface, 
+we need an equation to track that surface.
+The Lagrangian equation for time evolution of the free surface can be written
+\begin{equation}
+\frac{d \zeta}{dt} = \mathbf{u \cdot n} \quad \textrm{on  }  \partial \Omega_\textrm{free surface}
+\label{eq:surface_evolution}
+\end{equation}
+where $\zeta$ is the surface coordinate of the free surface, and $\partial \Omega_\textrm{free surface}$ is the 
+part of the domain boundary corresponding to the free surface.
+
 \section{Eigenvalue analysis}
 \label{sec:eigenvalue}
 
-We begin with the homogeneous Stokes equations for incompressible creeping flow:
+In order to better understand the time evolution of Equations~\eqref{eq:momentum_mass_conservation}-\eqref{eq:surface_evolution} 
+we will consider the eigenvalues of a simplified homogeneous system. By setting $\rho = \rho_0$, we obtain the system
 \begin{equation}
-\nabla \cdot \left( 2 \eta \varepsilon( \mathbf{u} ) \right) - \nabla p = 0
-\label{eq:stokes}
+\nabla \cdot \left( 2 \eta \varepsilon( \mathbf{u} ) \right) - \nabla p^\prime = 0
+\label{eq:homogeneous_stokes}
 \end{equation}
 
 \begin{equation}
 \nabla \cdot \mathbf{u} = 0
 \label{eq:incompressible}
 \end{equation}
-where $\mathbf{u}$ is the velocity, $p$ is the pressure, $\eta$ is the viscosity, and 
-$\varepsilon(\mathbf{u}) = \frac{1}{2}(\nabla \mathbf{u} + (\nabla \mathbf{u} )^T )$ is the strain-rate tensor.
 
 We will proceed with this analysis within a finite element framework, though similar arguments should 
 work for other discrete methods.
 We transform the governing equations into the weak form amenable to finite elements via standard operations \citep[e.g.][]{zienkiewicz1977finite} to get
 
 \begin{equation}
--\int_\Omega 2 \eta \varepsilon( \mathbf{w} ) \colon \varepsilon( \mathbf{u} ) + \int_\Omega p \nabla \cdot \mathbf{w} 
-+ \int_{\partial \Omega_N} \mathbf{w} \cdot \mathbf{T} \cdot \mathbf{n} = 0 
+-\int_{\Omega(t)} 2 \eta \varepsilon( \mathbf{w} ) \colon \varepsilon( \mathbf{u} ) + \int_{\Omega(t)} p^\prime \nabla \cdot \mathbf{w} 
++ \int_{\partial \Omega_N(t)} \mathbf{w} \cdot \mathbf{T} \cdot \mathbf{n} = 0 
 \label{eq:weak_stokes}
 \end{equation}
 
 \begin{equation}
-\int_\Omega q \nabla \cdot \mathbf{u} = 0
+\int_{\Omega(t)} q \nabla \cdot \mathbf{u} = 0
 \label{eq:weak_incompressible}
 \end{equation}
 where $\mathbf{w}$ and $q$ are suitably chosen test functions and the integrals over 
 $\Omega$ and $\partial \Omega_N$ are over the volume of the domain and the part of the boundary with stress boundary conditions, respectively.
-$\mathbf{T}$ is the stress tensor, defined by
-\begin{equation}
-\mathbf{T} = 2 \eta \varepsilon(\mathbf{u}) - p \mathbf{I}
-\end{equation}
+Note that since the free surface can move, the shape of the domain is a function of time.
+It is most convenient to integrate over the domain at the current timestep, which corresponds to an explicit scheme.
+However, as we will see, the implicit scheme of integrating over the (unknown) domain at the next timestep
+is much more stable, at the cost of making the problem nonlinear \citep{furuichi2015implicit}.
+
 The integral over the surface in Equation~\eqref{eq:weak_stokes} accounts for boundary stresses, 
 which should be zero when evaluated on a true free surface.
-
 Rather than analyzing finite deformation to the free surface (a nonlinear problem),
 we will make the analytically useful approximation of small deformations about the hydrostatic 
 reference surface and analyze their stability.
 We will therefore  evaluate the integrals in Equation~\eqref{eq:weak_stokes} 
 over the hydrostatic reference surface and introduce a temporary auxilliary variable $\zeta$ which 
 represents the (small) topography of the free surface relative to that reference surface.
-The Lagrangian equation for time evolution of the free surface is then
-\begin{equation}
-\frac{d \zeta}{dt} = \mathbf{u \cdot n}
-\label{eq:surface_evolution}
-\end{equation}
-where $\mathbf{u}$ is evaluated at the free surface.
+On the reference surface the gravity vector is opposite the direction of the surface normal $\mathbf{g} = -g \mathbf{n}$.
 The stress on this reference surface can be approximated by the hydrostatic pressure
 \begin{equation}
-\mathbf{T} \approx \rho g \zeta \mathbf{I}
+\mathbf{T} \approx \rho_0 g \zeta \mathbf{I}
 \label{eq:hydrostatic}
 \end{equation}
-where $\rho$ is the density and $g$ is gravity. Equation~\eqref{eq:weak_stokes} then becomes
+Equation~\eqref{eq:weak_stokes} then becomes
 
 \begin{equation}
--\int_\Omega 2 \eta \varepsilon( \mathbf{w} ) \colon \varepsilon( \mathbf{u} ) + \int_\Omega p \nabla \cdot \mathbf{w} 
-+ \int_{\partial \Omega_N} \rho g \zeta  \mathbf{w} \cdot \mathbf{n} = 0 
+-\int_{\Omega(t)} 2 \eta \varepsilon( \mathbf{w} ) \colon \varepsilon( \mathbf{u} ) + \int_{\Omega(t)} p^\prime \nabla \cdot \mathbf{w} 
++ \int_{\partial \Omega_N(t)} \rho_0 g \zeta  \mathbf{w} \cdot \mathbf{n} = 0 
 \end{equation}
 
 We would like to analyze the time evolution of the normal modes of this system: each mode 
 is the relaxation of topography with a characteristic relaxation time.  
-We denote the normal modes by $\left[ \mathbf{u}_i, p_i, \zeta_i \right]^T$, with
+We denote the normal modes by $\left[ \mathbf{u}_i, p^\prime_i, \zeta_i \right]^T$, with
 relaxation times $\tau_i$, where the subscript corresponds to the $i$th normal mode.
 
 The equations decouple for the normal modes, and Equation~\eqref{eq:surface_evolution} then becomes
@@ -257,8 +291,8 @@ The equations decouple for the normal modes, and Equation~\eqref{eq:surface_evol
 \end{equation}
 This can then be used to eliminate $\zeta$ from the Stokes system:
 \begin{equation}
--\int_\Omega 2 \eta \varepsilon( \mathbf{w} ) \colon \varepsilon( \mathbf{u}_i ) + \int_\Omega p_i \nabla \cdot \mathbf{w} 
-= \tau_i \int_{\partial \Omega_N} \rho g (\mathbf{u}_i \cdot \mathbf{n} ) (\mathbf{w} \cdot \mathbf{n})
+-\int_{\Omega(t)} 2 \eta \varepsilon( \mathbf{w} ) \colon \varepsilon( \mathbf{u}_i ) + \int_{\Omega(t)} p^\prime_i \nabla \cdot \mathbf{w} 
+= \tau_i \int_{\partial \Omega_N(t)} \rho_0 g (\mathbf{u}_i \cdot \mathbf{n} ) (\mathbf{w} \cdot \mathbf{n})
 \label{eq:weak_eigen}
 \end{equation}
 When these equations are discretized \citep[e.g.][]{kronbichler2012high} we get
@@ -283,7 +317,7 @@ p^n_i
 \end{bmatrix}
 \label{eq:generalized_eigenvalue}
 \end{equation}
-where $\mathbf{u}^n_i$ and $p^n_i$ are finite-dimensional representations of $\mathbf{u}_i$ and $p_i$,
+where $\mathbf{u}^n_i$ and $p^n_i$ are finite-dimensional representations of $\mathbf{u}_i$ and $p^\prime_i$,
 and $M$ is the discretization of the bilinear form on the right-hand side of Equation~\eqref{eq:weak_eigen}.
 
 Equation~\eqref{eq:generalized_eigenvalue} is a generalized eigenvalue problem for the normal modes of the system.
@@ -389,15 +423,14 @@ The surface integral has the form of a velocity-dependent surface stress pushing
 domain, and can be thought of as an artificial viscous damping of the surface.
 Since it depends on the velocity, it can no longer go on the right-hand side of the 
 equation, and must be added as a stabilization term in the system matrix.  
-Empirically it has been found to be successful at damping instabilities \citep{kaus2010stabilization, quinquis2011role, crameri2012comparison}.
+Empirically it has been found to be successful at damping instabilities \citep{kaus2010stabilization, quinquis2011role, duretz2011discretization}.
 
 Indeed, using the formalism in Section~\ref{sec:eigenvalue} we can see the effect of this 
-stabilization term. In the reference state we note that $\mathbf{g} = g \mathbf{n}$, which
+stabilization term. On the reference surface we note that $\mathbf{g} = -g \mathbf{n}$, which
 allows us to write the stabilization term as
 \begin{equation}
-\theta \Delta t \int_{\partial \Omega} \rho g ( \mathbf{w \cdot n}) (\mathbf{u \cdot n} )
+-\theta \Delta t \int_{\partial \Omega} \rho g ( \mathbf{w \cdot n}) (\mathbf{u \cdot n} )
 \end{equation}
-
 The integral here is precisely the same as that on the right hand side of Equation~\eqref{eq:weak_eigen}, which was discretized as the matrix $M$.
 
 If we discretize the Stokes system with the quasi-implicit stabilization term, we find
@@ -515,7 +548,7 @@ The theory has been developed in, among others, a series of papers by
 The parameter $\tau^*$ sets how quickly $\mathbf{u}$ decays in Equation~\eqref{eq:velocity_decay}, and a good 
 choice is crucial for accuracy and stability. A shorter decay time corresponds to more stabilization,
 but if it becomes too short, the surface velocity will become overdamped. In general, we will want 
-to choose $\tau^*$ so that it is as close as possible to the least stable mode, or $\tau_{\mathrm{max}}$.
+to choose $\tau^*$ so that it is as close as possible to the relaxation time of the least stable mode, or $\tau_{\mathrm{min}}$.
 
 To investigate the stability of this scheme we consider a velocity solution comprised of 
 a single normal mode of the system $\mathbf{u} = a_i \mathbf{u}_i$.

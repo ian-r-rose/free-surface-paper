@@ -42,7 +42,7 @@ plt.text(0.1, 0.0005, r'$O(\Delta t)$', fontsize=9)
 plt.xlabel(r'$\Delta t / \tau_\mathrm{min}$')
 plt.ylabel(r'Error')
 plt.legend(loc='lower right', fontsize=8)
-plt.title('Non-standard FD')
+plt.title('(a) Non-standard FD')
 
 
 #Plot convergence of the QI scheme
@@ -76,7 +76,7 @@ plt.text(0.3, 0.0005, r'$O(\Delta t^2)$', fontsize=9)
 
 plt.xlabel(r'$\Delta t / \tau_\mathrm{min}$')
 plt.legend(loc='lower right', fontsize=8)
-plt.title('Quasi-implicit')
+plt.title('(b) Quasi-implicit')
 
 
 
