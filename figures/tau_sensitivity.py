@@ -10,13 +10,13 @@ except AttributeError:
 except ValueError:
   print "Cannot find the requested stylesheet"
 
-plt.figure(figsize=(8,8) )
+plt.figure(figsize=(4,4) )
 
 data = np.loadtxt("../benchmarks/tau_sensitivity/tau_sensitivity.txt")
 relaxation_times =  data[:,0]
 errors = data[:,2]
 
-plt.semilogy(relaxation_times, errors, '-x', markersize=8)
+plt.semilogy(relaxation_times, errors, '-o', markersize=4)
 
 
 plt.xlabel(r'$\tau^* / \tau_\mathrm{min}$')

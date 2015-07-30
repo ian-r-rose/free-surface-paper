@@ -585,11 +585,11 @@ Otherwise, the scheme is conditionally stable, with the timestep limited by
 \begin{equation}
 \Delta t \le -\tau^* \log \left(1 - 2 \frac{\tau_i}{\tau^*} \right)
 \end{equation}
-The stability region is plotted in Figure \ref{fig:stability}. 
+The stability region is plotted in Figure \ref{fig:stability_region}. 
 
 \begin{figure*}
-\includegraphics[width=0.9\textwidth]{figures/stability.pdf}
-\label{fig:stability}
+\includegraphics[width=0.9\textwidth]{figures/stability_region.pdf}
+\label{fig:stability_region}
 \caption{Left: stability region for the nonstandard finite difference scheme (green). On the x-axis is the value of the stabilization time, in units of the minimum relaxation time $\tau_{\mathrm{min}}$.  On the y-axis is the value of the timestep, also in units of the minimum relaxation time. For $\tau^*\le 2 \tau_{\mathrm{min}}$ the nonstandard finite difference scheme is unconditionally stable.  Right: stability region for the quasi-implicit scheme (green).  Again, the y axis is in units of the minumum relaxation time.  The x-axis shows the value of the stabilization parameter $\theta$. For $\theta = 1$ the quasi-implicit scheme is unconditionally stable. In both cases the stability region for the forward Euler scheme is also shown in blue.}
 \end{figure*}
 
@@ -764,12 +764,6 @@ with timestep.
 \includegraphics[width=0.9\textwidth]{figures/timestep_convergence.pdf}
 \caption{Convergence test with timestep size.}
 \label{fig:timestep_convergence}
-\end{figure*}
-
-\begin{figure*}
-\includegraphics[width=0.9\textwidth]{figures/timestep_convergence_qi.pdf}
-\caption{Convergence test with timestep size, quasi-implicit}
-\label{fig:timestep_convergence_qi}
 \end{figure*}
 
 \begin{figure*}
