@@ -133,11 +133,26 @@ mantle convection software \texttt{Aspect}.
 Surface topography in simulations of mantle convection and other geodynamic processes is an important observable,
 allowing insights into Earth's internal density structure, rheology, and geoid perturbations \citep[e.g.][]{richards1984geoid, hager1985lower, baumann2014constraining}.
 Historically, most simulations have been performed with free-slip boundary conditions at the surface, 
-with dynamic topography calculated as a postprocessing step \citep[e.g.][]{zhong2000role}. 
+with dynamic topography calculated as a postprocessing step \citep[e.g.][]{zhong2000role}.
 
-\hl{address pseudo free surface, free surface, sticky air}
+There have been several approaches to treating real free surfaces in geodynamic simulations.
+\citet{zhong1996free} introduced a pseudo-free-surface formulation, where the free surface coordinate was
+treated as an extra variable that was integrated in time. In this approximation, the free surface 
+is approximated on the undeformed Eulerian grid by applying pressure boundary conditions on the reference surface 
+corresponding to the hydrostatic pressure perturbation predicted by the surface topography.
 
-More recently, the nature of surface boundary conditions have been shown to be important for controlling the 
+A large number of studies have approximated free surfaces in the interior of the domain by using the 
+`sticky air' approximation. In this approximation there is a low-viscosity, low-density layer in the fluid 
+(termed `air', though its viscosity is much higher) above the free surface, effectively decoupling it from the boundary. 
+Typically a free-slip boundary condition is used above the sticky air. 
+
+Finally, one can use a true free surface, where a stress-free boundary condition is applied on the boundary 
+of the domain. In this case, there can be flow in an out of the domain, so the boundary must move in time.
+A true free surface has mathematical elegance in that the boundary condition of the domain more closely 
+matches the boundary conditions which one is trying to model, but it typically requires a deformable 
+domain with frequent remeshing to avoid ill-conditioned cells. 
+
+Recently, the nature of surface boundary conditions have been shown to be important for controlling the 
 dynamics of subduction zone modeling.  In a benchmark study \citet{schmeling2008benchmark} performed extensive testing on the effect
 of a free surface on the sinking of a slab. They found that the nature of the free surface had a large effect 
 on the dynamics of the slab, affecting both the shape and the timing of sinking. Most of the 
@@ -149,15 +164,13 @@ it from the boundary. Typically a free-slip boundary condition is used above the
 controlled the shape and timing of the slab, and the viscosity averaging scheme for areas of transitional
 composition was extremely important, as the subducting slab entrained significant amounts of the sticky air.
 \citet{crameri2012comparison} conducted comparisons between sticky air and true free surface models, 
-demonstrating a range of parameters for sticky air which can mitigate some of the difficulties that it 
-introduces.
-
+demonstrating a range of parameters for sticky air which can mitigate some of the difficulties that it introduces.
 A study by \citet{quinquis2011role} found that free surface boundary conditions have a large effect on 
 trench migration in a subduction zone, and \citet{crameri2012free} found that a free surface combined 
 with a weak crust is important for producing one-sided subduction zones.
 
-Both true free surface and sticky air calculations have been subject to an instability which has been 
-variously termed a ``sloshing,'' or ``druknen sailor'' instability \citep{kaus2010stabilization, duretz2011discretization}. 
+All of the approaches to free surface simulations have been subject to an instability which has been 
+variously termed a ``sloshing,'' or ``druknen sailor'' instability \citep{kaus2010stabilization, duretz2011discretization, kramer2012implicit}. 
 This instability, arising from the large density contrast typical at a free surface (compared with the much smaller 
 internal density contrasts), severely limits the maximum stable timestep for free surface computations.
 Frequently, the maximum stable timestep is several orders of magnitude smaller than that for an otherwise 
@@ -643,9 +656,15 @@ a_i(\Delta t) - a_i^{1} &= a_i(0) e^{-\Delta t/\tau_i} - a_i{(0)} \left[ 1 - \fr
 
 Note that when $\tau_i = \tau^*$ the nonstandard finite difference scheme is exact.
 The exponentials may be expanded to find
+\ifdetail
 \begin{equation}
 a_i(\Delta t) - a_i^{1} = - a_i{(0)} \left[ \left(\frac{\Delta t}{\tau_i}\right)^2 - \frac{\tau^*}{\tau_i} \left(\frac{\Delta t }{\tau^* }\right)^2 \right] 
 \end{equation}
+\fi
+\begin{equation}
+a_i(\Delta t) - a_i^{1} = {a_i{(0)} } \left( \frac{\Delta t}{\tau_i} \right)^2 \left( 1 - \frac{\tau_i}{\tau^*} \right) + O(\Delta t^3)
+\end{equation}
+
 
 \subsection{Choice of $\tau^*$}
 As discussed above, a full geodynamic simulation will have a spectrum of relaxation times.
@@ -803,7 +822,7 @@ with timestep.
 
 \begin{figure*}
 \includegraphics[width=0.9\textwidth]{figures/tau_sensitivity.pdf}
-\caption{Sensitivity to $\tau^*$. As the relaxation parameter $\tau^*$ approaches the relaxation time of the benchmark case the error reduces. The sharp cusp at $\tau^* = \tau_\mathrm{min}$ corresponds to the essentially spectral accuracy of the time marching scheme for that case.}
+\caption{Sensitivity to $\tau^*$. As the relaxation parameter $\tau^*$ approaches the relaxation time of the benchmark case the error reduces. The sharp cusp at $\tau^* = \tau_\mathrm{min}$ corresponds to the almost spectral accuracy of the time marching scheme for that case.}
 \label{fig:tau_sensitivity}
 \end{figure*}
 
