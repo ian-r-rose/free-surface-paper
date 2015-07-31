@@ -511,6 +511,10 @@ note that as $\theta$ goes to one this scheme should become unconditionally stab
 but nonlinear effects and discretization errors due to finite deformation of the surface could 
 prevent that stability.
 
+The lengthening of relaxation times due to the quasi-implicit stabilization has an unequal 
+effect on the modes. They are all lengthened by the same amount, which is a much bigger 
+fraction of the total relaxation time for the shorter modes than the longer ones.
+
 \section{A novel time-integration scheme}
 
 One downside of the quasi-implicit scheme is that it requires a modification of the system matrix, 
@@ -643,7 +647,6 @@ The stability region is plotted in Figure \ref{fig:stability_region}.
 It is important to note that even though we derived the nonstandard finite difference scheme assuming a decaying exponential
 for $\mathbf{u}$, it is formally a first-order accurate scheme. As such, it is capable of capturing arbitrary motions 
 of the free surface, but with better stability properties than forward Euler schemes.
-It is helpful to take a closer look at the pseudo-timestep $\tau^*(1-e^{-\Delta t/\tau^*})$.
 
 Again we may take one of the normal modes as an example, differencing the nonstandard finite-difference scheme from the analytical solution:
 
@@ -665,6 +668,15 @@ a_i(\Delta t) - a_i^{1} = - a_i{(0)} \left[ \left(\frac{\Delta t}{\tau_i}\right)
 a_i(\Delta t) - a_i^{1} = {a_i{(0)} } \left( \frac{\Delta t}{\tau_i} \right)^2 \left( 1 - \frac{\tau_i}{\tau^*} \right) + O(\Delta t^3)
 \end{equation}
 
+It is helpful to take a closer look at the pseudo-timestep $\tau^*(1-e^{-\Delta t/\tau^*})$.
+As the timestep $\Delta t$ goes to zero, the pseudo timestep approaches $\Delta t$, recovering 
+the forward Euler scheme. However, as $\Delta t$ gets larger, the pseudo timestep does not 
+increase as quickly, reflecting the decaying nature of the normal modes.
+Likewise, as the stabilization timescale $\tau^*$ goes to infinity, we also recover the 
+forward Euler scheme, in what is essentially the unstabilized problem. But as $\tau^*$
+goes to zero, the pseudo-timestep also goes to zero. This corresponds to over-stabilizing the
+problem. With too short of a stabilization timescale the free surface is never advected 
+at all (which is a very stable situation, if not very accurate!).
 
 \subsection{Choice of $\tau^*$}
 As discussed above, a full geodynamic simulation will have a spectrum of relaxation times.
@@ -811,8 +823,24 @@ solutions at the center of the domain:
 \label{fig:benchmark_setup}
 \end{figure*}
 
-Figure~\ref{fig:timestep_convergence} shows the convergence of the nonstandard finite difference scheme 
-with timestep.
+Figure~\ref{fig:timestep_convergence}a shows the convergence of the nonstandard finite difference scheme 
+with timestep. The scheme is first order in time, with improving accuracy as the value of $\tau^*$ approaches
+the relaxation time of the relevant mode $\tau_i$. Interestingly, if $\tau^* = \tau_i$ the advection scheme
+becomes exact \citep{mickens2002nonstandard}. At this point the error plummets in magnitude, and is no longer 
+a strong function of the timestep; instead, it is likely due to nonlinearities, error in the spatial discretization,
+or limits in the linear solver tolerance.
+
+Figure~\ref{fig:timestep_convergence}b shows the convergence of the quasi-implicit scheme with timestep.
+When $\theta=0.0$, it corresponds to the unstabilized forward Euler scheme, and is first order in time. 
+When $\theta=1.0$ it is also first order in time, but allows for a much larger timestep.  When $\theta=0.5$
+the quasi-implicit guess for the body force is good enough that it actually seems to achieve the second-order 
+convergence of a trapezoidal scheme, though it is not clear whether this extends to more complicated models.
+
+Figure~\ref{fig:tau_sensitivity} shows in more detail the effects of the choice of $\tau^*$. In a narrow region 
+close to the true value of $\tau_\mathrm{min}$ the error becomes very small, but in a broader region nearby 
+the errors are larger. Most of the time the enhanced accuracy of the scheme when $\tau^*$ is near to an eigenvalue 
+is a curiosity, though it does suggest the possibility for tuning the finite difference scheme to very accurately 
+track a specific mode in time.
 
 \begin{figure*}
 \includegraphics[width=0.9\textwidth]{figures/timestep_convergence.pdf}
@@ -827,7 +855,24 @@ with timestep.
 \end{figure*}
 
 
-\section{Discussion}
+\section{Conclusion}
+We have analyzed stability of free surface boundary conditions in geodynamic simulations and 
+demonstrated the cause of sloshing instabilities using a normal mode analysis.
+This perspective on the problem allowed us to construct an explicit finite difference 
+scheme which is first order accurate in time and is unconditionally stable.
+The nonstandard finite difference scheme is extremely simple to implement, and 
+requires no modifications to the system matrix.
+
+The normal mode perspective on the problem also provides insights into the effect of 
+the quasi-implicit stabilization scheme proposed by \citet{kaus2010stabilization}.
+The relaxation time of each mode is lengthened by an amout $\theta \Delta t$, and the
+maximum allowable timestep is correspondingly lengthened.
+
+Finally, we have described the implementation of free surface boundary conditions in 
+the open source mantle convection software \texttt{Aspect}. Both the quasi-implicit 
+scheme and the nonstandard finite difference scheme are available. The implementation is 
+sufficiently general to accommodate many different geometies, rheologies, and 
+gravity models. Furthermore, it runs in parallel and with adaptive mesh refinement.
 
 %% The Appendices part is started with the command \appendix;
 %% appendix sections are then done as normal sections
