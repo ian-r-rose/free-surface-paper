@@ -133,7 +133,7 @@ mantle convection software \texttt{Aspect}.
 Surface topography in simulations of mantle convection and other geodynamic processes is an important observable,
 allowing insights into Earth's internal density structure, rheology, and geoid perturbations \citep[e.g.][]{richards1984geoid, hager1985lower, baumann2014constraining}.
 Historically, most simulations have been performed with free-slip boundary conditions at the surface, 
-with dynamic topography calculated as a postprocessing step. 
+with dynamic topography calculated as a postprocessing step \citep[e.g.][]{zhong2000role}. 
 
 \hl{address pseudo free surface, free surface, sticky air}
 
@@ -515,17 +515,17 @@ We would like to construct an explicit scheme that accounts for following proper
 
 \subsection{Nonstandard finite-differences}
 
-A general expression for the evolution of a free surface from time $t=0$ to time $t=\Delta t$ is 
+A general expression for the evolution of a free surface from time $t^n$ to time $t^{n+1}$ is 
 \begin{equation}
-\mathbf{x}(\Delta t) = \mathbf{x}(0) + \int_0^{\Delta t} \mathbf{u}(t) dt
+\mathbf{x}(t^{n+1}) = \mathbf{x}(t^n) + \int_{t^{n}}^{t^{n+1}} \mathbf{u}(t) dt
 \label{eq:time_integration}
 \end{equation}
-where $\mathbf{x}$ is the location of the free surface.  If we approximate $\mathbf{u}(t) \approx \mathbf{u}(0)$, 
+where $\mathbf{x}$ is the location of the free surface.  If we approximate $\mathbf{u}(t) \approx \mathbf{u}(t^{n})$, 
 we of course recover the forward Euler scheme.
 However, we can make another choice based on our knowledge of the system behavior. 
 We can approximate $\mathbf{u}(t)$ as
 \begin{equation}
-\mathbf{u}(t) = \mathbf{u}(0) e^{-t/\tau^*}
+\mathbf{u}(t) = \mathbf{u}(t^n) e^{-(t-t^n)/\tau^*}
 \label{eq:velocity_decay}
 \end{equation}
 where $\tau^*$ is some as-yet undetermined positive constant.
@@ -534,7 +534,7 @@ stability properties than forward Euler integration.
 Using Equation~\eqref{eq:velocity_decay} in Equation~\eqref{eq:time_integration} and integrating, we find
 
 \begin{equation}
-\mathbf{x}(\Delta t) = \mathbf{x}(0) + \mathbf{u}(0) \tau^* \left(1-e^{-\Delta t/\tau^*} \right)
+\mathbf{x}(t^{n+1}) = \mathbf{x}(t^n) + \mathbf{u}(t^{n}) \tau^* \left(1-e^{-\Delta t/\tau^*} \right)
 \label{eq:nsfd}
 \end{equation}
 
@@ -558,11 +558,11 @@ This will decay exponentially with relaxation time $\tau_i$, or
 \end{equation}
 Applying the nonstandard finite difference scheme, we find
 \begin{equation}
-a_i^{(1)} = a_i^{(0)} \left[ 1 - \frac{\tau^*}{\tau_i} \left(1-e^{-\Delta t/\tau^*} \right) \right]
+a_i^{n} = a_i^{n+1} \left[ 1 - \frac{\tau^*}{\tau_i} \left(1-e^{-\Delta t/\tau^*} \right) \right]
 \label{eq:recursion}
 \end{equation}
-In order for the scheme to be stable, the quantity in brackets must not blow up as it is repeatedly 
-multiplied by itself, or 
+where superscripts indicate the timestep number.
+In order for the scheme to be stable, the quantity in brackets must not blow up as it is repeatedly multiplied by itself, or 
 \begin{equation}
 \left| 1 - \frac{\tau^*}{\tau_i} \left(1-e^{-\Delta t/\tau^*} \right) \right| \le 1
 \end{equation}
@@ -623,18 +623,20 @@ The stability region is plotted in Figure \ref{fig:stability_region}.
 \begin{figure*}
 \includegraphics[width=0.9\textwidth]{figures/stability_region.pdf}
 \label{fig:stability_region}
-\caption{Left: stability region for the nonstandard finite difference scheme (green). On the x-axis is the value of the stabilization time, in units of the minimum relaxation time $\tau_{\mathrm{min}}$.  On the y-axis is the value of the timestep, also in units of the minimum relaxation time. For $\tau^*\le 2 \tau_{\mathrm{min}}$ the nonstandard finite difference scheme is unconditionally stable.  Right: stability region for the quasi-implicit scheme (green).  Again, the y axis is in units of the minumum relaxation time.  The x-axis shows the value of the stabilization parameter $\theta$. For $\theta = 1$ the quasi-implicit scheme is unconditionally stable. In both cases the stability region for the forward Euler scheme is also shown in blue.}
+\caption{(a) Stability region for the nonstandard finite difference scheme (green). On the x-axis is the value of the stabilization time, in units of the minimum relaxation time $\tau_{\mathrm{min}}$.  On the y-axis is the value of the timestep, also in units of the minimum relaxation time. For $\tau^*\le 2 \tau_{\mathrm{min}}$ the nonstandard finite difference scheme is unconditionally stable.  (b) Stability region for the quasi-implicit scheme (green).  Again, the y axis is in units of the minumum relaxation time.  The x-axis shows the value of the stabilization parameter $\theta$. For $\theta = 1$ the quasi-implicit scheme is unconditionally stable. In both cases the stability region for the forward Euler scheme is also shown in blue.}
 \end{figure*}
 
-\subsection{Accuracy of the scheme}
+\subsection{Accuracy and asymptotics of the scheme}
 It is important to note that even though we derived the nonstandard finite difference scheme assuming a decaying exponential
 for $\mathbf{u}$, it is formally a first-order accurate scheme. As such, it is capable of capturing arbitrary motions 
-of the free surface, but with good stability properties.
-Again we may take one of the normal modes as an example, differencing the analytical solution from the nonstandard finite-difference scheme:
+of the free surface, but with better stability properties than forward Euler schemes.
+It is helpful to take a closer look at the pseudo-timestep $\tau^*(1-e^{-\Delta t/\tau^*})$.
+
+Again we may take one of the normal modes as an example, differencing the nonstandard finite-difference scheme from the analytical solution:
 
 \begin{equation}
 \begin{aligned}
-a_i(\Delta t) - a_i^{(1)} &= a_i(0) e^{-\Delta t/\tau_i} - a_i{(0)} \left[ 1 - \frac{\tau^*}{\tau_i} \left(1-e^{-\Delta t/\tau^*} \right) \right] \\
+a_i(\Delta t) - a_i^{1} &= a_i(0) e^{-\Delta t/\tau_i} - a_i{(0)} \left[ 1 - \frac{\tau^*}{\tau_i} \left(1-e^{-\Delta t/\tau^*} \right) \right] \\
                           &= a_i{(0)} \left[ e^{-\Delta t/\tau_i} - 1 + \frac{\tau^*}{\tau_i} \left(1-e^{-\Delta t/\tau^*} \right) \right] \\
 \end{aligned}
 \end{equation}
@@ -642,7 +644,7 @@ a_i(\Delta t) - a_i^{(1)} &= a_i(0) e^{-\Delta t/\tau_i} - a_i{(0)} \left[ 1 - \
 Note that when $\tau_i = \tau^*$ the nonstandard finite difference scheme is exact.
 The exponentials may be expanded to find
 \begin{equation}
-a_i(\Delta t) - a_i^{(1)} = a_i(0) e^{-\Delta t/\tau_i} - a_i{(0)} \left[ \left(\frac{\Delta t}{\tau_i}\right)^2 - \frac{\tau^*}{\tau_i} \left(\frac{\Delta t }{\tau^* }\right)^2 \right] 
+a_i(\Delta t) - a_i^{1} = - a_i{(0)} \left[ \left(\frac{\Delta t}{\tau_i}\right)^2 - \frac{\tau^*}{\tau_i} \left(\frac{\Delta t }{\tau^* }\right)^2 \right] 
 \end{equation}
 
 \subsection{Choice of $\tau^*$}
@@ -795,13 +797,13 @@ with timestep.
 
 \begin{figure*}
 \includegraphics[width=0.9\textwidth]{figures/timestep_convergence.pdf}
-\caption{Convergence test with timestep size.}
+\caption{Convergence tests for the benchmark shown in Figure~\ref{fig:benchmark_setup}. (a) Convergence test with timestep size for the nonstandard finite difference scheme. Comparison with the slope-one line confirms that it is first-order in time. In the case that the stabilization relaxation time $\tau^*$ is equal to the analytic relaxation time the error plummets, as the time integration scheme becomes exact \citep{mickens2002nonstandard}. (b) Convergence test with timestep size for the quasi-implicit scheme. For $\theta = 1$ and $\theta = 0$ the scheme is first-order accurate (though the latter is just an unstabilized forward-Euler scheme). For $\theta=0.5$ the scheme appears second order accurate on this benchmark.}
 \label{fig:timestep_convergence}
 \end{figure*}
 
 \begin{figure*}
 \includegraphics[width=0.9\textwidth]{figures/tau_sensitivity.pdf}
-\caption{Sensitivity to $\tau^*$.}
+\caption{Sensitivity to $\tau^*$. As the relaxation parameter $\tau^*$ approaches the relaxation time of the benchmark case the error reduces. The sharp cusp at $\tau^* = \tau_\mathrm{min}$ corresponds to the essentially spectral accuracy of the time marching scheme for that case.}
 \label{fig:tau_sensitivity}
 \end{figure*}
 
