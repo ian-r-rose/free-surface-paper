@@ -138,13 +138,14 @@ with dynamic topography calculated as a postprocessing step \citep[e.g.][]{zhong
 There have been several approaches to treating real free surfaces in geodynamic simulations.
 \citet{zhong1996free} introduced a pseudo-free-surface formulation, where the free surface coordinate was
 treated as an extra variable that was integrated in time. In this approximation, the free surface 
-is approximated on the undeformed Eulerian grid by applying pressure boundary conditions on the reference surface 
-corresponding to the hydrostatic pressure perturbation predicted by the surface topography.
+is approximated on the undeformed Eulerian grid by applying pressure boundary conditions on the reference surface.
+The pressure is determined by a first-order Taylor series approximation of the hydrostatic pressure profile 
+predicted by the surface topography.
 
 A large number of studies have approximated free surfaces in the interior of the domain by using the 
 `sticky air' approximation. In this approximation there is a low-viscosity, low-density layer in the fluid 
 (termed `air', though its viscosity is much higher) above the free surface, effectively decoupling it from the boundary. 
-Typically a free-slip boundary condition is used above the sticky air. 
+Typically a free-slip boundary condition is used above the sticky air, though an open boundary may be better \citep{hillebrand2014using}. 
 
 Finally, one can use a true free surface, where a stress-free boundary condition is applied on the boundary 
 of the domain. In this case, there can be flow in an out of the domain, so the boundary must move in time.
@@ -156,11 +157,8 @@ Recently, the nature of surface boundary conditions have been shown to be import
 dynamics of subduction zone modeling.  In a benchmark study \citet{schmeling2008benchmark} performed extensive testing on the effect
 of a free surface on the sinking of a slab. They found that the nature of the free surface had a large effect 
 on the dynamics of the slab, affecting both the shape and the timing of sinking. Most of the 
-participating codes in that benchmark used the `sticky air' approximation for the free surface, where a low viscosity,
-low density layer of fluid (termed `air', though its viscosity is much higher) is placed above the free surface, decoupling 
-it from the boundary. Typically a free-slip boundary condition is used above the stiky air. 
-
-\citet{schmeling2008benchmark} found that the specific properties of the sticky air layer 
+participating codes in that benchmark used the sticky air approximation.
+They found that the specific properties of the sticky air layer 
 controlled the shape and timing of the slab, and the viscosity averaging scheme for areas of transitional
 composition was extremely important, as the subducting slab entrained significant amounts of the sticky air.
 \citet{crameri2012comparison} conducted comparisons between sticky air and true free surface models, 
@@ -222,7 +220,7 @@ velocity $\mathbf{u}$ is zero:
 \label{eq:hydrostatic_stokes}
 \end{equation}
 where $p_0$ is the reference hydrostatic pressure and $\rho_0$ is a reference density profile (which may vary with depth).
-The total pressure and density can then be decomposed in to variations about their 
+The total pressure and density can then be decomposed into variations about their 
 reference values: $\rho = \rho_0 + \rho^\prime$, $p = p_0 + p^\prime$. 
 
 Furthermore, since we are interested in solving these equations for a domain with a free surface, 
@@ -280,9 +278,10 @@ We will therefore  evaluate the integrals in Equation~\eqref{eq:weak_stokes}
 over the hydrostatic reference surface and introduce a temporary auxilliary variable $\zeta$ which 
 represents the (small) topography of the free surface relative to that reference surface.
 On the reference surface the gravity vector is opposite the direction of the surface normal $\mathbf{g} = -g \mathbf{n}$.
-The stress on this reference surface can be approximated by the hydrostatic pressure
+The stress on this reference surface can be approximated by using the first order Taylor series
+expansion of the hydrostatic pressure profile:
 \begin{equation}
-\mathbf{T} \approx \rho_0 g \zeta \mathbf{I}
+\mathbf{T} \approx \frac{\partial \mathbf{T}}{\partial \mathbf{n} } \cdot \mathbf{n} \zeta = \rho_0 g \zeta \mathbf{I}
 \label{eq:hydrostatic}
 \end{equation}
 Equation~\eqref{eq:weak_stokes} then becomes
@@ -412,10 +411,10 @@ evaluated on a prediction of the shape of the domain at a later time.
 The weak form of the right-hand-side body forces in the finite element discretization is then
 
 \begin{equation}
-\mathbf{f}_{\mathrm{body}} = \int_{\Omega + \Delta \Omega} \rho \mathbf{w} \cdot \mathbf{g}
+\mathbf{f}_{\mathrm{body}} = \int_{\Omega^n + \Delta \Omega} \rho \mathbf{w} \cdot \mathbf{g}
 \label{eq:predict}
 \end{equation}
-
+where the superscript $n$ on $\Omega$ indicates the shape at the $n$th timestep.
 The shape prediction can be approximated by integration of the velocity:
 \begin{equation}
 \Delta \Omega \approx \theta \Delta t \mathbf{u}
@@ -427,8 +426,8 @@ One can approximately expand the integral in Equation~\eqref{eq:predict} using
 Reynold's transport theorem to find
 
 \begin{equation}
-\int_{\Omega + \Delta \Omega} \rho  \mathbf{w} \cdot \mathbf{g} \approx
-\int_{\Omega} \rho  \mathbf{w} \cdot \mathbf{g} + \theta \Delta t \int_{\partial \Omega} \rho ( \mathbf{w \cdot g}) (\mathbf{u \cdot n} )
+\int_{\Omega^n + \Delta \Omega} \rho  \mathbf{w} \cdot \mathbf{g} \approx
+\int_{\Omega^n} \rho  \mathbf{w} \cdot \mathbf{g} + \theta \Delta t \int_{\partial \Omega^n} \rho ( \mathbf{w \cdot g}) (\mathbf{u \cdot n} )
 \label{eq:kmm}
 \end{equation}
 The volume integral is the same as that of the unstabilized problem, but now there is a surface integral.
@@ -442,7 +441,7 @@ Indeed, using the formalism in Section~\ref{sec:eigenvalue} we can see the effec
 stabilization term. On the reference surface we note that $\mathbf{g} = -g \mathbf{n}$, which
 allows us to write the stabilization term as
 \begin{equation}
--\theta \Delta t \int_{\partial \Omega} \rho g ( \mathbf{w \cdot n}) (\mathbf{u \cdot n} )
+-\theta \Delta t \int_{\partial \Omega^n} \rho g ( \mathbf{w \cdot n}) (\mathbf{u \cdot n} )
 \end{equation}
 The integral here is precisely the same as that on the right hand side of Equation~\eqref{eq:weak_eigen}, which was discretized as the matrix $M$.
 
@@ -513,12 +512,17 @@ prevent that stability.
 
 The lengthening of relaxation times due to the quasi-implicit stabilization has an unequal 
 effect on the modes. They are all lengthened by the same amount, which is a much bigger 
-fraction of the total relaxation time for the shorter modes than the longer ones.
+fraction of the total relaxation time for the shorter-time modes than the longer-time ones.
+Therefore the shorter-time modes are effectively damped more.
+This can be seen as an attractive feature of the scheme, since those are the least stable modes,
+though it can result in less accurate time-marching of the longest wavelengths of the system.
 
 \section{A novel time-integration scheme}
 
-One downside of the quasi-implicit scheme is that it requires a modification of the system matrix, 
-and as we have seen this shifts its spectrum.
+One downside of the quasi-implicit scheme is that it requires a modification of the system matrix.
+A naive implementation of the scheme results in a slightly 
+asymmetric matrix, which can be more difficult to solve, requiring either
+changes to the solver/preconditioner, or symmetrization of the stabilization term \citep{kaus2010stabilization}.
 An alternative would be to construct a time-integration scheme with better stability properties.  
 The reason that forward Euler integration performs so badly with the decay of topography is that 
 at larger timesteps it overshoots its equilibrium position. This overshoot causes it to lurch back 
@@ -648,15 +652,15 @@ It is important to note that even though we derived the nonstandard finite diffe
 for $\mathbf{u}$, it is formally a first-order accurate scheme. As such, it is capable of capturing arbitrary motions 
 of the free surface, but with better stability properties than forward Euler schemes.
 
-Again we may take one of the normal modes as an example, differencing the nonstandard finite-difference scheme from the analytical solution:
+Again we may take one of the normal modes as an example and inspect the difference between the nonstandard finite-difference
+scheme and the analytical solution after one time step:
 
 \begin{equation}
 \begin{aligned}
 a_i(\Delta t) - a_i^{1} &= a_i(0) e^{-\Delta t/\tau_i} - a_i{(0)} \left[ 1 - \frac{\tau^*}{\tau_i} \left(1-e^{-\Delta t/\tau^*} \right) \right] \\
-                          &= a_i{(0)} \left[ e^{-\Delta t/\tau_i} - 1 + \frac{\tau^*}{\tau_i} \left(1-e^{-\Delta t/\tau^*} \right) \right] \\
+                        &= a_i{(0)} \left[ e^{-\Delta t/\tau_i} - 1 + \frac{\tau^*}{\tau_i} \left(1-e^{-\Delta t/\tau^*} \right) \right] \\
 \end{aligned}
 \end{equation}
-
 Note that when $\tau_i = \tau^*$ the nonstandard finite difference scheme is exact.
 The exponentials may be expanded to find
 \ifdetail
@@ -667,6 +671,9 @@ a_i(\Delta t) - a_i^{1} = - a_i{(0)} \left[ \left(\frac{\Delta t}{\tau_i}\right)
 \begin{equation}
 a_i(\Delta t) - a_i^{1} = {a_i{(0)} } \left( \frac{\Delta t}{\tau_i} \right)^2 \left( 1 - \frac{\tau_i}{\tau^*} \right) + O(\Delta t^3)
 \end{equation}
+Summing this error over many timesteps results in a factor of $\Delta t^{-1}$, demonstrating the first-order accuracy~\citep[e.g.]{leveque2007finite}.
+The choice of $\tau^*$ controls the size of the coefficient on the truncation error for the scheme.
+The error for a given mode becomes considerably smaller when $\tau^*$ is close to its natural relaxation times.
 
 It is helpful to take a closer look at the pseudo-timestep $\tau^*(1-e^{-\Delta t/\tau^*})$.
 As the timestep $\Delta t$ goes to zero, the pseudo timestep approaches $\Delta t$, recovering 
@@ -838,9 +845,10 @@ convergence of a trapezoidal scheme, though it is not clear whether this extends
 
 Figure~\ref{fig:tau_sensitivity} shows in more detail the effects of the choice of $\tau^*$. In a narrow region 
 close to the true value of $\tau_\mathrm{min}$ the error becomes very small, but in a broader region nearby 
-the errors are larger. Most of the time the enhanced accuracy of the scheme when $\tau^*$ is near to an eigenvalue 
-is a curiosity, though it does suggest the possibility for tuning the finite difference scheme to very accurately 
-track a specific mode in time.
+the errors are larger. 
+The excellent accuracy when the stabilization timescale $\tau^*$ is close to one of the natural relaxation
+timescales allows for tuning of the scheme to track specific long-wavelength modes, such as 
+those due to rotational or tidal deformation.
 
 \begin{figure*}
 \includegraphics[width=0.9\textwidth]{figures/timestep_convergence.pdf}
@@ -850,7 +858,7 @@ track a specific mode in time.
 
 \begin{figure*}
 \includegraphics[width=0.9\textwidth]{figures/tau_sensitivity.pdf}
-\caption{Sensitivity to $\tau^*$. As the relaxation parameter $\tau^*$ approaches the relaxation time of the benchmark case the error reduces. The sharp cusp at $\tau^* = \tau_\mathrm{min}$ corresponds to the almost spectral accuracy of the time marching scheme for that case.}
+\caption{Sensitivity of the nonstandard finite difference scheme to $\tau^*$. As the relaxation parameter $\tau^*$ approaches the relaxation time of the benchmark case the error reduces. The sharp cusp at $\tau^* = \tau_\mathrm{min}$ corresponds to the almost spectral accuracy of the time marching scheme for that case.}
 \label{fig:tau_sensitivity}
 \end{figure*}
 
