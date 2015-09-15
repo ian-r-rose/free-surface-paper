@@ -109,7 +109,7 @@ stabilization parameter which may be identified with the smallest relaxation tim
 free surface.
 
 Finally, we discuss the implementation of a free surface in the open source, community based
-mantle convection software \texttt{Aspect}.
+mantle convection software \texttt{ASPECT}.
 \end{abstract}
 
 \begin{keyword}
@@ -187,7 +187,7 @@ The analysis allows us to propose a new time marching scheme for free surface co
 good stability properties. It is an explicit method which requires no modification to the system matrix,
 which makes it extremely simple to implement.
 
-Finally, we describe the implementation of a free surface in the mantle convection software \texttt{Aspect}. 
+Finally, we describe the implementation of a free surface in the mantle convection software \texttt{ASPECT}. 
 
 \section{Governing Equations}
 \label{sec:governing}
@@ -713,18 +713,18 @@ problem can furnish an estimate of its relaxation time.
 \end{itemize} 
 
 
-\section{Implementation in \texttt{Aspect} }
+\section{Implementation in \texttt{ASPECT} }
 \label{sec:implementation}
-We have implemented the ability to run free surface simulations in the mantle convection software \texttt{Aspect} \citep{kronbichler2012high}. 
-\texttt{Aspect} is designed to be highly flexible and modular, with the ability for user-defined rheologies, geometries, and gravity models. 
+We have implemented the ability to run free surface simulations in the mantle convection software \texttt{ASPECT} \citep{kronbichler2012high}. 
+\texttt{ASPECT} is designed to be highly flexible and modular, with the ability for user-defined rheologies, geometries, and gravity models. 
 The implementation of the free surface, therefore, needs to be general enough to work for many combinations of these models, including those 
 which may not have been written yet. In particular, it cannot rely on assumptions regarding the shape of the domain.
 
-Furthermore, \texttt{Aspect} allows for computations in both 2D and 3D, so the implementation must be sufficiently dimension
+Furthermore, \texttt{ASPECT} allows for computations in both 2D and 3D, so the implementation must be sufficiently dimension
 independent to work in both cases. We implement the free surface within an arbitrary Lagrangian-Eulerian (ALE) formulation
 \citep[e.g][]{fullsack1995arbitrary,donea2004encyclopedia}.
 
-\texttt{Aspect} is a parallelized, distributed memory code with adaptive mesh refinement.
+\texttt{ASPECT} is a parallelized, distributed memory code with adaptive mesh refinement.
 The free surface implementation works with these features.  We store the mesh vertex positions 
 in a fully distributed vector. This vector is continually updated and redistributed across 
 processes upon mesh adaptation (which is handled by the adaptive octree library \texttt{p4est}).
@@ -877,7 +877,7 @@ The relaxation time of each mode is lengthened by an amout $\theta \Delta t$, an
 maximum allowable timestep is correspondingly lengthened.
 
 Finally, we have described the implementation of free surface boundary conditions in 
-the open source mantle convection software \texttt{Aspect}. Both the quasi-implicit 
+the open source mantle convection software \texttt{ASPECT}. Both the quasi-implicit 
 scheme and the nonstandard finite difference scheme are available. The implementation is 
 sufficiently general to accommodate many different geometies, rheologies, and 
 gravity models. Furthermore, it runs in parallel and with adaptive mesh refinement.
