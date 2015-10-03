@@ -12,6 +12,9 @@ benchmark_setup.pdf: benchmark_setup.py
 tau_sensitivity.pdf: tau_sensitivity.py
 	python tau_sensitivity.py
 
+amr.pdf: amr.py
+	python amr.py
+
 .PHONY: clean
 clean:
 	rm -f *.pdf *.png
