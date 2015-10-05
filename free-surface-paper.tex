@@ -862,6 +862,22 @@ those due to rotational or tidal deformation.
 \label{fig:tau_sensitivity}
 \end{figure*}
 
+We also investigate the advantages of combining adaptive mesh refinement with free surface computations.
+\citet{crameri2012comparison} performed a community benchmark of a setup for which there is no analytic
+solution. In this benchmark, a buoyant blob rises beneath a viscous lid with a free surface, deflecting the
+boundary upwards (for the full setup, see \citet{crameri2012comparison}). 
+Figure~\ref{fig:amr} shows the convergence of the maximum topography at 3 Myr to its value in a high resolution simulation.
+Figure~\ref{fig:amr}a shows the convergence with uniform refinement, and~\ref{fig:amr}b shows the convergence
+with adaptive mesh refinement. Both have essentially the same behavior, but the adaptive case requires 
+fewer degrees of freedom by a factor of approximately an order of magnitude. More complex models will have
+more detail and so we may be less able to aggressively coarsen them, but we still expect that adaptive mesh refinement 
+will result in significant computational savings.
+
+\begin{figure*}
+\includegraphics[width=0.9\textwidth]{figures/amr.pdf}
+\caption{Convergence with resolution for the \citet{crameri2012comparison} Case 2 benchmark, for both uniform (a) and adaptive (b) mesh refinement. The minimum cell size h is normalized by the model depth, and the timestep $\Delta t$ is 500 yr. We compare the maximum topography at 3 Myr with its value at high resolution ($\sim$398 m). The points are labeled with the approximate number of degrees of freedom (DoFs) for that simulation. Both cases converge similarly, but the adaptive mesh refinement simulations require significantly smaller system sizes.}
+\label{fig:amr}
+\end{figure*}
 
 \section{Conclusion}
 We have analyzed stability of free surface boundary conditions in geodynamic simulations and 

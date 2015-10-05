@@ -44,9 +44,9 @@ plt.text(1.e-2,3.7e1, '88 kDoF', fontsize = font_size)
 plt.text(2.e-2,6.5e1, '22 kDoF', fontsize = font_size)
 
 plt.xlabel(r'h')
-plt.ylabel(r'Topography error at 3 Ma (m)')
+plt.ylabel(r'Topography error at 3 Myr (m)')
 plt.legend(loc='lower right', fontsize=8)
-plt.title("Uniform refinement")
+plt.title("(a) Uniform refinement")
 
 plt.subplot(122)
 
@@ -55,7 +55,7 @@ plt.loglog(h_value, error_adaptive_qi, marker.next(), markersize=8, label=r'QI')
 plt.loglog(h_value, error_adaptive_nsfd, marker.next(), markersize=8, label=r'NSFD')
 plt.xlabel(r'h')
 plt.legend(loc='lower right', fontsize=8)
-plt.title("Adaptive refinement")
+plt.title("(b) Adaptive refinement")
 
 plt.text(1.2e-3,3.e-1, '233 kDoF', fontsize = font_size)
 plt.text(2.1e-3,1.2e0, '111 kDoF', fontsize = font_size)

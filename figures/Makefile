@@ -1,4 +1,4 @@
-all: stability_region.pdf timestep_convergence.pdf benchmark_setup.pdf tau_sensitivity.pdf
+all: stability_region.pdf timestep_convergence.pdf benchmark_setup.pdf tau_sensitivity.pdf amr.pdf
 
 stability_region.pdf: stability_region.py
 	python stability_region.py
