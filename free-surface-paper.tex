@@ -40,6 +40,10 @@
 \usepackage{amssymb}
 \usepackage{amsmath}
 \usepackage{color, soul}
+\usepackage{url}
+
+\usepackage{todonotes}
+\newcommand\timo[1]{\todo[inline]{Timo: #1}}
 
 \newif\ifdetail
 \detailfalse
@@ -86,7 +90,12 @@
 %% \address[label1]{}
 %% \address[label2]{}
 
-\author{I. Rose, B. Buffett, and T. Heister}
+\author{I. Rose, B. Buffett, and Timo Heister\fnref{ref3}}
+
+\fntext[ref3]{\url{heister@clemson.edu}, partially supported by the Computational Infrastructure in
+Geodynamics initiative (CIG), through the National Science Foundation under Award No. EAR-0949446 
+and The University of California—Davis, and National Science Foundation grant DMS1522191.}
+
 
 \address{}
 
@@ -168,7 +177,7 @@ trench migration in a subduction zone, and \citet{crameri2012free} found that a 
 with a weak crust is important for producing one-sided subduction zones.
 
 All of the approaches to free surface simulations have been subject to an instability which has been 
-variously termed a ``sloshing,'' or ``druknen sailor'' instability \citep{kaus2010stabilization, duretz2011discretization, kramer2012implicit}. 
+variously termed a ``sloshing,'' or ``drunken sailor'' instability \citep{kaus2010stabilization, duretz2011discretization, kramer2012implicit}. 
 This instability, arising from the large density contrast typical at a free surface (compared with the much smaller 
 internal density contrasts), severely limits the maximum stable timestep for free surface computations.
 Frequently, the maximum stable timestep is several orders of magnitude smaller than that for an otherwise 
@@ -223,20 +232,33 @@ where $p_0$ is the reference hydrostatic pressure and $\rho_0$ is a reference de
 The total pressure and density can then be decomposed into variations about their 
 reference values: $\rho = \rho_0 + \rho^\prime$, $p = p_0 + p^\prime$. 
 
-Furthermore, since we are interested in solving these equations for a domain with a free surface, 
-we need an equation to track that surface.
-The Lagrangian equation for time evolution of the free surface can be written
+Formally, this gives rise to the following time dependent, coupled system with unknowns $\mathbf{u}(t)$ and $\mathbf{p}(t)$:
 \begin{equation}
-\frac{d \zeta}{dt} = \mathbf{u \cdot n} \quad \textrm{on  }  \partial \Omega_\textrm{free surface}
-\label{eq:surface_evolution}
+\begin{aligned}
+\nabla \cdot \left( 2 \eta \varepsilon( \mathbf{u} ) \right) - \nabla p &= \rho \mathbf{g} \qquad \text{in} \qquad \Omega(t)\\
+\nabla \cdot \mathbf{u} &= 0  \qquad \text{in} \qquad  \Omega(t)
+\end{aligned}
+\label{eq:final_system}
 \end{equation}
-where $\zeta$ is the surface coordinate of the free surface, and $\partial \Omega_\textrm{free surface}$ is the 
-part of the domain boundary corresponding to the free surface.
+defined on the bounded, moving domain $\Omega(t)\subset \mathbb{R}^d$ with boundary $\partial \Omega = \Gamma_0 \cup \Gamma_F$
+split into a fixed (Dirichlet) and free surface part $\Gamma_0$ and $\Gamma_F$, respectively.
+The domain at time $t$ is defined by advecting a reference configuration $\Omega_0$ by a mesh velocity $\mathbf{v}(t)$
+\timo{Do we need $\Gamma_N$ here?}
+\begin{equation}
+ \Omega(t) = \Omega_0 + \int_{t_0}^t \mathbf{v}(t) \text{ d} t.
+\end{equation}
+The mesh velocity in normal direction is given by the velocity $\mathbf{u}(t)$ on the free surface
+\begin{equation}
+ \mathbf{v}(t) \cdot n = \mathbf{u}(t) \cdot n \text{on} \Gamma_F
+\end{equation}
+and set to zero on the rest of the boundary. We defer the discussion of the velocity $\mathbf{v}$ in the interior of the domain
+to Section~\ref{sec:remeshing}.
+Finally, we denote the displacement at time $t$ by $\zeta = \int_{t_0}^t \mathbf{v}(t) \text{ d} t$.
 
 \section{Eigenvalue analysis}
 \label{sec:eigenvalue}
 
-In order to better understand the time evolution of Equations~\eqref{eq:momentum_mass_conservation}-\eqref{eq:surface_evolution} 
+In order to better understand the time evolution of the system in \eqref{eq:final_system}
 we will consider the eigenvalues of a simplified homogeneous system. By setting $\rho = \rho_0$, we obtain the system
 \begin{equation}
 \nabla \cdot \left( 2 \eta \varepsilon( \mathbf{u} ) \right) - \nabla p^\prime = 0
@@ -254,21 +276,22 @@ We transform the governing equations into the weak form amenable to finite eleme
 
 \begin{equation}
 -\int_{\Omega(t)} 2 \eta \varepsilon( \mathbf{w} ) \colon \varepsilon( \mathbf{u} ) + \int_{\Omega(t)} p^\prime \nabla \cdot \mathbf{w} 
-+ \int_{\partial \Omega_N(t)} \mathbf{w} \cdot \mathbf{T} \cdot \mathbf{n} = 0 
++ \int_{\Gamma_N(t)} \mathbf{w} \cdot \mathbf{T} \cdot \mathbf{n} = 0 
 \label{eq:weak_stokes}
 \end{equation}
-
+\timo{change boundary $\Gamma_N$ with new notation above.}
 \begin{equation}
 \int_{\Omega(t)} q \nabla \cdot \mathbf{u} = 0
 \label{eq:weak_incompressible}
 \end{equation}
 where $\mathbf{w}$ and $q$ are suitably chosen test functions and the integrals over 
-$\Omega$ and $\partial \Omega_N$ are over the volume of the domain and the part of the boundary with stress boundary conditions, respectively.
+$\Omega$ and $\partial \Gamma_N$ are over the volume of the domain and the part of the boundary with stress boundary conditions, respectively.
 Note that since the free surface can move, the shape of the domain is a function of time.
 It is most convenient to integrate over the domain at the current timestep, which corresponds to an explicit scheme.
 However, as we will see, the implicit scheme of integrating over the (unknown) domain at the next timestep
 is much more stable, at the cost of making the problem nonlinear \citep{furuichi2015implicit}.
 
+\timo{TODO: update. write as solving on $\Omega(t^n)$ instead of $\Omega(t^{n+1})$}
 The integral over the surface in Equation~\eqref{eq:weak_stokes} accounts for boundary stresses, 
 which should be zero when evaluated on a true free surface.
 Rather than analyzing finite deformation to the free surface (a nonlinear problem),
@@ -733,6 +756,8 @@ when the free surface slope is steep to allow for accurate interface tracking.
 
 
 \subsection{Remeshing}
+\label{sec:remeshing}
+
 In ALE calculations the internal mesh velicity is undetermined.
 In general, one wants to smoothly deform the mesh so as to preserve its regularity, 
 avoiding inverted or otherwise poorly conditioned cells.
