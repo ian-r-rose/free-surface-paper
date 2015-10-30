@@ -765,7 +765,7 @@ when the free surface slope is steep to allow for accurate interface tracking.
 \subsection{Remeshing}
 \label{sec:remeshing}
 
-In ALE calculations the internal mesh velicity is undetermined.
+In ALE calculations the internal mesh velocity is undetermined.
 In general, one wants to smoothly deform the mesh so as to preserve its regularity, 
 avoiding inverted or otherwise poorly conditioned cells.
 The mesh deformation can be calcluated in many different ways, including algebraic \citep[e.g.][]{thieulot2011fantom} 
@@ -780,9 +780,9 @@ We solve the equation
 subject to the boundary conditions
 \begin{equation}
 \begin{aligned}
-&\mathbf{u}_\mathrm{mesh} = \left( \textbf{u} \cdot \textbf{n} \right) \textbf{n} & \qquad & \textrm{on } \partial \Omega_{\textrm{free surface}}, \\
+&\mathbf{u}_\mathrm{mesh} = \left( \textbf{u} \cdot \textbf{n} \right) \textbf{n} & \qquad & \textrm{on } \Gamma_F, \\
 &\mathbf{u}_\mathrm{mesh} \cdot \textbf{n} = 0 & \qquad & \textrm{on } \partial \Omega_{\textrm{free slip}}, \\
-&\mathbf{u}_\mathrm{mesh} = 0 & \qquad & \textrm{on } \partial \Omega_{\textrm{Dirichlet}}.
+&\mathbf{u}_\mathrm{mesh} = 0 & \qquad & \textrm{on } \Gamma_0.
 \end{aligned}
 \label{eq:laplacian_bcs}
 \end{equation}
@@ -796,7 +796,7 @@ result in poor overall mass conservation in time. In some scenarios, the total v
 fluctuate significantly over hundreds or thousands of time steps.
 Consistency with the Stokes solution requires 
 \begin{equation}
-\mathbf{u}_{\mathrm{mesh}} \cdot \mathbf{n} = \mathbf{u \cdot n}
+\mathbf{u}_{\mathrm{mesh}} \cdot \mathbf{n} = \mathbf{u \cdot n}.
 \end{equation}
 
 Unfortunately the normal vectors are not well defined on the mesh vertices, which is 
@@ -811,11 +811,10 @@ solution onto the mesh velocity vector. Multiplying the boundary conditions
 surface part of the boundary, we find
 
 \begin{equation}
-\int_{\partial \Omega_{\textrm{free surface}} } \mathbf{w} \cdot \mathbf{u}_\mathrm{mesh} = 
-\int_{\partial \Omega_{\textrm{free surface}} } \left( \mathbf{w \cdot n } \right) \left( \mathbf{u \cdot n} \right)
+\int_{\Gamma_F} \mathbf{w} \cdot \mathbf{u}_\mathrm{mesh} = 
+\int_{\Gamma_F} \left( \mathbf{w \cdot n } \right) \left( \mathbf{u \cdot n} \right).
 \end{equation}
-
-When discretized, this forms a linear system which can be solved for the mesh velocity at the 
+When discretized, this forms a linear system which can be solved for the mesh velocity $\mathbf{u}_\mathrm{mesh}$ at the 
 free surface. Of course, a new system to solve is not ideal, but this system, being nonzero 
 over only the free surface, is relatively small and easy to solve.
 
@@ -863,11 +862,12 @@ solutions at the center of the domain:
 \end{figure*}
 
 Figure~\ref{fig:timestep_convergence}a shows the convergence of the nonstandard finite difference scheme 
-with timestep. The scheme is first order in time, with improving accuracy as the value of $\tau^*$ approaches
+with respect to timestep size. The scheme is first order in time, with improving accuracy as the value of $\tau^*$ approaches
 the relaxation time of the relevant mode $\tau_i$. Interestingly, if $\tau^* = \tau_i$ the advection scheme
 becomes exact \citep{mickens2002nonstandard}. At this point the error plummets in magnitude, and is no longer 
-a strong function of the timestep; instead, it is likely due to nonlinearities, error in the spatial discretization,
-or limits in the linear solver tolerance.
+a strong function of the timestep. The remaining error is likely due to nonlinearities, error in the spatial discretization,
+or limits in the linear solver tolerance. 
+\timo{Could the error be the accuracy of the reference $\zeta$? If you look at 3b, the error also tapers of at 1e-5...}
 
 Figure~\ref{fig:timestep_convergence}b shows the convergence of the quasi-implicit scheme with timestep.
 When $\theta=0.0$, it corresponds to the unstabilized forward Euler scheme, and is first order in time. 
@@ -883,7 +883,7 @@ timescales allows for tuning of the scheme to track specific long-wavelength mod
 those due to rotational or tidal deformation.
 
 \begin{figure*}
-\includegraphics[width=0.9\textwidth]{figures/timestep_convergence.pdf}
+\includegraphics[width=0.95\textwidth]{figures/timestep_convergence.pdf}
 \caption{Convergence tests for the benchmark shown in Figure~\ref{fig:benchmark_setup}. (a) Convergence test with timestep size for the nonstandard finite difference scheme. Comparison with the slope-one line confirms that it is first-order in time. In the case that the stabilization relaxation time $\tau^*$ is equal to the analytic relaxation time the error plummets, as the time integration scheme becomes exact \citep{mickens2002nonstandard}. (b) Convergence test with timestep size for the quasi-implicit scheme. For $\theta = 1$ and $\theta = 0$ the scheme is first-order accurate (though the latter is just an unstabilized forward-Euler scheme). For $\theta=0.5$ the scheme appears second order accurate on this benchmark.}
 \label{fig:timestep_convergence}
 \end{figure*}
@@ -904,6 +904,7 @@ with adaptive mesh refinement. Both have essentially the same behavior, but the 
 fewer degrees of freedom by a factor of approximately an order of magnitude. More complex models will have
 more detail and so we may be less able to aggressively coarsen them, but we still expect that adaptive mesh refinement 
 will result in significant computational savings.
+\timo{Change the figure into one with number of unknowns on the x axis and combine into a single figure. Your computed reference value is also not accurate enough. (I can take a look at that)}
 
 \begin{figure*}
 \includegraphics[width=0.9\textwidth]{figures/amr.pdf}
