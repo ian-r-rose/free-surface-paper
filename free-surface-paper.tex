@@ -249,11 +249,18 @@ The domain at time $t$ is defined by advecting a reference configuration $\Omega
 \end{equation}
 The mesh velocity in normal direction is given by the velocity $\mathbf{u}(t)$ on the free surface
 \begin{equation}
- \mathbf{v}(t) \cdot n = \mathbf{u}(t) \cdot n \text{on} \Gamma_F
+ \mathbf{v}(t) \cdot n = \mathbf{u}(t) \cdot n \quad \text{on} \quad \Gamma_F
 \end{equation}
 and set to zero on the rest of the boundary. We defer the discussion of the velocity $\mathbf{v}$ in the interior of the domain
 to Section~\ref{sec:remeshing}.
-Finally, we denote the displacement at time $t$ by $\zeta = \int_{t_0}^t \mathbf{v}(t) \text{ d} t$.
+Finally, we denote the displacement at time $t$ by $\zeta = \int_{t_0}^t \mathbf{v}(t) \text{ d} t$, leading to the evolution
+equation
+\begin{equation}
+\frac{d \zeta}{dt} = \mathbf{u \cdot n} \quad \textrm{on  }  \Gamma_F.
+\label{eq:surface_evolution}
+\end{equation}
+
+
 
 \section{Eigenvalue analysis}
 \label{sec:eigenvalue}
