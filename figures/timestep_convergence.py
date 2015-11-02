@@ -23,8 +23,10 @@ relaxation_times.sort()
 
 vals = []
 for r in relaxation_times:
-  tsteps = np.ma.masked_where( data[:,0] != r, data[:,1])
-  errors = np.ma.masked_where( data[:,0] != r, data[:,2])
+  # Remove last point, where limit of analytical solution is probably reached
+  tsteps = np.ma.compressed(np.ma.masked_where( data[:,0] != r, data[:,1]))[:-1]
+  errors = np.ma.compressed(np.ma.masked_where( data[:,0] != r, data[:,2]))[:-1] 
+  print tsteps,errors
   vals.append( (tsteps, errors ) )
 
 plt.subplot(121)
@@ -41,6 +43,7 @@ plt.text(0.1, 0.0005, r'$O(\Delta t)$', fontsize=9)
 
 plt.xlabel(r'$\Delta t / \tau_\mathrm{min}$')
 plt.ylabel(r'Error')
+plt.xlim(0.01, 2)
 plt.legend(loc='lower right', fontsize=8)
 plt.title('(a) Non-standard FD')
 
@@ -56,8 +59,9 @@ plt.subplot(122)
 
 vals = []
 for theta in thetas:
-  tsteps = np.ma.masked_where( data[:,0] != theta, data[:,1])
-  errors = np.ma.masked_where( data[:,0] != theta, data[:,2])
+  # Remove last point, where limit of analytical solution is probably reached
+  tsteps = np.ma.compressed(np.ma.masked_where( data[:,0] != theta, data[:,1]))[:-1]
+  errors = np.ma.compressed(np.ma.masked_where( data[:,0] != theta, data[:,2]))[:-1]
   vals.append( (tsteps, errors ) )
 
 marker = itertools.cycle( ('-h', '-v', '-^', '-*', '-D', '-s', '-o') )
@@ -74,6 +78,7 @@ plt.loglog(x2,y2, 'k--')
 plt.text(0.1, 0.05, r'$O(\Delta t)$', fontsize=9)
 plt.text(0.3, 0.0005, r'$O(\Delta t^2)$', fontsize=9)
 
+plt.xlim(0.01, 2)
 plt.xlabel(r'$\Delta t / \tau_\mathrm{min}$')
 plt.legend(loc='lower right', fontsize=8)
 plt.title('(b) Quasi-implicit')
