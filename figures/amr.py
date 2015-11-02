@@ -10,7 +10,7 @@ except AttributeError:
 except ValueError:
   print "Cannot find the requested stylesheet"
 
-plt.figure(figsize=(8,4) )
+plt.figure(figsize=(4,4) )
 
 
 data_uniform_qi = np.loadtxt("../benchmarks/amr/uniform_qi/resolution_convergence_uniform_qi.txt")
@@ -19,49 +19,46 @@ data_adaptive_qi = np.loadtxt("../benchmarks/amr/adaptive_qi/resolution_converge
 data_adaptive_nsfd = np.loadtxt("../benchmarks/amr/adaptive_nsfd/resolution_convergence_adaptive_nsfd.txt")
 
 refinement_levels = np.linspace(4., 8., 5)
-h_value  =  (2.)**(-refinement_levels)
+h_value  =  (2.)**(-refinement_levels)[:-1]
 
 topography_at_3Ma = 397.6
 
-error_uniform_qi = np.abs(data_uniform_qi[:,1] - topography_at_3Ma)
-error_uniform_nsfd = np.abs(data_uniform_nsfd[:,1] - topography_at_3Ma)
-error_adaptive_qi = np.abs(data_adaptive_qi[:,1] - topography_at_3Ma)
-error_adaptive_nsfd = np.abs(data_adaptive_nsfd[:,1] - topography_at_3Ma)
+# Get the error, less the point at the highest refinement level,
+# where the convergence sort of falls apart, presumably due to
+# loss of accuracy due to something else in the solution.
+error_uniform_qi = np.abs(data_uniform_qi[:,1] - topography_at_3Ma)[:-1]
+error_uniform_nsfd = np.abs(data_uniform_nsfd[:,1] - topography_at_3Ma)[:-1]
+error_adaptive_qi = np.abs(data_adaptive_qi[:,1] - topography_at_3Ma)[:-1]
+error_adaptive_nsfd = np.abs(data_adaptive_nsfd[:,1] - topography_at_3Ma)[:-1]
+
+# Normalize the errors
+error_uniform_qi /= topography_at_3Ma
+error_uniform_nsfd /= topography_at_3Ma
+error_adaptive_qi /= topography_at_3Ma
+error_adaptive_nsfd /= topography_at_3Ma
+
+# Read from console outputs rather than parsing... oh well.
+dofs_uniform_qi = np.array([24600, 96296,381000,1515656, 6045960])[:-1] 
+dofs_uniform_nsfd = dofs_uniform_qi
+dofs_adaptive_qi = np.array([10916, 22994, 55476, 122008, 255296])[:-1]
+dofs_adaptive_nsfd = dofs_adaptive_qi
 
 
 font_size = 12
 
-plt.subplot(121)
+plt.subplot(111)
 
-marker = itertools.cycle( ('-h', '-v') )
-plt.loglog(h_value, error_uniform_qi, marker.next(), markersize=8, label=r'QI')
-plt.loglog(h_value, error_uniform_nsfd, marker.next(), markersize=8, label=r'NSFD')
+marker = itertools.cycle( ('-h', '-v', '-^', '-s') )
+plt.loglog(dofs_uniform_qi, error_uniform_qi, marker.next(), markersize=8, label=r'Uniform, QI')
+plt.loglog(dofs_uniform_nsfd, error_uniform_nsfd, marker.next(), markersize=8, label=r'Uniform, NSFD')
+plt.loglog(dofs_adaptive_qi, error_uniform_qi, marker.next(), markersize=8, label=r'Adaptive, QI')
+plt.loglog(dofs_adaptive_nsfd, error_uniform_nsfd, marker.next(), markersize=8, label=r'Adaptive, NSFD')
 
-plt.text(1.2e-3,3.e-1, '5.5 MDoF', fontsize = font_size)
-plt.text(2.1e-3,1.2e0, '1.4 MDoF', fontsize = font_size)
-plt.text(4.e-3,5.e0, '347 kDoF', fontsize = font_size)
-plt.text(1.e-2,3.7e1, '88 kDoF', fontsize = font_size)
-plt.text(2.e-2,6.5e1, '22 kDoF', fontsize = font_size)
-
-plt.xlabel(r'h')
-plt.ylabel(r'Topography error at 3 Myr (m)')
-plt.legend(loc='lower right', fontsize=8)
-plt.title("(a) Uniform refinement")
-
-plt.subplot(122)
-
-marker = itertools.cycle( ('-h', '-v') )
-plt.loglog(h_value, error_adaptive_qi, marker.next(), markersize=8, label=r'QI')
-plt.loglog(h_value, error_adaptive_nsfd, marker.next(), markersize=8, label=r'NSFD')
-plt.xlabel(r'h')
-plt.legend(loc='lower right', fontsize=8)
-plt.title("(b) Adaptive refinement")
-
-plt.text(1.2e-3,3.e-1, '233 kDoF', fontsize = font_size)
-plt.text(2.1e-3,1.2e0, '111 kDoF', fontsize = font_size)
-plt.text(5.e-3,4.e0, '51 kDoF', fontsize = font_size)
-plt.text(1.e-2,3.7e1, '21 kDoF', fontsize = font_size)
-plt.text(2.e-2,6.5e1, '10 kDoF', fontsize = font_size)
+plt.ylim(1.e-3, 0.3)
+plt.xlim(1.e4, 3.e6)
+plt.xlabel(r'DoFs')
+plt.ylabel(r'Relative topography error')
+plt.legend(loc='upper right', fontsize=8)
 
 #plt.show()
 plt.savefig('amr.pdf')

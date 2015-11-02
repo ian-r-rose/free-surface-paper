@@ -235,28 +235,28 @@ reference values: $\rho = \rho_0 + \rho^\prime$, $p = p_0 + p^\prime$.
 Formally, this gives rise to the following time dependent, coupled system with unknowns $\mathbf{u}(t)$ and $\mathbf{p}(t)$:
 \begin{equation}
 \begin{aligned}
-\nabla \cdot \left( 2 \eta \varepsilon( \mathbf{u} ) \right) - \nabla p &= \rho \mathbf{g} \qquad \text{in} \qquad \Omega(t)\\
-\nabla \cdot \mathbf{u} &= 0  \qquad \text{in} \qquad  \Omega(t)
+\nabla \cdot \left( 2 \eta \varepsilon( \mathbf{u} ) \right) - \nabla p &= \rho \mathbf{g} \qquad &\text{in} \qquad &\Omega(t)\\
+\nabla \cdot \mathbf{u} &= 0  \qquad &\text{in} \qquad &\Omega(t)
 \end{aligned}
 \label{eq:final_system}
 \end{equation}
 defined on the bounded, moving domain $\Omega(t)\subset \mathbb{R}^d$ with boundary $\partial \Omega = \Gamma_0 \cup \Gamma_F$
 split into a fixed (Dirichlet) and free surface part $\Gamma_0$ and $\Gamma_F$, respectively.
-The domain at time $t$ is defined by advecting a reference configuration $\Omega_0$ by a mesh velocity $\mathbf{v}(t)$
-\timo{Do we need $\Gamma_N$ here?}
+For the sake of economy we neglect inhomogeneous stress boundary conditions, though it would be straightforward to include them.
+The domain at time $t$ is defined by advecting a reference configuration $\Omega_0$ by a mesh velocity $\mathbf{u}_{\mathrm{mesh}}(t)$
 \begin{equation}
- \Omega(t) = \Omega_0 + \int_{t_0}^t \mathbf{v}(t) \text{ d} t.
+ \Omega(t) = \Omega_0 + \int_{t_0}^t \mathbf{u}_{\mathrm{mesh}}(t) \text{ d}t.
 \end{equation}
 The mesh velocity in normal direction is given by the velocity $\mathbf{u}(t)$ on the free surface
 \begin{equation}
- \mathbf{v}(t) \cdot n = \mathbf{u}(t) \cdot n \quad \text{on} \quad \Gamma_F
+ \mathbf{u}_\mathrm{mesh}(t) \cdot \mathbf{n} = \mathbf{u}(t) \cdot \mathbf{n} \quad \text{on} \quad \Gamma_F
 \end{equation}
-and set to zero on the rest of the boundary. We defer the discussion of the velocity $\mathbf{v}$ in the interior of the domain
+and set to zero on the rest of the boundary. We defer the discussion of the velocity $\mathbf{u}_\mathrm{mesh}$ in the interior of the domain
 to Section~\ref{sec:remeshing}.
-Finally, we denote the displacement at time $t$ by $\zeta = \int_{t_0}^t \mathbf{v}(t) \text{ d} t$, leading to the evolution
+Finally, we denote the displacement at time $t$ by $\zeta = \int_{t_0}^t \mathbf{u}_\mathrm{mesh}(t)\cdot \mathbf{n} \text{ d}t$, leading to the evolution
 equation
 \begin{equation}
-\frac{d \zeta}{dt} = \mathbf{u \cdot n} \quad \textrm{on  }  \Gamma_F.
+\frac{\text{d} \zeta}{\text{d}t} = \mathbf{u \cdot \mathbf{n}} \quad \textrm{on  }  \Gamma_F.
 \label{eq:surface_evolution}
 \end{equation}
 
@@ -283,22 +283,21 @@ We transform the governing equations into the weak form amenable to finite eleme
 
 \begin{equation}
 -\int_{\Omega(t)} 2 \eta \varepsilon( \mathbf{w} ) \colon \varepsilon( \mathbf{u} ) + \int_{\Omega(t)} p^\prime \nabla \cdot \mathbf{w} 
-+ \int_{\Gamma_N(t)} \mathbf{w} \cdot \mathbf{T} \cdot \mathbf{n} = 0 
++ \int_{\Gamma_F(t)} \mathbf{w} \cdot \mathbf{T} \cdot \mathbf{n} = 0 
 \label{eq:weak_stokes}
 \end{equation}
-\timo{change boundary $\Gamma_N$ with new notation above.}
 \begin{equation}
 \int_{\Omega(t)} q \nabla \cdot \mathbf{u} = 0
 \label{eq:weak_incompressible}
 \end{equation}
 where $\mathbf{w}$ and $q$ are suitably chosen test functions and the integrals over 
-$\Omega$ and $\partial \Gamma_N$ are over the volume of the domain and the part of the boundary with stress boundary conditions, respectively.
+$\Omega(t)$ and $\Gamma_F(t)$ are over the volume of the domain and the free surface, respectively.
 Note that since the free surface can move, the shape of the domain is a function of time.
-It is most convenient to integrate over the domain at the current timestep, which corresponds to an explicit scheme.
-However, as we will see, the implicit scheme of integrating over the (unknown) domain at the next timestep
+It is most convenient to integrate over the domain at the current timestep $\Omega^n$ 
+(where the superscript indicates timestep number), which corresponds to an explicit scheme.
+However, as we will see, the implicit scheme of integrating over the (unknown) domain at the next timestep $\Omega^{n+1}$
 is much more stable, at the cost of making the problem nonlinear \citep{furuichi2015implicit}.
 
-\timo{TODO: update. write as solving on $\Omega(t^n)$ instead of $\Omega(t^{n+1})$}
 The integral over the surface in Equation~\eqref{eq:weak_stokes} accounts for boundary stresses, 
 which should be zero when evaluated on a true free surface.
 Rather than analyzing finite deformation to the free surface (a nonlinear problem),
@@ -318,7 +317,7 @@ Equation~\eqref{eq:weak_stokes} then becomes
 
 \begin{equation}
 -\int_{\Omega(t)} 2 \eta \varepsilon( \mathbf{w} ) \colon \varepsilon( \mathbf{u} ) + \int_{\Omega(t)} p^\prime \nabla \cdot \mathbf{w} 
-+ \int_{\partial \Omega_N(t)} \rho_0 g \zeta  \mathbf{w} \cdot \mathbf{n} = 0 
++ \int_{\Gamma_F(t)} \rho_0 g \zeta  \mathbf{w} \cdot \mathbf{n} = 0 
 \end{equation}
 
 We would like to analyze the time evolution of the normal modes of this system: each mode 
@@ -329,12 +328,12 @@ relaxation times $\tau_i$, where the subscript corresponds to the $i$th normal m
 The equations decouple for the normal modes, and Equation~\eqref{eq:surface_evolution} then becomes
 
 \begin{equation}
-\frac {d}{d t} \zeta_i(\mathbf{x},t) = \frac{d}{dt} \zeta_i(\mathbf{x})e^{-t/\tau_i} = -\frac{\zeta_i(\mathbf{x},t)}{\tau_i} = \mathbf{u}_i \cdot \mathbf{n}
+\frac {\text{d}}{\text{d} t} \zeta_i(\mathbf{x},t) = \frac{\text{d}}{\text{d}t} \zeta_i(\mathbf{x})e^{-t/\tau_i} = -\frac{\zeta_i(\mathbf{x},t)}{\tau_i} = \mathbf{u}_i \cdot \mathbf{n}
 \end{equation}
 This can then be used to eliminate $\zeta$ from the Stokes system:
 \begin{equation}
 -\int_{\Omega(t)} 2 \eta \varepsilon( \mathbf{w} ) \colon \varepsilon( \mathbf{u}_i ) + \int_{\Omega(t)} p^\prime_i \nabla \cdot \mathbf{w} 
-= \tau_i \int_{\partial \Omega_N(t)} \rho_0 g (\mathbf{u}_i \cdot \mathbf{n} ) (\mathbf{w} \cdot \mathbf{n})
+= \tau_i \int_{\Gamma_F(t)} \rho_0 g (\mathbf{u}_i \cdot \mathbf{n} ) (\mathbf{w} \cdot \mathbf{n})
 \label{eq:weak_eigen}
 \end{equation}
 When these equations are discretized \citep[e.g.][]{kronbichler2012high} we get
@@ -457,7 +456,7 @@ Reynold's transport theorem to find
 
 \begin{equation}
 \int_{\Omega^n + \Delta \Omega} \rho  \mathbf{w} \cdot \mathbf{g} \approx
-\int_{\Omega^n} \rho  \mathbf{w} \cdot \mathbf{g} + \theta \Delta t \int_{\partial \Omega^n} \rho ( \mathbf{w \cdot g}) (\mathbf{u \cdot n} )
+\int_{\Omega^n} \rho  \mathbf{w} \cdot \mathbf{g} + \theta \Delta t \int_{\Gamma_F^n} \rho ( \mathbf{w \cdot g}) (\mathbf{u \cdot n} )
 \label{eq:kmm}
 \end{equation}
 The volume integral is the same as that of the unstabilized problem, but now there is a surface integral.
@@ -471,7 +470,7 @@ Indeed, using the formalism in Section~\ref{sec:eigenvalue} we can see the effec
 stabilization term. On the reference surface we note that $\mathbf{g} = -g \mathbf{n}$, which
 allows us to write the stabilization term as
 \begin{equation}
--\theta \Delta t \int_{\partial \Omega^n} \rho g ( \mathbf{w \cdot n}) (\mathbf{u \cdot n} )
+-\theta \Delta t \int_{\Gamma_F^n} \rho g ( \mathbf{w \cdot n}) (\mathbf{u \cdot n} )
 \end{equation}
 The integral here is precisely the same as that on the right hand side of Equation~\eqref{eq:weak_eigen}, which was discretized as the matrix $M$.
 
@@ -536,7 +535,7 @@ This correspondingly lengthens the maximum stable timestep for the forward Euler
 \Delta t  \le \frac{2}{1-\theta} \tau_{\mathrm{min}}
 \label{eq:cfl_euler_stabilized}
 \end{equation}
-note that as $\theta$ goes to one this scheme should become unconditionally stable,
+Note that as $\theta$ goes to one this scheme should become unconditionally stable,
 but nonlinear effects and discretization errors due to finite deformation of the surface could 
 prevent that stability.
 
@@ -568,7 +567,7 @@ We would like to construct an explicit scheme that accounts for following proper
 
 A general expression for the evolution of a free surface from time $t^n$ to time $t^{n+1}$ is 
 \begin{equation}
-\mathbf{x}(t^{n+1}) = \mathbf{x}(t^n) + \int_{t^{n}}^{t^{n+1}} \mathbf{u}(t) dt
+\mathbf{x}(t^{n+1}) = \mathbf{x}(t^n) + \int_{t^{n}}^{t^{n+1}} \mathbf{u}(t) \text{ d}t
 \label{eq:time_integration}
 \end{equation}
 where $\mathbf{x}$ is the location of the free surface.  If we approximate $\mathbf{u}(t) \approx \mathbf{u}(t^{n})$, 
@@ -605,14 +604,13 @@ To investigate the stability of this scheme we consider a velocity solution comp
 a single normal mode of the system $\mathbf{u} = a_i \mathbf{u}_i$.
 This will decay exponentially with relaxation time $\tau_i$, or
 \begin{equation}
-\frac{d a_i} {dt} = - \frac{ a_i }{\tau_i} 
+\frac{\text{d} a_i} {\text{d}t} = - \frac{ a_i }{\tau_i} 
 \end{equation}
 Applying the nonstandard finite difference scheme, we find
 \begin{equation}
 a_i^{n} = a_i^{n+1} \left[ 1 - \frac{\tau^*}{\tau_i} \left(1-e^{-\Delta t/\tau^*} \right) \right]
 \label{eq:recursion}
 \end{equation}
-where superscripts indicate the timestep number.
 In order for the scheme to be stable, the quantity in brackets must not blow up as it is repeatedly multiplied by itself, or 
 \begin{equation}
 \left| 1 - \frac{\tau^*}{\tau_i} \left(1-e^{-\Delta t/\tau^*} \right) \right| \le 1
@@ -852,7 +850,7 @@ to quadratic \citep{kramer2012implicit, furuichi2015implicit}.
 We evaluate error by time-integrating the L2 difference between the numerical and analytical
 solutions at the center of the domain:
 \begin{equation}
-\mathrm{Error} = \frac{1}{4\tau}\int_0^{4 \tau} \lVert \zeta_\mathrm{numeric}(L/2, t) - \zeta_\mathrm{analytic}(L/2, t) \rVert_2 dt
+\mathrm{Error} = \frac{1}{4\tau}\int_0^{4 \tau} \lVert \zeta_\mathrm{numeric}(L/2, t) - \zeta_\mathrm{analytic}(L/2, t) \rVert_2 \text{ d}t
 \end{equation}
 
 \begin{figure*}
@@ -864,10 +862,9 @@ solutions at the center of the domain:
 Figure~\ref{fig:timestep_convergence}a shows the convergence of the nonstandard finite difference scheme 
 with respect to timestep size. The scheme is first order in time, with improving accuracy as the value of $\tau^*$ approaches
 the relaxation time of the relevant mode $\tau_i$. Interestingly, if $\tau^* = \tau_i$ the advection scheme
-becomes exact \citep{mickens2002nonstandard}. At this point the error plummets in magnitude, and is no longer 
-a strong function of the timestep. The remaining error is likely due to nonlinearities, error in the spatial discretization,
-or limits in the linear solver tolerance. 
-\timo{Could the error be the accuracy of the reference $\zeta$? If you look at 3b, the error also tapers of at 1e-5...}
+becomes exact \citep{mickens2002nonstandard}. At this point the magnitude of the error plummets and is no longer 
+a strong function of the timestep. The remaining error is likely due to error in the linear approxmation for 
+the analytical solution, the spatial discretization, or the linear solver tolerance. 
 
 Figure~\ref{fig:timestep_convergence}b shows the convergence of the quasi-implicit scheme with timestep.
 When $\theta=0.0$, it corresponds to the unstabilized forward Euler scheme, and is first order in time. 
@@ -884,7 +881,7 @@ those due to rotational or tidal deformation.
 
 \begin{figure*}
 \includegraphics[width=0.95\textwidth]{figures/timestep_convergence.pdf}
-\caption{Convergence tests for the benchmark shown in Figure~\ref{fig:benchmark_setup}. (a) Convergence test with timestep size for the nonstandard finite difference scheme. Comparison with the slope-one line confirms that it is first-order in time. In the case that the stabilization relaxation time $\tau^*$ is equal to the analytic relaxation time the error plummets, as the time integration scheme becomes exact \citep{mickens2002nonstandard}. (b) Convergence test with timestep size for the quasi-implicit scheme. For $\theta = 1$ and $\theta = 0$ the scheme is first-order accurate (though the latter is just an unstabilized forward-Euler scheme). For $\theta=0.5$ the scheme appears second order accurate on this benchmark.}
+\caption{Convergence tests for the benchmark shown in Figure~\ref{fig:benchmark_setup}. (a) Convergence test with timestep size for the nonstandard finite difference scheme. Comparison with the slope-one line confirms that it is first-order in time. In the case that the stabilization relaxation time $\tau^*$ is equal to the analytic relaxation time the error becomes very small, as the time integration scheme becomes exact \citep{mickens2002nonstandard}. (b) Convergence test with timestep size for the quasi-implicit scheme. For $\theta = 1$ and $\theta = 0$ the scheme is first-order accurate (though the latter is just an unstabilized forward-Euler scheme). For $\theta=0.5$ the scheme appears second order accurate on this benchmark.}
 \label{fig:timestep_convergence}
 \end{figure*}
 
@@ -904,11 +901,10 @@ with adaptive mesh refinement. Both have essentially the same behavior, but the 
 fewer degrees of freedom by a factor of approximately an order of magnitude. More complex models will have
 more detail and so we may be less able to aggressively coarsen them, but we still expect that adaptive mesh refinement 
 will result in significant computational savings.
-\timo{Change the figure into one with number of unknowns on the x axis and combine into a single figure. Your computed reference value is also not accurate enough. (I can take a look at that)}
 
 \begin{figure*}
 \includegraphics[width=0.9\textwidth]{figures/amr.pdf}
-\caption{Convergence with resolution for the \citet{crameri2012comparison} Case 2 benchmark, for both uniform (a) and adaptive (b) mesh refinement. The minimum cell size h is normalized by the model depth, and the timestep $\Delta t$ is 500 yr. We compare the maximum topography at 3 Myr with its value at high resolution ($\sim$398 m). The points are labeled with the approximate number of degrees of freedom (DoFs) for that simulation. Both cases converge similarly, but the adaptive mesh refinement simulations require significantly smaller system sizes.}
+\caption{Convergence with degrees of freedom (DoFs) for the \citet{crameri2012comparison} Case 2 benchmark, for both uniform and adaptive mesh refinement. The timestep $\Delta t$ is 500 yr. We compare the maximum topography at 3 Myr with its value at high resolution ($\sim$398 m). For the adaptive cases we perform mesh refinement according to the sum of density and composition gradients. Both cases converge similarly, but the adaptive mesh refinement simulations require significantly smaller system sizes.}
 \label{fig:amr}
 \end{figure*}
 
