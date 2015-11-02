@@ -867,8 +867,8 @@ a strong function of the timestep. The remaining error is likely due to error in
 the analytical solution, the spatial discretization, or the linear solver tolerance. 
 
 Figure~\ref{fig:timestep_convergence}b shows the convergence of the quasi-implicit scheme with timestep.
-When $\theta=0.0$, it corresponds to the unstabilized forward Euler scheme, and is first order in time. 
-When $\theta=1.0$ it is also first order in time, but allows for a much larger timestep.  When $\theta=0.5$
+When $\theta=0$, it corresponds to the unstabilized forward Euler scheme, and is first order in time. 
+When $\theta=1$ it is also first order in time, but allows for a much larger timestep.  When $\theta=0.5$
 the quasi-implicit guess for the body force is good enough that it actually seems to achieve the second-order 
 convergence of a trapezoidal scheme, though it is not clear whether this extends to more complicated models.
 
@@ -918,8 +918,13 @@ requires no modifications to the system matrix.
 
 The normal mode perspective on the problem also provides insights into the effect of 
 the quasi-implicit stabilization scheme proposed by \citet{kaus2010stabilization}.
-The relaxation time of each mode is lengthened by an amout $\theta \Delta t$, and the
+The relaxation time of each mode is lengthened by an amount $\theta \Delta t$, and the
 maximum allowable timestep is correspondingly lengthened.
+
+It is not clear that the non-standard finite difference scheme is superior to 
+the quasi-implicit scheme. For $\theta=0.5$ the quasi-implicit scheme is more accurate,
+but is only conditionally stable. For $\theta=1$ the two schemes are comparably accurate 
+in the tests we ran.
 
 Finally, we have described the implementation of free surface boundary conditions in 
 the open source mantle convection software \texttt{ASPECT}. Both the quasi-implicit 
