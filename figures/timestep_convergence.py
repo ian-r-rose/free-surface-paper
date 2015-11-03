@@ -26,7 +26,6 @@ for r in relaxation_times:
   # Remove last point, where limit of analytical solution is probably reached
   tsteps = np.ma.compressed(np.ma.masked_where( data[:,0] != r, data[:,1]))[:-1]
   errors = np.ma.compressed(np.ma.masked_where( data[:,0] != r, data[:,2]))[:-1] 
-  print tsteps,errors
   vals.append( (tsteps, errors ) )
 
 plt.subplot(121)
