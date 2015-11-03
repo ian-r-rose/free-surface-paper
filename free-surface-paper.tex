@@ -703,9 +703,9 @@ Summing this error over many timesteps results in a factor of $\Delta t^{-1}$, d
 The choice of $\tau^*$ controls the size of the coefficient on the truncation error for the scheme.
 The error for a given mode becomes considerably smaller when $\tau^*$ is close to its natural relaxation times.
 
-It is helpful to take a closer look at the pseudo-timestep $\tau^*(1-e^{-\Delta t/\tau^*})$.
+It is helpful to take a closer look at the pseudo-timestep introduced in Equation~\eqref{eq:nsfd}: $\tau^*(1-e^{-\Delta t/\tau^*})$.
 As the timestep $\Delta t$ goes to zero, the pseudo timestep approaches $\Delta t$, recovering 
-the forward Euler scheme. However, as $\Delta t$ gets larger, the pseudo timestep does not 
+the forward Euler scheme. However, as $\Delta t$ gets larger, the pseudo-timestep does not 
 increase as quickly, reflecting the decaying nature of the normal modes.
 Likewise, as the stabilization timescale $\tau^*$ goes to infinity, we also recover the 
 forward Euler scheme, in what is essentially the unstabilized problem. But as $\tau^*$
@@ -778,12 +778,13 @@ We solve the equation
 subject to the boundary conditions
 \begin{equation}
 \begin{aligned}
+&\mathbf{u}_\mathrm{mesh} = 0 & \qquad & \textrm{on } \Gamma_0. \\
 &\mathbf{u}_\mathrm{mesh} = \left( \textbf{u} \cdot \textbf{n} \right) \textbf{n} & \qquad & \textrm{on } \Gamma_F, \\
-&\mathbf{u}_\mathrm{mesh} \cdot \textbf{n} = 0 & \qquad & \textrm{on } \partial \Omega_{\textrm{free slip}}, \\
-&\mathbf{u}_\mathrm{mesh} = 0 & \qquad & \textrm{on } \Gamma_0.
+&\mathbf{u}_\mathrm{mesh} \cdot \textbf{n} = 0 & \qquad & \textrm{on } \Gamma_{FS}, \\
 \end{aligned}
 \label{eq:laplacian_bcs}
 \end{equation}
+where $\Gamma_{FS}$ is the part of the boundary with free slip boundary conditions $\mathbf{u \cdot n} = 0$.
 This scheme has the advantage of working for many different domain geometries and combinations of boundary conditions.
 For moderate mesh deformation, the mesh stays smooth and well conditioned, though it breaks down for large deformations 
 or on non-convex domains.
