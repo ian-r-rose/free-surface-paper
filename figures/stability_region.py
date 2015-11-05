@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 try:
-  plt.style.use('ian')
+  plt.style.use('./free_surface_paper.mplstyle')
 except AttributeError:
   print "old matplotlib version?"
 except ValueError:
