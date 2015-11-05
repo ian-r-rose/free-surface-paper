@@ -58,7 +58,11 @@ plt.ylim(1.e-3, 0.3)
 plt.xlim(1.e4, 3.e6)
 plt.xlabel(r'DoFs')
 plt.ylabel(r'Relative topography error')
-plt.legend(loc='upper right', fontsize=8)
+try:
+  plt.legend(loc='lower right')
+  plt.legend(loc='lower right', fontsize=8)
+except:
+  pass
 
 #plt.show()
 plt.savefig('amr.pdf')

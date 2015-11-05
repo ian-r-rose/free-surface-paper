@@ -43,7 +43,11 @@ plt.text(0.1, 0.0005, r'$O(\Delta t)$', fontsize=9)
 plt.xlabel(r'$\Delta t / \tau_\mathrm{min}$')
 plt.ylabel(r'Error')
 plt.xlim(0.01, 2)
-plt.legend(loc='lower right', fontsize=8)
+try:
+  plt.legend(loc='lower right')
+  plt.legend(loc='lower right', fontsize=8)
+except:
+  pass
 plt.title('(a) Non-standard FD')
 
 
@@ -79,7 +83,12 @@ plt.text(0.3, 0.0005, r'$O(\Delta t^2)$', fontsize=9)
 
 plt.xlim(0.01, 2)
 plt.xlabel(r'$\Delta t / \tau_\mathrm{min}$')
-plt.legend(loc='lower right', fontsize=8)
+try:
+  plt.legend(loc='lower right')
+  plt.legend(loc='lower right', fontsize=8)
+except:
+  pass
+
 plt.title('(b) Quasi-implicit')
 
 
