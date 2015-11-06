@@ -275,14 +275,13 @@ equation
 In order to better understand the time evolution of the system in \eqref{eq:final_system}
 we will consider the eigenvalues of a simplified homogeneous system. By setting $\rho = \rho_0$, we obtain the system
 \begin{equation}
-\nabla \cdot \left( 2 \eta \varepsilon( \mathbf{u} ) \right) - \nabla p^\prime = 0
+\begin{aligned}
+\nabla \cdot \left( 2 \eta \varepsilon( \mathbf{u} ) \right) - \nabla p^\prime &= 0 \\
+\nabla \cdot \mathbf{u} &= 0
+\end{aligned}
 \label{eq:homogeneous_stokes}
 \end{equation}
 
-\begin{equation}
-\nabla \cdot \mathbf{u} = 0
-\label{eq:incompressible}
-\end{equation}
 
 We will proceed with this analysis within a finite element framework, though similar arguments should 
 work for other discrete methods.
@@ -301,9 +300,11 @@ where $\mathbf{w}$ and $q$ are suitably chosen test functions and the integrals 
 $\Omega(t)$ and $\Gamma_F(t)$ are over the volume of the domain and the free surface, respectively.
 Note that since the free surface can move, the shape of the domain is a function of time.
 It is most convenient to integrate over the domain at the current timestep $\Omega^n$ 
-(where the superscript indicates timestep number), which corresponds to an explicit scheme.
-However, as we will see, the implicit scheme of integrating over the (unknown) domain at the next timestep $\Omega^{n+1}$
-is much more stable, at the cost of making the problem nonlinear \citep{furuichi2015implicit}.
+(where the superscript indicates timestep number) instead of 
+the at this point unknown $\Omega^{n+1}$. This corresponds to an explicit scheme,
+which is not stable.
+However, as we will see, the implicit scheme of integrating over the (unknown) domain at the correct time $\Omega^{n+1}$ will
+give a stable scheme, at the cost of making the problem nonlinear \citep{furuichi2015implicit}.
 
 The integral over the surface in Equation~\eqref{eq:weak_stokes} accounts for boundary stresses, 
 which should be zero when evaluated on a true free surface.
@@ -335,12 +336,12 @@ relaxation times $\tau_i$, where the subscript corresponds to the $i$th normal m
 The equations decouple for the normal modes, and Equation~\eqref{eq:surface_evolution} then becomes
 
 \begin{equation}
-\frac {\text{d}}{\text{d} t} \zeta_i(\mathbf{x},t) = \frac{\text{d}}{\text{d}t} \zeta_i(\mathbf{x})e^{-t/\tau_i} = -\frac{\zeta_i(\mathbf{x},t)}{\tau_i} = \mathbf{u}_i \cdot \mathbf{n}
+\frac {\text{d}}{\text{d} t} \zeta_i(\mathbf{x},t) = \frac{\text{d}}{\text{d}t} \zeta_i(\mathbf{x})e^{-t/\tau_i} = -\frac{\zeta_i(\mathbf{x},t)}{\tau_i} = \mathbf{u}_i \cdot \mathbf{n}.
 \end{equation}
 This can then be used to eliminate $\zeta$ from the Stokes system:
 \begin{equation}
 -\int_{\Omega(t)} 2 \eta \varepsilon( \mathbf{w} ) \colon \varepsilon( \mathbf{u}_i ) + \int_{\Omega(t)} p^\prime_i \nabla \cdot \mathbf{w} 
-= \tau_i \int_{\Gamma_F(t)} \rho_0 g (\mathbf{u}_i \cdot \mathbf{n} ) (\mathbf{w} \cdot \mathbf{n})
+= \tau_i \int_{\Gamma_F(t)} \rho_0 g (\mathbf{u}_i \cdot \mathbf{n} ) (\mathbf{w} \cdot \mathbf{n}).
 \label{eq:weak_eigen}
 \end{equation}
 When these equations are discretized \citep[e.g.][]{kronbichler2012high} we get
@@ -411,9 +412,8 @@ represented by a linear combination of its normal modes
 \end{equation}
 then the time evolution of the free surface is given by
 \begin{equation}
-\zeta( \mathbf{x}, t) = \displaystyle \sum_i a_i \zeta_i(\mathbf{x}) e^{-t/\tau_i}
+\zeta( \mathbf{x}, t) = \displaystyle \sum_i a_i \zeta_i(\mathbf{x}) e^{-t/\tau_i}.
 \end{equation}
-
 Of course, most finite element (or finite difference, or finite volume) geodynamic simulations do not resolve 
 the solution and surface topography into its normal modes and integrate those separately. 
 Indeed, analytical solutions for the normal modes are only known for simple geometries and rheologies.
@@ -424,7 +424,7 @@ The decay equation is the archetypical example of a stiff ordinary differential 
 If we were to numerically integrate this in time with a forward Euler method, we would find the 
 time-step criterion for stability \citep[e.g.][]{leveque2007finite} to be
 \begin{equation}
-\Delta t  \le 2 \tau_{\mathrm{min}}
+\Delta t  \le 2 \tau_{\mathrm{min}}.
 \label{eq:cfl_euler}
 \end{equation}
 The maximum allowable timestep is limited by the minimum relaxation timescale.
@@ -466,11 +466,11 @@ Reynold's transport theorem to find
 \int_{\Omega^n} \rho  \mathbf{w} \cdot \mathbf{g} + \theta \Delta t \int_{\Gamma_F^n} \rho ( \mathbf{w \cdot g}) (\mathbf{u \cdot n} )
 \label{eq:kmm}
 \end{equation}
-The volume integral is the same as that of the unstabilized problem, but now there is a surface integral.
-The surface integral has the form of a velocity-dependent surface stress pushing down on the 
+The volume integral is the same as that of the unstabilized problem, but now we obtained an additional surface integral.
+It has the form of a velocity-dependent surface stress pushing down on the 
 domain, and can be thought of as an artificial viscous damping of the surface.
-Since it depends on the velocity, it can no longer go on the right-hand side of the 
-equation, and must be added as a stabilization term in the system matrix.  
+Since the term depends on the velocity, it 
+enters the system matrix as a stabilization term.  
 Empirically it has been found to be successful at damping instabilities \citep{kaus2010stabilization, quinquis2011role, duretz2011discretization}.
 
 Indeed, using the formalism in Section~\ref{sec:eigenvalue} we can see the effect of this 
@@ -483,7 +483,6 @@ The integral here is precisely the same as that on the right hand side of Equati
 
 If we discretize the Stokes system with the quasi-implicit stabilization term, we find
 a new generalized eigenvalue problem:
-
 \begin{equation}
 \begin{bmatrix}
 A + \theta \Delta t M & B^T \\
@@ -525,7 +524,7 @@ M & 0 \\
 \begin{bmatrix}
 \mathbf{u}^n_i \\
 p^n_i
-\end{bmatrix}
+\end{bmatrix}.
 \label{eq:rearranged_stabilized_generalized_eigenvalue}
 \end{equation}
 
@@ -539,7 +538,7 @@ terms of those of the unstabilized problem:
 Essentially, the stabilization term lengthens every relaxation time for the system by an amount $\theta \Delta t$.
 This correspondingly lengthens the maximum stable timestep for the forward Euler method:
 \begin{equation}
-\Delta t  \le \frac{2}{1-\theta} \tau_{\mathrm{min}}
+\Delta t  \le \frac{2}{1-\theta} \tau_{\mathrm{min}}.
 \label{eq:cfl_euler_stabilized}
 \end{equation}
 Note that as $\theta$ goes to one this scheme should become unconditionally stable,
@@ -612,16 +611,16 @@ To investigate the stability of this scheme we consider a velocity solution comp
 a single normal mode of the system $\mathbf{u} = a_i \mathbf{u}_i$.
 This will decay exponentially with relaxation time $\tau_i$, or
 \begin{equation}
-\frac{\text{d} a_i} {\text{d}t} = - \frac{ a_i }{\tau_i} 
+\frac{\text{d} a_i} {\text{d}t} = - \frac{ a_i }{\tau_i} .
 \end{equation}
 Applying the nonstandard finite difference scheme, we find
 \begin{equation}
-a_i^{n} = a_i^{n+1} \left[ 1 - \frac{\tau^*}{\tau_i} \left(1-e^{-\Delta t/\tau^*} \right) \right]
+a_i^{n} = a_i^{n+1} \left[ 1 - \frac{\tau^*}{\tau_i} \left(1-e^{-\Delta t/\tau^*} \right) \right].
 \label{eq:recursion}
 \end{equation}
 In order for the scheme to be stable, the quantity in brackets must not blow up as it is repeatedly multiplied by itself, or 
 \begin{equation}
-\left| 1 - \frac{\tau^*}{\tau_i} \left(1-e^{-\Delta t/\tau^*} \right) \right| \le 1
+\left| 1 - \frac{\tau^*}{\tau_i} \left(1-e^{-\Delta t/\tau^*} \right) \right| \le 1.
 \end{equation}
 
 \ifdetail
@@ -669,11 +668,11 @@ It is convenient to write this in terms of dimensionless times $\Delta t/ \tau_i
 The stability of this scheme is determined by the choice of $\tau^*$.  
 It has a region of unconditional stability, where
 \begin{equation}
-\tau^* \le 2 \tau_i
+\tau^* \le 2 \tau_i.
 \end{equation}
 Otherwise, the scheme is conditionally stable, with the timestep limited by 
 \begin{equation}
-\Delta t \le -\tau^* \log \left(1 - 2 \frac{\tau_i}{\tau^*} \right)
+\Delta t \le -\tau^* \log \left(1 - 2 \frac{\tau_i}{\tau^*} \right).
 \end{equation}
 The stability region is plotted in Figure \ref{fig:stability_region}. 
 
@@ -694,18 +693,18 @@ scheme and the analytical solution after one time step:
 \begin{equation}
 \begin{aligned}
 a_i(\Delta t) - a_i^{1} &= a_i(0) e^{-\Delta t/\tau_i} - a_i{(0)} \left[ 1 - \frac{\tau^*}{\tau_i} \left(1-e^{-\Delta t/\tau^*} \right) \right] \\
-                        &= a_i{(0)} \left[ e^{-\Delta t/\tau_i} - 1 + \frac{\tau^*}{\tau_i} \left(1-e^{-\Delta t/\tau^*} \right) \right] \\
+                        &= a_i{(0)} \left[ e^{-\Delta t/\tau_i} - 1 + \frac{\tau^*}{\tau_i} \left(1-e^{-\Delta t/\tau^*} \right) \right].
 \end{aligned}
 \end{equation}
 Note that when $\tau_i = \tau^*$ the nonstandard finite difference scheme is exact.
 The exponentials may be expanded to find
 \ifdetail
 \begin{equation}
-a_i(\Delta t) - a_i^{1} = - a_i{(0)} \left[ \left(\frac{\Delta t}{\tau_i}\right)^2 - \frac{\tau^*}{\tau_i} \left(\frac{\Delta t }{\tau^* }\right)^2 \right] 
+a_i(\Delta t) - a_i^{1} = - a_i{(0)} \left[ \left(\frac{\Delta t}{\tau_i}\right)^2 - \frac{\tau^*}{\tau_i} \left(\frac{\Delta t }{\tau^* }\right)^2 \right].
 \end{equation}
 \fi
 \begin{equation}
-a_i(\Delta t) - a_i^{1} = {a_i{(0)} } \left( \frac{\Delta t}{\tau_i} \right)^2 \left( 1 - \frac{\tau_i}{\tau^*} \right) + O(\Delta t^3)
+a_i(\Delta t) - a_i^{1} = {a_i{(0)} } \left( \frac{\Delta t}{\tau_i} \right)^2 \left( 1 - \frac{\tau_i}{\tau^*} \right) + O(\Delta t^3).
 \end{equation}
 Summing this error over many timesteps results in a factor of $\Delta t^{-1}$, demonstrating the first-order accuracy~\citep[e.g.]{leveque2007finite}.
 The choice of $\tau^*$ controls the size of the coefficient on the truncation error for the scheme.
@@ -726,7 +725,7 @@ As discussed above, a full geodynamic simulation will have a spectrum of relaxat
 For complete stability, the parameter $\tau^*$ should be chosen such that every mode is stable.
 In practice, this means that a good choice is 
 \begin{equation}
-\tau^* \approx \tau_{\mathrm{min}}
+\tau^* \approx \tau_{\mathrm{min}}.
 \label{eq:tau_choice}
 \end{equation}
 
@@ -830,7 +829,7 @@ the accuracy of the Stokes solve for Equation~\eqref{eq:weak_incompressible}, an
 found it to conserve mass more accurately than algebraic techniques for evaluating the mesh-normal velocity.
 Similar results were found by \citet{fullsack1995arbitrary}.
 
-\section{Results}
+\section{Numerical Results}
 \label{sec:results}
 
 We demonstrate the convergence of the nonstandard finite difference model by comparison 
@@ -860,7 +859,7 @@ to quadratic \citep{kramer2012implicit, furuichi2015implicit}.
 We evaluate error by time-integrating the L2 difference between the numerical and analytical
 solutions at the center of the domain:
 \begin{equation}
-\mathrm{Error} = \frac{1}{4\tau}\int_0^{4 \tau} \lVert \zeta_\mathrm{numeric}(L/2, t) - \zeta_\mathrm{analytic}(L/2, t) \rVert_2 \text{ d}t
+\mathrm{Error} = \frac{1}{4\tau}\int_0^{4 \tau} \lVert \zeta_\mathrm{numeric}(L/2, t) - \zeta_\mathrm{analytic}(L/2, t) \rVert_2 \text{ d}t.
 \end{equation}
 
 \begin{figure*}
@@ -957,6 +956,7 @@ gravity models. Furthermore, it runs in parallel and with adaptive mesh refineme
 %% If you have bibdatabase file and want bibtex to generate the
 %% bibitems, please use
 %%
+\section{Bibliography}
 \bibliographystyle{elsarticle-harv} 
 \bibliography{free-surface-paper}
 
