@@ -202,7 +202,7 @@ quasi-implicit stabilization proposed in \citet{kaus2010stabilization}.
 Then, we propose a new time marching scheme for free surface computations with 
 good stability properties (Section~\ref{sec:newscheme}).
 Finally, we describe the implementation of a free surface in the mantle convection software \texttt{ASPECT} in Section~\ref{sec:implementation}, before showing numerical results
-in \ref{sec:results}. 
+in Section~\ref{sec:results}. 
 
 
 \section{Governing Equations}
@@ -554,7 +554,7 @@ This can be seen as an attractive feature of the scheme, since those are the lea
 though it can result in less accurate time-marching of the longest wavelengths of the system.
 
 \section{A novel time-integration scheme}
-\ref{sec:newscheme}
+\label{sec:newscheme}
 
 One downside of the quasi-implicit scheme is that it requires a modification of the system matrix.
 A naive implementation of the scheme results in a slightly 
