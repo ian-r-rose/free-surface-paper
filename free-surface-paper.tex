@@ -190,13 +190,20 @@ surface. \citet{kaus2010stabilization} proposed a quasi-implicit scheme which mo
 Stokes matrix, giving it better stability properties.  \citet{kramer2012implicit} and \citet{furuichi2015implicit}
 explored methods for solving the transport of the free surface implicitly.
 
-Here we analyze the problem of the sloshing instability.  We demonstrate the nature of the instability, 
-as well as clarifying the effect of quasi-implicit stabilization.
-The analysis allows us to propose a new time marching scheme for free surface computations with 
-good stability properties. It is an explicit method which requires no modification to the system matrix,
-which makes it extremely simple to implement.
 
-Finally, we describe the implementation of a free surface in the mantle convection software \texttt{ASPECT}. 
+
+The paper is organized as follows.
+After introducing the problem in Section~\ref{sec:governing},
+we derive an approach to analyze 
+free surface schemes based on the normal modes in Section~\ref{sec:eigenvalue}
+and Section~\ref{sec:timestepping}.
+In Section~\ref{sec:kmm} we use this approach to look at the
+quasi-implicit stabilization proposed in \citet{kaus2010stabilization}.
+Then, we propose a new time marching scheme for free surface computations with 
+good stability properties (Section~\ref{sec:newscheme}).
+Finally, we describe the implementation of a free surface in the mantle convection software \texttt{ASPECT} in Section~\ref{sec:implementation}, before showing numerical results
+in \ref{sec:results}. 
+
 
 \section{Governing Equations}
 \label{sec:governing}
@@ -426,7 +433,7 @@ The modes with the smallest relaxation times are usually those with the largest 
 and so it will be those which go unstable first, a phenomenon which has been called 
 a ``sloshing'', or ``drunken sailor'' instability \citep{kaus2010stabilization}.
 
-\section{Quasi-implicit stabilization}
+\section{Analysis of quasi-implicit stabilization}
 \label{sec:kmm}
 
 The relaxation timescales for surface topography tend to be considerably shorter than those for 
@@ -547,6 +554,7 @@ This can be seen as an attractive feature of the scheme, since those are the lea
 though it can result in less accurate time-marching of the longest wavelengths of the system.
 
 \section{A novel time-integration scheme}
+\ref{sec:newscheme}
 
 One downside of the quasi-implicit scheme is that it requires a modification of the system matrix.
 A naive implementation of the scheme results in a slightly 
@@ -823,6 +831,7 @@ found it to conserve mass more accurately than algebraic techniques for evaluati
 Similar results were found by \citet{fullsack1995arbitrary}.
 
 \section{Results}
+\label{sec:results}
 
 We demonstrate the convergence of the nonstandard finite difference model by comparison 
 with an analytical solution. Following \citet{kramer2012implicit} we model the relaxation
