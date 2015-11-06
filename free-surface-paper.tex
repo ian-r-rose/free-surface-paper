@@ -42,9 +42,6 @@
 \usepackage{color, soul}
 \usepackage{url}
 
-\usepackage{todonotes}
-\newcommand\timo[1]{\todo[inline]{Timo: #1}}
-
 \newif\ifdetail
 \detailfalse
 %\detailtrue
@@ -56,6 +53,24 @@
 %% \begin{linenumbers}, end it with \end{linenumbers}. Or switch it on
 %% for the whole article with \linenumbers.
 %% \usepackage{lineno}
+
+%% Block of code for fixing corresponding author bug 
+%% in elsarticle template... Don't really understand it
+\makeatletter
+\def\@author#1{\g@addto@macro\elsauthors{\normalsize%
+    \def\baselinestretch{1}%
+    \upshape\authorsep#1\unskip\textsuperscript{%
+      \ifx\@fnmark\@empty\else\unskip\sep\@fnmark\let\sep=,\fi
+      \ifx\@corref\@empty\else\unskip\sep\@corref\let\sep=,\fi
+      }%
+    \def\authorsep{\unskip,\space}%
+    \global\let\@fnmark\@empty
+    \global\let\@corref\@empty  %% Added
+    \global\let\sep\@empty}%
+    \@eadauthor={#1}
+}
+\makeatother
+%% End block of weird code
 
 \journal{Physics of the Earth and Planetary Interiors}
 
@@ -90,11 +105,13 @@
 %% \address[label1]{}
 %% \address[label2]{}
 
-\author{I. Rose, B. Buffett, and Timo Heister\fnref{ref3}}
+\author{Ian Rose\corref{cor1}\fnref{ref1}}
+\author{Bruce Buffett\fnref{ref1}}
+\author{Timo Heister\fnref{ref2}}
 
-\fntext[ref3]{\url{heister@clemson.edu}, partially supported by the Computational Infrastructure in
-Geodynamics initiative (CIG), through the National Science Foundation under Award No. EAR-0949446 
-and The University of California-Davis, and National Science Foundation grant DMS1522191.}
+\fntext[ref1]{University of California, Berkeley}
+\fntext[ref2]{Clemson University}
+\cortext[cor1]{Corresponding author, \url{ian.rose@berkeley.edu}}
 
 
 \address{}
@@ -950,6 +967,12 @@ scheme and the nonstandard finite difference scheme are available. The implement
 sufficiently general to accommodate many different geometies, rheologies, and 
 gravity models. Furthermore, it runs in parallel and with adaptive mesh refinement.
 
+
+\section*{Acknowledgements}
+This work was supported through National Science Foundation grant EAR-1246670
+and by the Computational Infrastructure in Geodynamics (CIG), through National Science Foundation grant EAR-0949446. 
+TH is partially supported by NSF grant DMS-1522191.
+Thanks to Wolfgang Bangerth and Brent Delbridge for useful discussions.
 %% The Appendices part is started with the command \appendix;
 %% appendix sections are then done as normal sections
 %% \appendix
@@ -960,7 +983,7 @@ gravity models. Furthermore, it runs in parallel and with adaptive mesh refineme
 %% If you have bibdatabase file and want bibtex to generate the
 %% bibitems, please use
 %%
-\section{Bibliography}
+\section*{Bibliography}
 \bibliographystyle{elsarticle-harv} 
 \bibliography{free-surface-paper}
 
