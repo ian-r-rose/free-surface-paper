@@ -59,8 +59,8 @@ plt.xlim(1.e4, 3.e6)
 plt.xlabel(r'DoFs')
 plt.ylabel(r'Relative topography error')
 try:
-  plt.legend(loc='lower right')
-  plt.legend(loc='lower right', fontsize=8)
+  plt.legend(loc='upper right')
+  plt.legend(loc='upper right', fontsize=8)
 except:
   pass
 
