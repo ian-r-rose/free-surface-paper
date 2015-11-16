@@ -771,8 +771,8 @@ problem can furnish an estimate of its relaxation time.
 
 \section{Implementation in \texttt{ASPECT} }
 \label{sec:implementation}
-We have implemented the ability to run free surface simulations in the mantle convection software \texttt{ASPECT} \citep{kronbichler2012high}. 
-\texttt{ASPECT} is designed to be highly flexible and modular, with the ability for user-defined rheologies, geometries, and gravity models. 
+We have implemented the ability to run free surface simulations in the mantle convection software \texttt{ASPECT} \citep{aspectweb,kronbichler2012high}. 
+\texttt{ASPECT}, based on the open source, finite element library deal.II \citep{dealII82}, is designed to be highly flexible and modular, with the ability for user-defined rheologies, geometries, and gravity models. 
 The implementation of the free surface, therefore, needs to be general enough to work for many combinations of these models, including those 
 which may not have been written yet. In particular, it cannot rely on assumptions regarding the shape of the domain.
 
@@ -780,7 +780,7 @@ Furthermore, \texttt{ASPECT} allows for computations in both 2D and 3D, so the i
 independent to work in both cases. We implement the free surface within an arbitrary Lagrangian-Eulerian (ALE) formulation
 \citep[e.g][]{fullsack1995arbitrary,donea2004encyclopedia}.
 
-\texttt{ASPECT} is a parallelized, distributed memory code with adaptive mesh refinement.
+\texttt{ASPECT} is a parallelized, distributed memory code with adaptive mesh refinement (see \cite{BBHK10} for details).
 The free surface implementation works with these features.  We store the mesh vertex positions 
 in a fully distributed vector. This vector is continually updated and redistributed across 
 processes upon mesh adaptation (which is handled by the adaptive octree library \texttt{p4est}).
