@@ -1,0 +1,24 @@
+Reviewer #1: A general problem with numerical modelling a free surface in mantle convection models is that it tends to start oscillating unnaturally if the fastest vertical boundary movements are not resolved properly. The carefully conducted study on 'Free surface computations in mantle convection models' by Ian Rose and coauthors nicely summarises currently used methods to model and to stabilise a free surface in mantle convection models. It analyses in great detail free-surface boundary stabilisation using normal modes, then provides another, novel boundary stabilisation scheme and finally discusses its implementation into the open-source code ASPECT.
+The authors successfully demonstrate that their new explicit method, which relies on the smallest boundary-relaxation timescale, is first-order accurate in time, unconditionally stable and requires no modification to the system matrix. Compared to existing stabilisation schemes, this is thus another step forward to reduce the general problems occurring with modelling a free surface. Their improved stabilisation method has, therefore, the potential to enhance current geodynamic models beyond the code ASPECT.
+
+The manuscript is clearly structured, carefully written, and the equations seem to be correct. The figures are chosen carefully.
+
+I have only minor comments and therefore recommend it to be published with minor revision.
+
+equation 2:             maybe 'I' should be defined here as the identity matrix
+equation 7:             define surface normal vector 'n'
+page 7:                 Rewrite to e.g.: "By defining [equation 17] and then multiplying …"
+page 7:                 add description: "[equation 21], where tau_min is the minimum decay time."
+page 14:                second point:   typo in 'viscosity'
+                        third point:            add "…viscosity, and lengthscale L are …"
+page 17 (top):  Consider rewriting this sentence for clarity: "We evaluate error by time-integrating the L2 difference between the numerical and analytical solutions at the center of the domain: [equation 48]"
+page 21 (second-last sentence): typo in "geometries"
+
+figure 5 caption:       Clarify what you mean by "both cases", i.e., mention that you plot both uniform and adaptive for both non-standard FD and quasi-implicit.
+
+Add description of abbreviations, QI and NSFD, used in figure 5 to the text.
+
+
+general comment: numbered lines would be really helpful for future reviews.
+
+Fabio Crameri
