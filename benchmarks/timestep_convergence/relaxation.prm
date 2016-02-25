@@ -11,7 +11,7 @@ set Pressure normalization = no
 set Linear solver tolerance = 1.e-7
 set Timing output frequency                = 5
 set Use years in output instead of seconds = false
-set Additional shared libraries = ../librelaxation.so
+set Additional shared libraries = ../libplugins.so
 
 subsection Boundary temperature model
   set Model name = constant

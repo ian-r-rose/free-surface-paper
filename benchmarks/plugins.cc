@@ -17,11 +17,17 @@
   along with ASPECT; see the file doc/COPYING.  If not see
   <http://www.gnu.org/licenses/>.
 */
-#include <aspect/geometry_model/box.h>
 #include <deal.II/grid/grid_generator.h>
 #include <deal.II/grid/tria_iterator.h>
 #include <deal.II/grid/tria_accessor.h>
 #include <deal.II/grid/tria.h>
+
+#include <aspect/geometry_model/box.h>
+#include <aspect/postprocess/interface.h>
+#include <aspect/simulator_access.h>
+#include <deal.II/base/quadrature_lib.h>
+#include <deal.II/fe/fe_values.h>
+
 #include <cmath>
 #include <vector>
 
@@ -179,5 +185,115 @@ namespace aspect
     ASPECT_REGISTER_GEOMETRY_MODEL(ReboundBox,
                                    "rebound box",
                                    "Geometry model for benchmarking relaxation of topography.")
+  }
+}
+
+namespace aspect
+{
+  namespace Postprocess
+  {
+    template <int dim>
+    class InterfaceDepth : public Interface<dim>, public ::aspect::SimulatorAccess<dim>
+    {
+      public:
+        /**
+         * Evaluate the solution for interface depth.
+         */
+        virtual
+        std::pair<std::string,std::string>
+        execute (TableHandler &statistics);
+    };
+
+
+    template <int dim>
+    std::pair<std::string,std::string>
+    InterfaceDepth<dim>::execute (TableHandler &statistics)
+    {
+      if (this->n_compositional_fields() == 0)
+        return std::pair<std::string,std::string>();
+
+      // create a quadrature formula based on the compositional element alone.
+      // be defensive about determining that a compositional field actually exists
+      AssertThrow (this->introspection().base_elements.compositional_fields
+                   != numbers::invalid_unsigned_int,
+                   ExcMessage("This postprocessor cannot be used without compositional fields."));
+      const std::vector<Point<dim> > support_points
+        = this->get_fe().base_element(this->introspection().base_elements.compositional_fields).get_unit_support_points();
+      const Quadrature<dim> quadrature_formula (support_points);
+      const unsigned int n_q_points = quadrature_formula.size();
+
+      FEValues<dim> fe_values (this->get_mapping(),
+                               this->get_fe(),
+                               quadrature_formula,
+                               update_values   |
+                               update_quadrature_points);
+
+      std::vector<double> compositional_values(n_q_points);
+
+      typename DoFHandler<dim>::active_cell_iterator
+      cell = this->get_dof_handler().begin_active(),
+      endc = this->get_dof_handler().end();
+
+      std::vector<double> local_max_depth (this->n_compositional_fields(), -std::numeric_limits<double>::max());
+
+      // compute the max depth by looping over the cells
+      for (; cell!=endc; ++cell)
+        if (cell->is_locally_owned())
+          {
+            fe_values.reinit (cell);
+
+            for (unsigned int c=0; c<this->n_compositional_fields(); ++c)
+              {
+                fe_values[this->introspection().extractors.compositional_fields[c]].get_function_values (this->get_solution(),
+                    compositional_values);
+                for (unsigned int q=0; q<n_q_points; ++q)
+                  if (compositional_values[q] > 0.5 && 
+                      this->get_geometry_model().depth(fe_values.quadrature_point(q)) > local_max_depth[c])
+                    local_max_depth[c] = this->get_geometry_model().depth(fe_values.quadrature_point(q));
+              }
+          }
+      // compute the sum over all processors
+      std::vector<double> global_max_depth (local_max_depth.size());
+      Utilities::MPI::max (local_max_depth,
+                           this->get_mpi_communicator(),
+                           global_max_depth);
+      // finally produce something for the statistics file
+      for (unsigned int c=0; c<this->n_compositional_fields(); ++c)
+        {
+          statistics.add_value ("Interface depth for composition " + this->introspection().name_for_compositional_index(c),
+                                global_max_depth[c]);
+        }
+
+      // also make sure that the other columns filled by the this object
+      // all show up with sufficient accuracy and in scientific notation
+      for (unsigned int c=0; c<this->n_compositional_fields(); ++c)
+        {
+          const std::string str("Interface depth for composition " + this->introspection().name_for_compositional_index(c) );
+          statistics.set_precision (str, 8);
+          statistics.set_scientific (str, true);
+        }
+
+      std::ostringstream output;
+      output.precision(4);
+      for (unsigned int c=0; c<this->n_compositional_fields(); ++c)
+        output << global_max_depth[c] << '/';
+
+      return std::pair<std::string, std::string> ("Interface depth: ",
+                                                  output.str());
+    }
+  }
+}
+
+
+// explicit instantiations
+namespace aspect
+{
+  namespace Postprocess
+  {
+    ASPECT_REGISTER_POSTPROCESSOR(InterfaceDepth,
+                                  "interface depth",
+                                  "A postprocessor that computes the maximum depth of "
+                                  "a given compositional field, where maximum depth is "
+                                  "given by the deepest place where C >= 0.5.")
   }
 }
