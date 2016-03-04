@@ -1,0 +1,109 @@
+set Dimension = 2
+set CFL number                             = 1000.
+set Maximum time step                       = 10.0
+set End time                               = 1.e100
+set Output directory                       = output
+set Resume computation                     = false
+set Start time                             = 0
+set Adiabatic surface temperature          = 0
+set Surface pressure                       = 0
+set Pressure normalization = no
+set Linear solver tolerance = 1.e-7
+set Use years in output instead of seconds = false
+set Nonlinear solver scheme                = IMPES
+set Additional shared libraries = ../libplugins.so
+
+subsection Boundary temperature model
+  set Model name = constant
+  subsection Constant
+    set Boundary indicator to temperature mappings = left:0, right:0, bottom:0, top:0
+  end
+end
+
+subsection Discretization
+  set Stokes velocity polynomial degree       = 2
+  set Temperature polynomial degree           = 2
+  set Use locally conservative discretization = false
+  subsection Stabilization parameters
+    set alpha = 2
+    set beta  = 0.078
+    set cR    = 0.5   # default: 0.11
+  end
+end
+
+
+subsection Geometry model
+  set Model name = box
+  subsection Box
+    set X extent = 1.
+    set Y extent = 1.
+  end
+end
+
+
+subsection Gravity model
+  set Model name = vertical
+  subsection Vertical
+    set Magnitude = 1.0
+  end
+end
+
+
+subsection Initial conditions
+  set Model name = function
+  subsection Function 
+    set Variable names      = x,y
+    set Function expression =  0.0
+  end
+end
+
+
+subsection Material model
+  set Model name = simple
+  subsection Simple model
+    set Reference temperature = 0.
+    set Reference density             = 1.0
+    set Viscosity                     = 1.0
+  end
+end
+
+
+subsection Mesh refinement
+  set Additional refinement times        =
+  set Initial adaptive refinement        = 0                       # default: 2
+  set Initial global refinement          = 6                      # default: 2
+  set Refinement fraction                = 0.0
+  set Coarsening fraction                = 0.0
+  set Time steps between mesh refinement = 0                     # default: 10
+end
+
+
+subsection Model settings
+  set Include adiabatic heating               = false
+  set Include shear heating                   = false
+  set Fixed temperature boundary indicators   = bottom, top
+  set Tangential velocity boundary indicators = left, right, bottom
+  set Free surface boundary indicators = top
+  set Zero velocity boundary indicators       =
+end
+
+subsection Free surface
+  set Free surface stabilization theta = 1.0
+  set Relaxation time = 0.0
+  set Use nonstandard finite difference scheme = true
+end
+
+subsection Termination criteria
+  set Termination criteria = end step
+  set End step = 1
+end
+
+subsection Postprocess
+  set List of postprocessors = visualization, topography, interface depth
+  subsection Visualization
+    set Number of grouped files       = 1
+    set Output format                 = vtu
+    set Time between graphical output = 0.0
+    set Output mesh velocity          = true
+  end
+end
