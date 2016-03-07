@@ -40,7 +40,7 @@ def get_relaxation_times(tstep, theta):
 
 outputfile = open('perturb_spectrum.txt', 'w')
 
-tsteps = np.linspace(0, 1.0, 10.)[::-1]*tau
+tsteps = np.linspace(0, 1.0, 11)[::-1]*tau
 thetas = np.array([0.0, 0.5, 1.0])[::-1]
 
 errors = []
