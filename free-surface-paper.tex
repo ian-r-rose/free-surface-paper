@@ -122,7 +122,7 @@ investigate questions of dynamic topography, tectonic deformation, gravity pertu
 global mantle convection. However, implementations of free surface boundary conditions 
 have proven challenging from a standpoint of accuracy, robustness, and stability.
 In particular, free surfaces tend to suffer from sloshing instabilities, also known as 
-the ``drunken sailor'' instability, which severely limit time step sizes. Several 
+the ``drunken sailor'' instability, which severely limit timestep sizes. Several 
 schemes have been proposed in the literature to deal with these instabilities.
 
 Here we analyze the problem of creeping viscous flow with a free surface and discuss the 
@@ -206,7 +206,7 @@ equivalent model with free-slip boundary conditions.
 
 Several studies have attempted to alleviate the timestepping requirements imposed by the sloshing 
 instability. Since the most expensive part of geodynamic simulations is typically the Stokes solve,
-most free surface calculations have preferred to use explicit time stepping methods for the free 
+most free surface calculations have preferred to use explicit timestepping methods for the free 
 surface. \citet{kaus2010stabilization} proposed a quasi-implicit scheme which modifies the discretized 
 Stokes matrix, giving it better stability properties.  \citet{kramer2012implicit} and \citet{furuichi2015implicit}
 explored methods for solving the transport of the free surface implicitly.
@@ -243,7 +243,8 @@ $\mathbf{T}$ is the stress tensor for a Newtonian fluid, defined by
 \mathbf{T} = 2 \eta \varepsilon(\mathbf{u}) - p \mathbf{I}
 \label{eq:stress_tensor}
 \end{equation}
-where $\eta$ is the viscosity and $\varepsilon(\mathbf{u}) = \frac{1}{2}(\nabla \mathbf{u} + (\nabla \mathbf{u} )^T )$ is the strain-rate tensor.
+where $\eta$ is the viscosity, $\varepsilon(\mathbf{u}) = \frac{1}{2}(\nabla \mathbf{u} + (\nabla \mathbf{u} )^T )$
+is the strain-rate tensor, and $\mathbf{I}$ is the identity tensor.
 Substituting the stress tensor into Equation~\eqref{eq:momentum_mass_conservation} gets the familiar form of the Stokes equation:
 \begin{equation}
 \nabla \cdot \left( 2 \eta \varepsilon( \mathbf{u} ) \right) - \nabla p = \rho \mathbf{g}
@@ -275,7 +276,7 @@ The domain at time $t$ is defined by advecting a reference configuration $\Omega
 \begin{equation}
  \Omega(t) = \Omega_0 + \int_{t_0}^t \mathbf{u}_{\mathrm{mesh}}(t) \text{ d}t.
 \end{equation}
-The mesh velocity in normal direction is given by the velocity $\mathbf{u}(t)$ on the free surface
+The mesh velocity in normal direction (with unit normal $\mathbf{n}$) is given by the velocity $\mathbf{u}(t)$ on the free surface
 \begin{equation}
  \mathbf{u}_\mathrm{mesh}(t) \cdot \mathbf{n} = \mathbf{u}(t) \cdot \mathbf{n} \quad \text{on} \quad \Gamma_F
 \end{equation}
@@ -393,7 +394,7 @@ and $M$ is the discretization of the bilinear form on the right-hand side of Equ
 Equation~\eqref{eq:generalized_eigenvalue} is a generalized eigenvalue problem for the normal modes of the system.
 It is rather more difficult to solve than a standard eigenvalue problem because the matrix on the right-hand-side 
 is not invertible. It may, however, be transformed into a standard eigenvalue problem.
-Define
+By defining
 \begin{equation}
 \begin{aligned}
 C &= 
@@ -413,7 +414,7 @@ p^n_i
 \end{bmatrix} 
 \end{aligned}
 \end{equation}
-Then multiplying both sides by $\tau_i^{-1}C^{-1}$ we get
+and then multiplying both sides by $\tau_i^{-1}C^{-1}$ we get
 \begin{equation}
 (C^{-1}D)\mathbf{y}_i = \tau_i^{-1} \mathbf{y}_i
 \label{eq:standard_eigenvalue}
@@ -445,9 +446,10 @@ The decay equation is the archetypical example of a stiff ordinary differential 
 If we were to numerically integrate this in time with a forward Euler method, we would find the 
 time-step criterion for stability \citep[e.g.][]{leveque2007finite} to be
 \begin{equation}
-\Delta t  \le 2 \tau_{\mathrm{min}}.
+\Delta t  \le 2 \tau_{\mathrm{min}},
 \label{eq:cfl_euler}
 \end{equation}
+where $\tau_{\mathrm{min}}$ is this minumum decay time.
 The maximum allowable timestep is limited by the minimum relaxation timescale.
 If a larger timestep than this is taken then those modes will go unstable.
 The modes with the smallest relaxation times are usually those with the largest lengthscales \citep{schubert2001mantle}, 
@@ -709,7 +711,7 @@ for $\mathbf{u}$, it is formally a first-order accurate scheme. As such, it is c
 of the free surface, but with better stability properties than forward Euler schemes.
 
 Again we may take one of the normal modes as an example and inspect the difference between the nonstandard finite-difference
-scheme and the analytical solution after one time step:
+scheme and the analytical solution after one timestep:
 
 \begin{equation}
 \begin{aligned}
@@ -759,10 +761,10 @@ to be calculated or estimated first.  There are several possible ways to determi
 only the minimun relaxation time is required. For certain geometries a simple power iteration on 
 the standard eigenvalue problem~\eqref{eq:standard_eigenvalue} could be enough.
 \item Analytical formulae. Several geometry and viscosity model combinations have analytical solutions
-for relaxation spectra. Even if the user's model is not precisely the same (e.g., has some lateral viscosty
+for relaxation spectra. Even if the user's model is not precisely the same (e.g., has some lateral viscosity
 variations), an analytical approximation may be sufficient.
 \item Scaling. In general, we expect the relaxation times to scale with $\tau \sim \frac{\eta}{\rho g L}$,
-where the density, gravity, viscosity, and lengthscale are all representative values.  A small amount
+where the density, gravity, viscosity, and lengthscale $L$ are all representative values.  A small amount
 of experimentation near this value of $\tau$ can find an appropriate relaxation time.
 \item Observation of instabilities.  The mere act of observing a sloshing instability in an unstabilized
 problem can furnish an estimate of its relaxation time.
@@ -820,7 +822,7 @@ or on non-convex domains.
 \subsection{Surface advection}
 With a deformable domain there is the danger that small errors in free surface motion can
 result in poor overall mass conservation in time. In some scenarios, the total volume of the mesh can 
-fluctuate significantly over hundreds or thousands of time steps.
+fluctuate significantly over hundreds or thousands of timesteps.
 Consistency with the Stokes solution requires 
 \begin{equation}
 \mathbf{u}_{\mathrm{mesh}} \cdot \mathbf{n} = \mathbf{u \cdot n}.
@@ -877,8 +879,8 @@ where $D$ is the layer depth, $\eta$ is the viscosity, $\rho$ is the density, an
 This solution is only valid for infinitesimal topography. However, for small
 initial topography $\zeta_0$ it seems to be sufficiently accurate to test convergence orders up 
 to quadratic \citep{kramer2012implicit, furuichi2015implicit}.
-We evaluate error by time-integrating the L2 difference between the numerical and analytical
-solutions at the center of the domain:
+We estimate the error by time-integrating the L2 difference between the numerical and analytical
+solutions at the center point of the free surface:
 \begin{equation}
 \mathrm{Error} = \frac{1}{4\tau}\int_0^{4 \tau} \lVert \zeta_\mathrm{numeric}(L/2, t) - \zeta_\mathrm{analytic}(L/2, t) \rVert_2 \text{ d}t.
 \end{equation}
@@ -939,7 +941,7 @@ will result in significant computational savings.
 
 \begin{figure*}
 \includegraphics[width=0.9\textwidth]{figures/amr.pdf}
-\caption{Convergence with degrees of freedom (DoFs) for the \citet{crameri2012comparison} Case 2 benchmark, for both uniform and adaptive mesh refinement. The timestep $\Delta t$ is 500 yr. We compare the maximum topography at 3 Myr with its value at high resolution ($\sim$398 m). For the adaptive cases we perform mesh refinement according to the sum of density and composition gradients. Both cases converge similarly, but the adaptive mesh refinement simulations require significantly smaller system sizes.}
+\caption{Convergence with degrees of freedom (DoFs) for the \citet{crameri2012comparison} Case 2 benchmark, for both uniform and adaptive mesh refinement. The timestep $\Delta t$ is 500 yr. We compare the maximum topography at 3 Myr with its value at high resolution ($\sim$398 m). For the adaptive cases we perform mesh refinement according to the sum of density and composition gradients. Quasi-implicit and nonstandard finite difference timestepping converge similarly, but the adaptive mesh refinement simulations require significantly smaller system sizes.}
 \label{fig:amr}
 \end{figure*}
 
@@ -964,7 +966,7 @@ in the tests we ran.
 Finally, we have described the implementation of free surface boundary conditions in 
 the open source mantle convection software \texttt{ASPECT}. Both the quasi-implicit 
 scheme and the nonstandard finite difference scheme are available. The implementation is 
-sufficiently general to accommodate many different geometies, rheologies, and 
+sufficiently general to accommodate many different geometries, rheologies, and 
 gravity models. Furthermore, it runs in parallel and with adaptive mesh refinement.
 
 
