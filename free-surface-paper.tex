@@ -229,7 +229,7 @@ Finally, we describe the implementation of a free surface in the mantle convecti
 in Section~\ref{sec:results}. 
 
 
-\section{Governing Equations}
+\section{Governing equations}
 \label{sec:governing}
 
 We begin with the incompressible momentum conservation equations for creeping incompressible flow:
@@ -454,9 +454,9 @@ time-step criterion for stability \citep[e.g.][]{leveque2007finite} to be
 \end{equation}
 where $\tau_{\mathrm{min}}$ is this minumum decay time.
 The maximum allowable timestep is limited by the minimum relaxation timescale.
-If a larger timestep than this is taken then those modes will go unstable.
+If a larger timestep than this is taken then those modes will become unstable.
 The modes with the smallest relaxation times are usually those with the largest lengthscales \citep{schubert2001mantle}, 
-and so it will be those which go unstable first, a phenomenon which has been called 
+and so it will be those which become unstable first, a phenomenon which has been called 
 a ``sloshing'', or ``drunken sailor'' instability \citep{kaus2010stabilization}.
 
 \section{Analysis of quasi-implicit stabilization}
@@ -847,7 +847,7 @@ the accuracy of the Stokes solve for Equation~\eqref{eq:weak_incompressible}, an
 found it to conserve mass more accurately than algebraic techniques for evaluating the mesh-normal velocity.
 Similar results were found by \citet{fullsack1995arbitrary}.
 
-\section{Numerical Results}
+\section{Numerical results}
 \label{sec:results}
 
 We demonstrate the convergence of the nonstandard finite difference model by comparison 
@@ -936,7 +936,7 @@ will result in significant computational savings.
 
 \begin{figure*}
 \includegraphics[width=0.9\textwidth]{figures/amr.pdf}
-\caption{Convergence with degrees of freedom (DoFs) for the \citet{crameri2012comparison} Case 2 benchmark, for both uniform and adaptive mesh refinement. The timestep $\Delta t$ is 500 yr. We compare the maximum topography at 3 Myr with its value at high resolution ($\sim$398 m). For the adaptive cases we perform mesh refinement according to the sum of density and composition gradients. Quasi-implicit and nonstandard finite difference timestepping converge similarly, but the adaptive mesh refinement simulations require significantly smaller system sizes.}
+\caption{Convergence with degrees of freedom (DoFs) for the \citet{crameri2012comparison} Case 2 benchmark, for both uniform and adaptive mesh refinement. The timestep $\Delta t$ is 500 yr. We compare the maximum topography at 3 Myr with its value at high resolution ($\sim$398 m). For the adaptive cases we perform mesh refinement according to the sum of density and composition gradients. Quasi-implicit (QI) and nonstandard finite difference (NSFD) timestepping converge similarly, but the adaptive mesh refinement simulations require significantly fewer unknowns.}
 \label{fig:amr}
 \end{figure*}
 
