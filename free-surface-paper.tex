@@ -297,7 +297,7 @@ equation
 \section{Eigenvalue analysis}
 \label{sec:eigenvalue}
 
-In order to better understand the time evolution of the system in \eqref{eq:final_system}
+In order to better understand the time evolution of the system in Equation~\eqref{eq:final_system}
 we will consider the eigenvalues of a simplified homogeneous system. By setting $\rho = \rho_0$, we obtain the system
 \begin{equation}
 \begin{aligned}
@@ -430,7 +430,7 @@ a free surface.
 \label{sec:timestepping}
 
 Armed with the normal modes and relaxation times of the Stokes system, we can write down the
-formal solution to Equation~\ref{eq:surface_evolution}. Let the initial surface topography be 
+formal solution to Equation~\eqref{eq:surface_evolution}. Let the initial surface topography be 
 represented by a linear combination of its normal modes
 \begin{equation}
 \zeta(\mathbf{x}, t=0) = \displaystyle \sum_i a_i \zeta_i(\mathbf{x})
@@ -700,7 +700,7 @@ Otherwise, the scheme is conditionally stable, with the timestep limited by
 \begin{equation}
 \Delta t \le -\tau^* \log \left(1 - 2 \frac{\tau_i}{\tau^*} \right).
 \end{equation}
-The stability region is plotted in Figure \ref{fig:stability_region}. 
+The stability region is plotted in Figure~\ref{fig:stability_region}. 
 
 \begin{figure*}
 \includegraphics[width=0.9\textwidth]{figures/stability_region.pdf}
@@ -762,7 +762,7 @@ to be calculated or estimated first.  There are several possible ways to determi
 \begin{itemize}
 \item Direct solution of Equation~\eqref{eq:generalized_eigenvalue}. This can be expensive, although
 only the minimun relaxation time is required. For certain geometries a simple power iteration on 
-the standard eigenvalue problem~\eqref{eq:standard_eigenvalue} could be enough.
+the standard eigenvalue problem (Equation~\eqref{eq:standard_eigenvalue}) could be enough.
 \item Analytical formulae. Several geometry and viscosity model combinations have analytical solutions
 for relaxation spectra. Even if the user's model is not precisely the same (e.g., has some lateral viscosity
 variations), an analytical approximation may be sufficient.
@@ -839,7 +839,7 @@ properties.
 
 A better approach is to perform a finite element projection of the Stokes velocity 
 solution onto the mesh velocity vector. Multiplying the boundary conditions 
-\eqref{eq:laplacian_bcs} by a test function $\mathbf{w}$ and integrating over the free
+(Equation~\eqref{eq:laplacian_bcs}) by a test function $\mathbf{w}$ and integrating over the free
 surface part of the boundary, we find
 
 \begin{equation}
@@ -850,7 +850,7 @@ When discretized, this forms a linear system which can be solved for the mesh ve
 free surface. Of course, a new system to solve is not ideal, but this system, being nonzero 
 over only the free surface, is relatively small and easy to solve.
 
-This weak solution to the boundary conditions~\eqref{eq:laplacian_bcs} is able to borrow
+This weak solution to the boundary conditions (Equation~\eqref{eq:laplacian_bcs}) is able to borrow
 the accuracy of the Stokes solve for Equation~\eqref{eq:weak_incompressible}, and we have 
 found it to conserve mass more accurately than algebraic techniques for evaluating the mesh-normal velocity.
 Similar results were found by \citet{fullsack1995arbitrary}.
