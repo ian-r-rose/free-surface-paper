@@ -236,28 +236,28 @@ We begin with the incompressible momentum conservation equations for creeping in
 \begin{equation}
 \begin{aligned}
 \nabla \cdot \mathbf{T} &= \rho \mathbf{g} \\
-\nabla \cdot \mathbf{u} &= 0
+\nabla \cdot \mathbf{u} &= 0,
 \end{aligned}
 \label{eq:momentum_mass_conservation}
 \end{equation}
 where $\mathbf{u}$ is the fluid velocity, $\rho$ is the fluid density, and $\mathbf{g}$ is the force due to gravity.
 $\mathbf{T}$ is the stress tensor for a Newtonian fluid, defined by
 \begin{equation}
-\mathbf{T} = 2 \eta \varepsilon(\mathbf{u}) - p \mathbf{I}
+\mathbf{T} = 2 \eta \varepsilon(\mathbf{u}) - p \mathbf{I},
 \label{eq:stress_tensor}
 \end{equation}
 where $\eta$ is the viscosity, $\varepsilon(\mathbf{u}) = \frac{1}{2}(\nabla \mathbf{u} + (\nabla \mathbf{u} )^T )$
 is the strain-rate tensor, and $\mathbf{I}$ is the identity tensor.
 Substituting the stress tensor into Equation~\eqref{eq:momentum_mass_conservation} gets the familiar form of the Stokes equation:
 \begin{equation}
-\nabla \cdot \left( 2 \eta \varepsilon( \mathbf{u} ) \right) - \nabla p = \rho \mathbf{g}
+\nabla \cdot \left( 2 \eta \varepsilon( \mathbf{u} ) \right) - \nabla p = \rho \mathbf{g}.
 \label{eq:stokes}
 \end{equation}
 
 For the purposes of this analysis it is useful to define a hydrostatic reference state where the 
 velocity $\mathbf{u}$ is zero:
 \begin{equation}
-- \nabla p_0 = \rho_0 \mathbf{g}
+- \nabla p_0 = \rho_0 \mathbf{g},
 \label{eq:hydrostatic_stokes}
 \end{equation}
 where $p_0$ is the reference hydrostatic pressure and $\rho_0$ is a reference density profile (which may vary with depth).
@@ -302,7 +302,7 @@ we will consider the eigenvalues of a simplified homogeneous system. By setting 
 \begin{equation}
 \begin{aligned}
 \nabla \cdot \left( 2 \eta \varepsilon( \mathbf{u} ) \right) - \nabla p^\prime &= 0 \\
-\nabla \cdot \mathbf{u} &= 0
+\nabla \cdot \mathbf{u} &= 0.
 \end{aligned}
 \label{eq:homogeneous_stokes}
 \end{equation}
@@ -318,7 +318,7 @@ We transform the governing equations into the weak form amenable to finite eleme
 \label{eq:weak_stokes}
 \end{equation}
 \begin{equation}
-\int_{\Omega(t)} q \nabla \cdot \mathbf{u} = 0
+\int_{\Omega(t)} q \nabla \cdot \mathbf{u} = 0,
 \label{eq:weak_incompressible}
 \end{equation}
 where $\mathbf{w}$ and $q$ are suitably chosen test functions and the integrals over 
@@ -343,14 +343,14 @@ On the reference surface the gravity vector is opposite the direction of the sur
 The stress on this reference surface can be approximated by using the first order Taylor series
 expansion of the hydrostatic pressure profile:
 \begin{equation}
-\mathbf{T} \approx \frac{\partial \mathbf{T}}{\partial \mathbf{n} } \cdot \mathbf{n} \zeta = \rho_0 g \zeta \mathbf{I}
+\mathbf{T} \approx \frac{\partial \mathbf{T}}{\partial \mathbf{n} } \cdot \mathbf{n} \zeta = \rho_0 g \zeta \mathbf{I}.
 \label{eq:hydrostatic}
 \end{equation}
 Equation~\eqref{eq:weak_stokes} then becomes
 
 \begin{equation}
 -\int_{\Omega(t)} 2 \eta \varepsilon( \mathbf{w} ) \colon \varepsilon( \mathbf{u} ) + \int_{\Omega(t)} p^\prime \nabla \cdot \mathbf{w} 
-+ \int_{\Gamma_F(t)} \rho_0 g \zeta  \mathbf{w} \cdot \mathbf{n} = 0 
++ \int_{\Gamma_F(t)} \rho_0 g \zeta  \mathbf{w} \cdot \mathbf{n} = 0.
 \end{equation}
 
 We would like to analyze the time evolution of the normal modes of this system: each mode 
@@ -388,7 +388,7 @@ M & 0 \\
 \begin{bmatrix}
 \mathbf{u}^n_i \\
 p^n_i
-\end{bmatrix}
+\end{bmatrix},
 \label{eq:generalized_eigenvalue}
 \end{equation}
 where $\mathbf{u}^n_i$ and $p^n_i$ are finite-dimensional representations of $\mathbf{u}_i$ and $p^\prime_i$,
@@ -419,7 +419,7 @@ p^n_i
 \end{equation}
 and then multiplying both sides by $\tau_i^{-1}C^{-1}$ we get
 \begin{equation}
-(C^{-1}D)\mathbf{y}_i = \tau_i^{-1} \mathbf{y}_i
+(C^{-1}D)\mathbf{y}_i = \tau_i^{-1} \mathbf{y}_i.
 \label{eq:standard_eigenvalue}
 \end{equation}
 
@@ -433,7 +433,7 @@ Armed with the normal modes and relaxation times of the Stokes system, we can wr
 formal solution to Equation~\eqref{eq:surface_evolution}. Let the initial surface topography be 
 represented by a linear combination of its normal modes
 \begin{equation}
-\zeta(\mathbf{x}, t=0) = \displaystyle \sum_i a_i \zeta_i(\mathbf{x})
+\zeta(\mathbf{x}, t=0) = \displaystyle \sum_i a_i \zeta_i(\mathbf{x}),
 \end{equation}
 then the time evolution of the free surface is given by
 \begin{equation}
@@ -473,13 +473,13 @@ evaluated on a prediction of the shape of the domain at a later time.
 The weak form of the right-hand-side body forces in the finite element discretization is then
 
 \begin{equation}
-\mathbf{f}_{\mathrm{body}} = \int_{\Omega^n + \Delta \Omega} \rho \mathbf{w} \cdot \mathbf{g}
+\mathbf{f}_{\mathrm{body}} = \int_{\Omega^n + \Delta \Omega} \rho \mathbf{w} \cdot \mathbf{g},
 \label{eq:predict}
 \end{equation}
 where the superscript $n$ on $\Omega$ indicates the shape at the $n$th timestep.
 The shape prediction can be approximated by integration of the velocity:
 \begin{equation}
-\Delta \Omega \approx \theta \Delta t \mathbf{u}
+\Delta \Omega \approx \theta \Delta t \mathbf{u},
 \end{equation}
 where $\theta$ is a free parameter that corresponds to the magnitude of the 
 correction, where zero is no stabilization and one is fully (quasi) implicit.
@@ -489,7 +489,7 @@ Reynold's transport theorem to find
 
 \begin{equation}
 \int_{\Omega^n + \Delta \Omega} \rho  \mathbf{w} \cdot \mathbf{g} \approx
-\int_{\Omega^n} \rho  \mathbf{w} \cdot \mathbf{g} + \theta \Delta t \int_{\Gamma_F^n} \rho ( \mathbf{w \cdot g}) (\mathbf{u \cdot n} )
+\int_{\Omega^n} \rho  \mathbf{w} \cdot \mathbf{g} + \theta \Delta t \int_{\Gamma_F^n} \rho ( \mathbf{w \cdot g}) (\mathbf{u \cdot n} ).
 \label{eq:kmm}
 \end{equation}
 The volume integral is the same as that of the unstabilized problem, but now we obtained an additional surface integral.
@@ -503,7 +503,7 @@ Indeed, using the formalism in Section~\ref{sec:eigenvalue} we can see the effec
 stabilization term. On the reference surface we note that $\mathbf{g} = -g \mathbf{n}$, which
 allows us to write the stabilization term as
 \begin{equation}
--\theta \Delta t \int_{\Gamma_F^n} \rho g ( \mathbf{w \cdot n}) (\mathbf{u \cdot n} )
+-\theta \Delta t \int_{\Gamma_F^n} \rho g ( \mathbf{w \cdot n}) (\mathbf{u \cdot n} ).
 \end{equation}
 The integral here is precisely the same as that on the right hand side of Equation~\eqref{eq:weak_eigen}, which was discretized as the matrix $M$.
 
@@ -527,7 +527,7 @@ M & 0 \\
 \begin{bmatrix}
 \mathbf{u}^n_i \\
 p^n_i
-\end{bmatrix}
+\end{bmatrix},
 \label{eq:stabilized_generalized_eigenvalue}
 \end{equation}
 where $\tau^S_i$ indicate the eigenvalues of the stabilized system.
@@ -558,7 +558,7 @@ This is precisely the same generalized eigenvalue problem as Equation~\eqref{eq:
 so its eigenvalues must be the same.  This allows us to write the eigenvalues of the stabilized problem in
 terms of those of the unstabilized problem:
 \begin{equation}
-\tau^S_i = \tau_i + \theta \Delta t
+\tau^S_i = \tau_i + \theta \Delta t.
 \end{equation}
 
 Essentially, the stabilization term lengthens every relaxation time for the system by an amount $\theta \Delta t$.
@@ -600,7 +600,7 @@ We would like to construct an explicit scheme that accounts for following proper
 
 A general expression for the evolution of a free surface from time $t^n$ to time $t^{n+1}$ is 
 \begin{equation}
-\mathbf{x}(t^{n+1}) = \mathbf{x}(t^n) + \int_{t^{n}}^{t^{n+1}} \mathbf{u}(t) \text{ d}t
+\mathbf{x}(t^{n+1}) = \mathbf{x}(t^n) + \int_{t^{n}}^{t^{n+1}} \mathbf{u}(t) \text{ d}t,
 \label{eq:time_integration}
 \end{equation}
 where $\mathbf{x}$ is the location of the free surface.  If we approximate $\mathbf{u}(t) \approx \mathbf{u}(t^{n})$, 
@@ -608,7 +608,7 @@ we of course recover the forward Euler scheme.
 However, we can make another choice based on our knowledge of the system behavior. 
 We can approximate $\mathbf{u}(t)$ as
 \begin{equation}
-\mathbf{u}(t) = \mathbf{u}(t^n) e^{-(t-t^n)/\tau^*}
+\mathbf{u}(t) = \mathbf{u}(t^n) e^{-(t-t^n)/\tau^*},
 \label{eq:velocity_decay}
 \end{equation}
 where $\tau^*$ is some as-yet undetermined positive constant.
@@ -617,7 +617,7 @@ stability properties than forward Euler integration.
 Using Equation~\eqref{eq:velocity_decay} in Equation~\eqref{eq:time_integration} and integrating, we find
 
 \begin{equation}
-\mathbf{x}(t^{n+1}) = \mathbf{x}(t^n) + \mathbf{u}(t^{n}) \tau^* \left(1-e^{-\Delta t/\tau^*} \right)
+\mathbf{x}(t^{n+1}) = \mathbf{x}(t^n) + \mathbf{u}(t^{n}) \tau^* \left(1-e^{-\Delta t/\tau^*} \right).
 \label{eq:nsfd}
 \end{equation}
 
@@ -637,7 +637,7 @@ To investigate the stability of this scheme we consider a velocity solution comp
 a single normal mode of the system $\mathbf{u} = a_i \mathbf{u}_i$.
 This will decay exponentially with relaxation time $\tau_i$, or
 \begin{equation}
-\frac{\text{d} a_i} {\text{d}t} = - \frac{ a_i }{\tau_i} .
+\frac{\text{d} a_i} {\text{d}t} = - \frac{ a_i }{\tau_i}.
 \end{equation}
 Applying the nonstandard finite difference scheme, we find
 \begin{equation}
@@ -652,41 +652,33 @@ In order for the scheme to be stable, the quantity in brackets must not blow up 
 \ifdetail
 Taking the positive value of the absolute value yields the criterion of 
 \begin{equation}
-- \frac{\tau^*}{\tau_i} \left(1-e^{-\Delta t/\tau^*} \right) \le 0
+- \frac{\tau^*}{\tau_i} \left(1-e^{-\Delta t/\tau^*} \right) \le 0,
 \end{equation}
-
 which can be rearranged to find
 \begin{equation}
-e^{-\Delta t/\tau^*} \le 1
+e^{-\Delta t/\tau^*} \le 1,
 \end{equation}
-
 which is simply a statement that the timestep must be postive.
 
 Taking the negative value of the absolute value yields
 \begin{equation}
   \frac{\tau^*}{\tau_i} \left(1-e^{-\Delta t/\tau^*} \right)  \le 2
 \end{equation}
-
 \begin{equation}
  1 - 2 \frac{\tau_i}{\tau^*} \le e^{-\Delta t/\tau^*}
 \end{equation}
-
 if the left hand side is less than zero, then this is true regardless of step size, or
 \begin{equation}
 \tau^* \le 2 \tau_i
 \end{equation}
-
 if the left hand side is between zero and one, the expression is more complicated. 
 Taking the log of both sides:
-
 \begin{equation}
-\Delta t \le -\tau^* \log \left(1 - 2 \frac{\tau_i}{\tau^*} \right)
+\Delta t \le -\tau^* \log \left(1 - 2 \frac{\tau_i}{\tau^*} \right).
 \end{equation}
-
-It is convenient to write this in terms of dimensionless times $\Delta t/ \tau_i$ and $\tau^*/\tau_i$.
-
+It is convenient to write this in terms of dimensionless times $\Delta t/ \tau_i$ and $\tau^*/\tau_i$:
 \begin{equation}
-\frac{\Delta t}{\tau_i} \le -\frac{\tau^*}{\tau_i} \log \left(1 - 2 \frac{\tau_i}{\tau^*} \right)
+\frac{\Delta t}{\tau_i} \le -\frac{\tau^*}{\tau_i} \log \left(1 - 2 \frac{\tau_i}{\tau^*} \right).
 \end{equation}
 
 \fi
@@ -865,17 +857,17 @@ The setup is shown in Figure~\ref{fig:benchmark_setup}.
 
 The initial topography is given by
 \begin{equation}
-\zeta(x,0) = \zeta_0 \cos\left( k x \right)
+\zeta(x,0) = \zeta_0 \cos\left( k x \right),
 \end{equation}
 where $k = 2 \pi / L$.
 
 The time evolution of this topography is then
 \begin{equation}
-\zeta(x, t) = \zeta(x,0) e^{-t/\tau}
+\zeta(x, t) = \zeta(x,0) e^{-t/\tau},
 \end{equation}
 where the relaxation time $\tau$ is given by
 \begin{equation}
-\tau = \frac{D k + \sinh(D k) \cosh(D k)}{ \sinh^2 (D k) } \frac{2 k \eta}{\rho g}
+\tau = \frac{D k + \sinh(D k) \cosh(D k)}{ \sinh^2 (D k) } \frac{2 k \eta}{\rho g},
 \end{equation}
 where $D$ is the layer depth, $\eta$ is the viscosity, $\rho$ is the density, and $g$ is the force of gravity.
 
