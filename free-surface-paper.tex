@@ -42,9 +42,6 @@
 \usepackage{color, soul}
 \usepackage{url}
 
-\usepackage{lineno}
-    \linenumbers
-
 \newif\ifdetail
 \detailfalse
 %\detailtrue
@@ -55,7 +52,7 @@
 %% The lineno packages adds line numbers. Start line numbering with
 %% \begin{linenumbers}, end it with \end{linenumbers}. Or switch it on
 %% for the whole article with \linenumbers.
-%% \usepackage{lineno}
+\usepackage{lineno}
 
 %% Block of code for fixing corresponding author bug 
 %% in elsarticle template... Don't really understand it
@@ -124,9 +121,11 @@ Geodynamic simulations increasingly rely on simulations with a true free surface
 investigate questions of dynamic topography, tectonic deformation, gravity perturbations, and
 global mantle convection. However, implementations of free surface boundary conditions 
 have proven challenging from a standpoint of accuracy, robustness, and stability.
-In particular, free surfaces tend to suffer from sloshing instabilities, also known as 
-the ``drunken sailor'' instability, which severely limit timestep sizes. Several 
-schemes have been proposed in the literature to deal with these instabilities.
+In particular, time integration of a free surface tends to suffer from a numerical instability
+that manifests as sloshing surface motions, also known as the ``drunken sailor'' instability.
+This instability severely limits stable timestep sizes to those much smaller than could be used
+in geodynamic simulations without a free surface. 
+Several schemes have been proposed in the literature to deal with these instabilities.
 
 Here we analyze the problem of creeping viscous flow with a free surface and discuss the 
 origin of these instabilities. We demonstrate their cause and how existing stabilization 
@@ -157,7 +156,7 @@ Geodynamics
 
 \end{frontmatter}
 
-%% \linenumbers
+\linenumbers
 
 %% main text
 \section{Introduction}
@@ -166,7 +165,7 @@ Geodynamics
 Surface topography in simulations of mantle convection and other geodynamic processes is an important observable,
 allowing insights into Earth's internal density structure, rheology, and geoid perturbations \citep[e.g.][]{richards1984geoid, hager1985lower, baumann2014constraining}.
 Historically, most simulations have been performed with free-slip boundary conditions at the surface, 
-with dynamic topography calculated as a postprocessing step \citep[e.g.][]{zhong2000role}.
+with dynamic topography calculated as a postprocessing step \citep[e.g.][]{jarvis1982mantle, zhong2000role}.
 
 There have been several approaches to treating real free surfaces in geodynamic simulations.
 \citet{zhong1996free} introduced a pseudo-free-surface formulation, where the free surface coordinate was
@@ -176,9 +175,9 @@ The pressure is determined by a first-order Taylor series approximation of the h
 predicted by the surface topography.
 
 A large number of studies have approximated free surfaces in the interior of the domain by using the 
-`sticky air' approximation. In this approximation there is a low-viscosity, low-density layer in the fluid 
+`sticky air' approximation (see \citet{crameri2012comparison} and references therein). In this approximation there is a low-viscosity, low-density layer in the fluid 
 (termed `air', though its viscosity is much higher) above the free surface, effectively decoupling it from the boundary. 
-Typically a free-slip boundary condition is used above the sticky air, though an open boundary may be better \citep{hillebrand2014using}. 
+Typically a free-slip boundary condition is used above the sticky air, though an open boundary may be preferable \citep{hillebrand2014using}. 
 
 Finally, one can use a true free surface, where a stress-free boundary condition is applied on the boundary 
 of the domain. In this case, there can be flow in and out of the domain, so the boundary must move in time.
@@ -211,7 +210,7 @@ Several studies have attempted to alleviate the timestepping requirements impose
 instability. Since the most expensive part of geodynamic simulations is typically the Stokes solve,
 most free surface calculations have preferred to use explicit timestepping methods for the free 
 surface. \citet{kaus2010stabilization} proposed a quasi-implicit scheme which modifies the discretized 
-Stokes matrix, giving it better stability properties.  \citet{kramer2012implicit} and \citet{furuichi2015implicit}
+Stokes matrix, giving it better stability properties.  \citet{popov2008slim3d}, \citet{kramer2012implicit}, and \citet{furuichi2015implicit}
 explored methods for solving the transport of the free surface implicitly.
 
 
@@ -496,16 +495,24 @@ The volume integral is the same as that of the unstabilized problem, but now we 
 It has the form of a velocity-dependent surface stress pushing down on the 
 domain, and can be thought of as an artificial viscous damping of the surface.
 Since the term depends on the velocity, it 
-enters the system matrix as a stabilization term.  
-Empirically it has been found to be successful at damping instabilities \citep{kaus2010stabilization, quinquis2011role, duretz2011discretization}.
+enters the Stokes system matrix as a stabilization term.  
+Empirically, it has been found to be successful at damping instabilities \citep{kaus2010stabilization, quinquis2011role, duretz2011discretization}.
 
-Indeed, using the formalism in Section~\ref{sec:eigenvalue} we can see the effect of this 
-stabilization term. On the reference surface we note that $\mathbf{g} = -g \mathbf{n}$, which
-allows us to write the stabilization term as
+The surface integral in Equation~\eqref{eq:kmm} is almost the same as that on the right hand side of 
+Equation~\eqref{eq:weak_eigen}, which was discretized as the matrix $M$.
+By making two approximations we can connect it with the formalism developed in Section~\ref{sec:eigenvalue}.
+First, when the current position of the surface is near to the reference surface (i.e., the slope is not too steep)
+then gravity is approximately in the direction of the surface normal: $\mathbf{g} \approx -g \mathbf{n}$.
+Furthermore, in Equation~\eqref{eq:weak_eigen} we considered response of the surface in a homogeneous system where there were no lateral density variations,
+while Equation~\eqref{eq:kmm_stabilization} uses the total density.
+In most geodynamic simulations lateral density variations are small compared to the total density.
+For the purposes of stabilization we may approximate $\rho \approx \rho_0$.
+Inserting these two approximations, we find that the stabilization term may be written
 \begin{equation}
--\theta \Delta t \int_{\Gamma_F^n} \rho g ( \mathbf{w \cdot n}) (\mathbf{u \cdot n} ).
+-\theta \Delta t \int_{\Gamma_F^n} \rho_0 g ( \mathbf{w \cdot n}) (\mathbf{u \cdot n} )
+\label{eq:kmm_stabilization}
 \end{equation}
-The integral here is precisely the same as that on the right hand side of Equation~\eqref{eq:weak_eigen}, which was discretized as the matrix $M$.
+where the integral is now identical to that which discretizes to $M$.
 
 If we discretize the Stokes system with the quasi-implicit stabilization term, we find
 a new generalized eigenvalue problem:
@@ -582,7 +589,7 @@ though it can result in less accurate time-marching of the longest wavelengths o
 \label{sec:newscheme}
 
 One downside of the quasi-implicit scheme is that it requires a modification of the system matrix.
-A naive implementation of the scheme results in a slightly 
+The implementation of such a scheme results in a slightly 
 asymmetric matrix, which can be more difficult to solve, requiring either
 changes to the solver/preconditioner, or symmetrization of the stabilization term \citep{kaus2010stabilization}.
 An alternative would be to construct a time-integration scheme with better stability properties.  
@@ -703,7 +710,7 @@ The stability region is plotted in Figure~\ref{fig:stability_region}.
 \subsection{Accuracy and asymptotics of the scheme}
 It is important to note that even though we derived the nonstandard finite difference scheme assuming a decaying exponential
 for $\mathbf{u}$, it is formally a first-order accurate scheme. As such, it is capable of capturing arbitrary motions 
-of the free surface, but with better stability properties than forward Euler schemes.
+of the free surface, while allowing larger timesteps than forward Euler schemes.
 
 Again we may take one of the normal modes as an example and inspect the difference between the nonstandard finite-difference
 scheme and the analytical solution after one timestep:
@@ -811,8 +818,7 @@ subject to the boundary conditions
 \end{equation}
 where $\Gamma_{FS}$ is the part of the boundary with free slip boundary conditions $\mathbf{u \cdot n} = 0$.
 This scheme has the advantage of working for many different domain geometries and combinations of boundary conditions.
-For moderate mesh deformation, the mesh stays smooth and well conditioned, though it breaks down for large deformations 
-or on non-convex domains.
+For moderate mesh deformation, the mesh stays smooth and well conditioned, though it breaks down for large deformations.
 
 \subsection{Surface advection}
 With a deformable domain there is the danger that small errors in free surface motion can
@@ -840,7 +846,7 @@ surface part of the boundary, we find
 \end{equation}
 When discretized, this forms a linear system which can be solved for the mesh velocity $\mathbf{u}_\mathrm{mesh}$ at the 
 free surface. Of course, a new system to solve is not ideal, but this system, being nonzero 
-over only the free surface, is relatively small and easy to solve.
+over only the free surface, is relatively cheap to solve.
 
 This weak solution to the boundary conditions (Equation~\eqref{eq:laplacian_bcs}) is able to borrow
 the accuracy of the Stokes solve for Equation~\eqref{eq:weak_incompressible}, and we have 
@@ -874,7 +880,7 @@ where $D$ is the layer depth, $\eta$ is the viscosity, $\rho$ is the density, an
 This solution is only valid for infinitesimal topography. However, for small
 initial topography $\zeta_0$ it seems to be sufficiently accurate to test convergence orders up 
 to quadratic \citep{kramer2012implicit, furuichi2015implicit}.
-We estimate the error by time-integrating the L2 difference between the numerical and analytical
+We estimate the error by time-integrating the $L_2$ difference between the numerical and analytical
 solutions at the center point of the free surface:
 \begin{equation}
 \mathrm{Error} = \frac{1}{4\tau}\int_0^{4 \tau} \lVert \zeta_\mathrm{numeric}(L/2, t) - \zeta_\mathrm{analytic}(L/2, t) \rVert_2 \text{ d}t.
