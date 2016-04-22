@@ -1,7 +1,8 @@
 set Dimension = 2
-set CFL number                             = 0.2
+set CFL number                             = 1.
+set Maximum time step                       = 500.
 set End time                               = 1e7
-set Output directory                       = output_nsfd
+set Output directory                       = output_nsfd_adaptive_small_tstep
 set Resume computation                     = false
 set Start time                             = 0
 set Adiabatic surface temperature          = 0
@@ -117,7 +118,7 @@ subsection Postprocess
     set List of output variables = 
     set Number of grouped files       = 1
     set Output format                 = hdf5
-    set Time between graphical output = 1.e5
+    set Time between graphical output = 1.e6
     set Output mesh velocity          = true
   end
 end
