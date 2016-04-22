@@ -874,8 +874,8 @@ of the local vertical, or in some weighted average of the cell normals adjacent 
 but we have found that these schemes do not necessarily have good mass conservation 
 properties.
 
-A better approach is to perform a finite element projection of the Stokes velocity 
-solution onto the mesh velocity vector. Multiplying the boundary conditions 
+A better approach is to perform an $L_2$ projection of the normal velocity $\mathbf{u}\cdot\mathbf{n}$
+onto the free surface $\Gamma_F$. Multiplying the boundary conditions 
 (Equation~\eqref{eq:laplacian_bcs}) by a test function $\mathbf{w}$ and integrating over the free
 surface part of the boundary, we find
 
@@ -894,6 +894,9 @@ Similar results were found by \citet{fullsack1995arbitrary}.
 
 \section{Numerical results}
 \label{sec:results}
+
+\subsection{Relaxation of sinusoidal topography}
+\label{sec:topography_relaxation}
 
 We demonstrate the convergence of the nonstandard finite difference model by comparison 
 with an analytical solution. Following \citet{kramer2012implicit} we model the relaxation
@@ -919,10 +922,10 @@ where $D$ is the layer depth, $\eta$ is the viscosity, $\rho$ is the density, an
 This solution is only valid for infinitesimal topography. However, for small
 initial topography $\zeta_0$ it seems to be sufficiently accurate to test convergence orders up 
 to quadratic \citep{kramer2012implicit, furuichi2015implicit}.
-We estimate the error by time-integrating the $L_2$ difference between the numerical and analytical
+We estimate the error $E$ by time-integrating the $L_2$ difference between the numerical and analytical
 solutions at the center point of the free surface:
 \begin{equation}
-\mathrm{Error} = \frac{1}{4\tau}\int_0^{4 \tau} \lVert \zeta_\mathrm{numeric}(L/2, t) - \zeta_\mathrm{analytic}(L/2, t) \rVert_2 \text{ d}t.
+E = \frac{1}{4\tau}\int_0^{4 \tau} \lVert \zeta_\mathrm{numeric}(L/2, t) - \zeta_\mathrm{analytic}(L/2, t) \rVert_2 \text{ d}t.
 \end{equation}
 
 \begin{figure*}
@@ -962,6 +965,9 @@ those due to rotational or tidal deformation.
 \caption{Sensitivity of the nonstandard finite difference scheme to $\tau^*$. As the relaxation parameter $\tau^*$ approaches the relaxation time of the benchmark case the error reduces. The sharp cusp at $\tau^* = \tau_\mathrm{min}$ corresponds to the almost spectral accuracy of the time marching scheme for that case.}
 \label{fig:tau_sensitivity}
 \end{figure*}
+
+\subsection{Mesh adaptivity}
+\label{sec:mesh_adaptivity}
 
 We also investigate the advantages of combining adaptive mesh refinement with free surface computations.
 \citet{crameri2012comparison} performed a community benchmark of a setup for which there is no analytic
