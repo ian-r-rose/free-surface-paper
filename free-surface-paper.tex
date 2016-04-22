@@ -415,6 +415,7 @@ M & 0 \\
 p^n_i
 \end{bmatrix} 
 \end{aligned}
+\label{eq:eigen_substitution}
 \end{equation}
 and then multiplying both sides by $\tau_i^{-1}C^{-1}$ we get
 \begin{equation}
@@ -566,6 +567,7 @@ so its eigenvalues must be the same.  This allows us to write the eigenvalues of
 terms of those of the unstabilized problem:
 \begin{equation}
 \tau^S_i = \tau_i + \theta \Delta t.
+\label{eq:spectrum_shift}
 \end{equation}
 
 Essentially, the stabilization term lengthens every relaxation time for the system by an amount $\theta \Delta t$.
@@ -584,6 +586,43 @@ fraction of the total relaxation time for the shorter-time modes than the longer
 Therefore the shorter-time modes are effectively damped more.
 This can be seen as an attractive feature of the scheme, since those are the least stable modes,
 though it can result in less accurate time-marching of the longest wavelengths of the system.
+
+\subsection{Numerical determination of $\tau_\mathrm{min}$}
+
+It can be useful to determine the minimum relaxation time $\tau_{\mathrm{min}}$ for a particular
+simulation setup, both to determine an appropriate timestep and as a check on the eigenvalue
+analysis above. As discussed in Section~\ref{sec:eigenvalue}, the generalized eigenvalue problem
+given by Equation~\eqref{eq:stabilized_generalized_eigenvalue} is difficult to solve because the matrix on
+the right-hand-side is not invertible.
+However, we may convert Equation~\eqref{eq:stabilized_generalized_eigenvalue} to a standard eigenvalue problem
+in the same manner as before. Introducing $C_S$ as the Stokes system matrix with the stabilization term
+included, and with $D$ and $\mathbf{y}_i$ the same as in Equation~\eqref{eq:eigen_substitution}, we find
+\begin{equation}
+(C_S^{-1}D)\mathbf{y}_i = \frac{1}{\tau^S_i} \mathbf{y}_i.
+\label{eq:stabilized_standard_eigenvalue}
+\end{equation}
+Several things are of note about this eigenvalue equation which help in solving it.
+The matrix $D$ is a scaled mass matrix which is only nonzero on the free surface,
+so it is mostly empty, and, in general, it is not necessary to explicitly form the
+matrix in order to apply it.
+Second, applying the inverse of $C_S$ amounts to solving the Stokes system, so any
+existing geodynamical code can already do this.
+Third, it is now an equation for the inverse of $\tau^S_i$, and so solving for the 
+minimum relaxation time is now equivalent to finding the \emph{maximum} eigenvalue
+of Equation~\eqref{eq:stabilized_standard_eigenvalue}.
+
+All of these factors mean that power iteration (see, e.g., \citet{golub2012matrix}),
+which finds the dominant eigenvalue/eigenvector pair, is an attractive option for finding $\tau_\mathrm{min}$.
+We have numerically tested the effect of quasi-implicit stabilization on a 2D Cartesian box with a free surface,
+using power iteration to find $\tau_S$.
+Figure~\ref{fig:perturb_spectrum} shows the results, where colored circles indicate the numerical
+solution and black dots show the analytical solution using equation~\eqref{eq:spectrum_shift}.
+
+\begin{figure*}
+\includegraphics[width=0.9\textwidth]{figures/perturb_spectrum.pdf}
+\caption{The effect of quasi-implicit stabilization on the minimum relaxation time of a fluid in a 2D Cartesian box with a free surface (see Figure~\ref{fig:benchmark_setup}). The $x$-axis shows the timestep normalized by minimum relaxation time of the unstabilized problem $\tau_\mathrm{\min}$. The $y$-axis shows the stabilized relaxation time $\tau_S$, also normalized by $\tau_\mathrm{min}$. Colored circles show the relaxation times found by numerical solution of Equation~\eqref{eq:stabilized_standard_eigenvalue} with different values of the stabilization parameter $\theta$. Black dots show the relaxation times calculated using Equation~\eqref{eq:spectrum_shift}. The stabilized timescale is lengthened for larger timesteps and for larger values of $\theta$. For this test case, power iteration typically attains better than 1\% accuracy in 5-10 iterations.}
+\label{fig:perturb_spectrum}
+\end{figure*}
 
 \section{A novel time-integration scheme}
 \label{sec:newscheme}
