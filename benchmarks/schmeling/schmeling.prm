@@ -1,8 +1,8 @@
 set Dimension = 2
-set CFL number                             = 0.8
-set Maximum time step                      = 5.e4
+set CFL number                             = 0.2
+# set Maximum time step                      = 5.e4
 set End time                               = 1e8
-set Output directory                       = output
+set Output directory                       = output_qi_cfl_02
 set Resume computation                     = false
 set Start time                             = 0
 set Adiabatic surface temperature          = 0
@@ -90,8 +90,6 @@ subsection Mesh refinement
     set Boundary refinement indicators = top
   end
 end
-
-
 subsection Model settings
   set Include adiabatic heating               = false
   set Include shear heating                   = false
@@ -102,8 +100,9 @@ subsection Model settings
 end
 
 subsection Free surface
-  set Free surface stabilization theta = 0.0
-  set Relaxation time = 7280.
+  set Free surface stabilization theta = 1.0
+  set Relaxation time = 0.
+  set Use nonstandard finite difference scheme = false
   set Surface velocity projection = vertical
 end
 
