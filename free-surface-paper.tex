@@ -331,12 +331,6 @@ We transform the governing equations into the weak form amenable to finite eleme
 where $\mathbf{w}$ and $q$ are suitably chosen test functions and the integrals over 
 $\Omega(t)$ and $\Gamma_F(t)$ are over the volume of the domain and the free surface, respectively.
 Note that since the free surface can move, the shape of the domain is a function of time.
-It is most convenient to integrate over the domain at the current timestep $\Omega^n$ 
-(where the superscript indicates timestep number) instead of 
-the at this point unknown $\Omega^{n+1}$. This corresponds to an explicit scheme,
-which is not stable.
-However, as we will see, the implicit scheme of integrating over the (unknown) domain at the correct time $\Omega^{n+1}$ will
-give a stable scheme, at the cost of making the problem nonlinear \citep{furuichi2015implicit}.
 
 The integral over the surface in Equation~\eqref{eq:weak_stokes} accounts for boundary stresses, 
 which should be zero when evaluated on a true free surface.
@@ -376,15 +370,25 @@ This can then be used to eliminate $\zeta$ from the Stokes system:
 = \tau_i \int_{\Gamma_F(t)} \rho_0 g (\mathbf{u}_i \cdot \mathbf{n} ) (\mathbf{w} \cdot \mathbf{n}).
 \label{eq:weak_eigen}
 \end{equation}
-When these equations are discretized \citep[e.g.][]{kronbichler2012high} we get
+
+Equations~\eqref{eq:weak_stokes},~\eqref{eq:weak_incompressible}, and~\eqref{eq:weak_eigen}
+are continuous forms of the governing equations which must be discretized in space and time in order to be solved numerically.
+In particular, we must decide at which timestep (or combination of timesteps) we will integrate over the domain $\Omega(t)$.
+We denote discrete times by $t^n$, where $n$ is the timestep number, and $t^{n+1} = t^n+\Delta t$.
+It is most convenient to integrate over the domain at the current timestep $\Omega^n \equiv \Omega(t^n)$ instead of 
+the at this point unknown $\Omega^{n+1} \equiv \Omega(t^{n}+\Delta t)$. This corresponds to an explicit scheme.
+However, as we will see, the implicit scheme of integrating over the (unknown) domain at the next timestep $\Omega^{n+1}$ will
+give a stable timestepping scheme, at the cost of making the problem nonlinear \citep{furuichi2015implicit}.
+
+When these equations are spatially discretized using finite elements \citep[see, e.g.][]{kronbichler2012high} we get
 \begin{equation}
 \begin{bmatrix}
 A & B^T \\
 B & 0 \\
 \end{bmatrix}
 \begin{bmatrix}
-\mathbf{u}^n_i \\
-p^n_i
+\mathbf{u}^h_i \\
+p^h_i
 \end{bmatrix}
 =
 \tau_i
@@ -393,13 +397,15 @@ M & 0 \\
 0 & 0
 \end{bmatrix}
 \begin{bmatrix}
-\mathbf{u}^n_i \\
-p^n_i
+\mathbf{u}^h_i \\
+p^h_i
 \end{bmatrix},
 \label{eq:generalized_eigenvalue}
 \end{equation}
-where $\mathbf{u}^n_i$ and $p^n_i$ are finite-dimensional representations of $\mathbf{u}_i$ and $p^\prime_i$,
+where $\mathbf{u}^h_i$ and $p^h_i$ are finite-dimensional representations of $\mathbf{u}_i$ and $p^\prime_i$,
 and $M$ is the discretization of the bilinear form on the right-hand side of Equation~\eqref{eq:weak_eigen}.
+The form of Equation~\eqref{eq:generalized_eigenvalue} does not depend on whether we choose $\Omega^n$ or $\Omega^{n+1}$
+for the domain integration.
 
 Equation~\eqref{eq:generalized_eigenvalue} is a generalized eigenvalue problem for the normal modes of the system.
 It is rather more difficult to solve than a standard eigenvalue problem because the matrix on the right-hand-side 
@@ -419,8 +425,8 @@ M & 0 \\
 \end{bmatrix} \quad
 \mathbf{y}_i &= 
 \begin{bmatrix}
-\mathbf{u}^n_i \\
-p^n_i
+\mathbf{u}^h_i \\
+p^h_i
 \end{bmatrix} 
 \end{aligned}
 \label{eq:eigen_substitution}
@@ -461,7 +467,7 @@ time-step criterion for stability \citep[e.g.][]{leveque2007finite} to be
 \label{eq:cfl_euler}
 \end{equation}
 where $\tau_{\mathrm{min}}$ is this minumum decay time.
-The maximum allowable timestep is limited by the minimum relaxation timescale.
+The maximum stable timestep is limited by the minimum relaxation timescale.
 If a larger timestep than this is taken then those modes will become unstable.
 The modes with the smallest relaxation times are usually those with the largest lengthscales \citep{schubert2001mantle}, 
 and so it will be those which become unstable first, a phenomenon which has been called 
@@ -479,12 +485,10 @@ topography unknowns \citep[e.g.][]{kramer2012implicit}.
 \citet{kaus2010stabilization} proposed a scheme whereby the body forces on the domain are 
 evaluated on a prediction of the shape of the domain at a later time.
 The weak form of the right-hand-side body forces in the finite element discretization is then
-
 \begin{equation}
-\mathbf{f}_{\mathrm{body}} = \int_{\Omega^n + \Delta \Omega} \rho \mathbf{w} \cdot \mathbf{g},
+\mathbf{f}_{\mathrm{body}} = \int_{\Omega^n + \Delta \Omega} \rho \mathbf{w} \cdot \mathbf{g}.
 \label{eq:predict}
 \end{equation}
-where the superscript $n$ on $\Omega$ indicates the shape at the $n$th timestep.
 The shape prediction can be approximated by integration of the velocity:
 \begin{equation}
 \Delta \Omega \approx \theta \Delta t \mathbf{u},
@@ -531,8 +535,8 @@ A + \theta \Delta t M & B^T \\
 B & 0 \\
 \end{bmatrix}
 \begin{bmatrix}
-\mathbf{u}^n_i \\
-p^n_i
+\mathbf{u}^h_i \\
+p^h_i
 \end{bmatrix}
 =
 \tau^S_i
@@ -541,8 +545,8 @@ M & 0 \\
 0 & 0
 \end{bmatrix}
 \begin{bmatrix}
-\mathbf{u}^n_i \\
-p^n_i
+\mathbf{u}^h_i \\
+p^h_i
 \end{bmatrix},
 \label{eq:stabilized_generalized_eigenvalue}
 \end{equation}
@@ -554,8 +558,8 @@ A & B^T \\
 B & 0 \\
 \end{bmatrix}
 \begin{bmatrix}
-\mathbf{u}^n_i \\
-p^n_i
+\mathbf{u}^h_i \\
+p^h_i
 \end{bmatrix}
 =
 \left(\tau^S_i - \theta \Delta t \right)
@@ -564,8 +568,8 @@ M & 0 \\
 0 & 0
 \end{bmatrix}
 \begin{bmatrix}
-\mathbf{u}^n_i \\
-p^n_i
+\mathbf{u}^h_i \\
+p^h_i
 \end{bmatrix}.
 \label{eq:rearranged_stabilized_generalized_eigenvalue}
 \end{equation}
@@ -639,7 +643,7 @@ One downside of the quasi-implicit scheme is that it requires a modification of 
 The implementation of such a scheme results in a slightly 
 asymmetric matrix, which can be more difficult to solve, requiring either
 changes to the solver/preconditioner, or symmetrization of the stabilization term \citep{kaus2010stabilization}.
-An alternative would be to construct a time-integration scheme with better stability properties.  
+An alternative would be to construct a time-integration scheme that remains stable at larger timesteps.
 The reason that forward Euler integration performs so badly with the decay of topography is that 
 at larger timesteps it overshoots its equilibrium position. This overshoot causes it to lurch back 
 to the \emph{other} side of equilibrium, overshooting even more.
