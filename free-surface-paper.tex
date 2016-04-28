@@ -266,14 +266,22 @@ reference values: $\rho = \rho_0 + \rho^\prime$, $p = p_0 + p^\prime$.
 Formally, this gives rise to the following time dependent, coupled system with unknowns $\mathbf{u}(t)$ and $\mathbf{p}(t)$:
 \begin{equation}
 \begin{aligned}
-\nabla \cdot \left( 2 \eta \varepsilon( \mathbf{u} ) \right) - \nabla p &= \rho \mathbf{g} \qquad &\text{in} \qquad &\Omega(t)\\
-\nabla \cdot \mathbf{u} &= 0  \qquad &\text{in} \qquad &\Omega(t)
+\nabla \cdot \left( 2 \eta \varepsilon( \mathbf{u} ) \right) - \nabla p &= \rho \mathbf{g} \qquad &\text{in } &\Omega(t)\\
+\nabla \cdot \mathbf{u} &= 0  \qquad &\text{in } &\Omega(t)
 \end{aligned}
 \label{eq:final_system}
 \end{equation}
 defined on the bounded, moving domain $\Omega(t)\subset \mathbb{R}^d$ with boundary $\partial \Omega = \Gamma_0 \cup \Gamma_F$
 split into a fixed (Dirichlet) and free surface part $\Gamma_0$ and $\Gamma_F$, respectively.
+The boundary conditions are given by
+\begin{equation}
+\begin{aligned}
+\mathbf{u} &= 0 &\qquad \text{on } &\Gamma_0 \\
+\mathbf{T}\cdot \mathbf{n} &= 0 &\qquad \text{on } &\Gamma_F.
+\end{aligned}
+\end{equation}
 For the sake of economy we neglect inhomogeneous stress boundary conditions, though it would be straightforward to include them.
+We also defer discussion of free slip boundary conditions.
 The domain at time $t$ is defined by advecting a reference configuration $\Omega_0$ by a mesh velocity $\mathbf{u}_{\mathrm{mesh}}(t)$
 \begin{equation}
  \Omega(t) = \Omega_0 + \int_{t_0}^t \mathbf{u}_{\mathrm{mesh}}(t) \text{ d}t.
@@ -851,13 +859,20 @@ We solve the equation
 subject to the boundary conditions
 \begin{equation}
 \begin{aligned}
-&\mathbf{u}_\mathrm{mesh} = 0 & \qquad & \textrm{on } \Gamma_0. \\
-&\mathbf{u}_\mathrm{mesh} = \left( \textbf{u} \cdot \textbf{n} \right) \textbf{n} & \qquad & \textrm{on } \Gamma_F, \\
-&\mathbf{u}_\mathrm{mesh} \cdot \textbf{n} = 0 & \qquad & \textrm{on } \Gamma_{FS}, \\
+&\mathbf{u}_\mathrm{mesh} &= 0  &\qquad \textrm{on } \Gamma_0. \\
+&\mathbf{u}_\mathrm{mesh} &= \left( \textbf{u} \cdot \textbf{n} \right) \textbf{n} & \qquad \textrm{on } \Gamma_F, \\
+&\mathbf{u}_\mathrm{mesh} \cdot \textbf{n} &= 0  &\qquad \textrm{on } \Gamma_{FS}, \\
 \end{aligned}
 \label{eq:laplacian_bcs}
 \end{equation}
-where $\Gamma_{FS}$ is the part of the boundary with free slip boundary conditions $\mathbf{u \cdot n} = 0$.
+where $\Gamma_{FS}$ is the part of the boundary with free slip boundary conditions, given by
+\begin{equation}
+\begin{aligned}
+ \mathbf{u \cdot n} &= 0 \\ %&\qquad \textrm{on } \Gamma_{FS} \\
+ \mathbf{T}\cdot \mathbf{n} - (\mathbf{n}\cdot\mathbf{T} \cdot \mathbf{n})\mathbf{n} &= 0 &\qquad \textrm{on } \Gamma_{FS}.
+\end{aligned}
+\label{eq:free_slip_bcs}
+\end{equation}
 This scheme has the advantage of working for many different domain geometries and combinations of boundary conditions.
 For moderate mesh deformation, the mesh stays smooth and well conditioned, though it breaks down for large deformations.
 
@@ -919,7 +934,7 @@ where the relaxation time $\tau$ is given by
 \begin{equation}
 \tau = \frac{D k + \sinh(D k) \cosh(D k)}{ \sinh^2 (D k) } \frac{2 k \eta}{\rho g},
 \end{equation}
-where $D$ is the layer depth, $\eta$ is the viscosity, $\rho$ is the density, and $g$ is the force of gravity.
+where $D$ is the layer depth, $\eta$ is the viscosity, $\rho$ is the density, and $g$ is the acceleration due to gravity.
 
 This solution is only valid for infinitesimal topography. However, for small
 initial topography $\zeta_0$ it seems to be sufficiently accurate to test convergence orders up 
@@ -943,7 +958,7 @@ becomes exact \citep{mickens2002nonstandard}. At this point the magnitude of the
 a strong function of the timestep. The remaining error is likely due to error in the linear approxmation for 
 the analytical solution, the spatial discretization, or the linear solver tolerance. 
 
-Figure~\ref{fig:timestep_convergence}b shows the convergence of the quasi-implicit scheme with timestep.
+Figure~\ref{fig:timestep_convergence}b shows the convergence of the quasi-implicit scheme as a function of timestep $\Delta t$.
 When $\theta=0$, it corresponds to the unstabilized forward Euler scheme, and is first order in time. 
 When $\theta=1$ it is also first order in time, but allows for a much larger timestep.  When $\theta=0.5$
 the quasi-implicit guess for the body force is good enough that it actually seems to achieve the second-order 
