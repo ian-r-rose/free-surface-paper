@@ -5,3 +5,5 @@ free-surface-paper.pdf
 *.blg
 *.aux
 *.log
+*.h5
+*.vtu
