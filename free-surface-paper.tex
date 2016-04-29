@@ -600,6 +600,7 @@ This can be seen as an attractive feature of the scheme, since those are the lea
 though it can result in less accurate time-marching of the longest wavelengths of the system.
 
 \subsection{Numerical determination of $\tau_\mathrm{min}$}
+\label{sec:numerical_determination}
 
 It can be useful to determine the minimum relaxation time $\tau_{\mathrm{min}}$ for a particular
 simulation setup, both to determine an appropriate timestep and as a check on the eigenvalue
@@ -810,18 +811,34 @@ In order to use the nonstandard finite difference scheme, the value of $\tau^*$ 
 to be calculated or estimated first.  There are several possible ways to determine this value:
 
 \begin{itemize}
-\item Direct solution of Equation~\eqref{eq:generalized_eigenvalue}. This can be expensive, although
-only the minimum relaxation time is required. For certain geometries a simple power iteration on 
-the standard eigenvalue problem (Equation~\eqref{eq:standard_eigenvalue}) could be enough.
+\item Direct solution of Equation~\eqref{eq:generalized_eigenvalue}. Solution of the whole spectrum is expensive,
+however only the minimum relaxation time is required. For certain geometries a simple power iteration on 
+the standard eigenvalue problem (Equation~\eqref{eq:standard_eigenvalue}) can be enough.
 \item Analytical formulae. Several geometry and viscosity model combinations have analytical solutions
 for relaxation spectra. Even if the user's model is not precisely the same (e.g., has some lateral viscosity
 variations), an analytical approximation may be sufficient.
 \item Scaling. In general, we expect the relaxation times to scale with $\tau \sim \frac{\eta}{\rho g L}$,
 where the density, gravity, viscosity, and lengthscale $L$ are all representative values.  A small amount
 of experimentation near this value of $\tau$ can find an appropriate relaxation time.
-\item Observation of instabilities.  The mere act of observing a sloshing instability in an unstabilized
-problem can furnish an estimate of its relaxation time.
 \end{itemize} 
+
+The first point deserves a bit more attention, since it provides the most general method for determining $\tau_\mathrm{min}$.
+We discussed the numerical determination of $\tau_\mathrm{min}$ in Section~\ref{sec:numerical_determination}
+by solving Equation~\eqref{eq:standard_eigenvalue} via power iteration.
+Each iteration requires a solution of the Stokes system (the $C$ matrix), and we have found
+that $\sim$10 iterations is usually enough to obtain a reasonable estimate of $\tau_\mathrm{min}$.
+This can be done during preprocessing, so over the course of the simulation the cost of determining
+$\tau_\mathrm{min}$ would be negligible.
+
+As a simulation progresses, there is the possibility that its viscosity or density structure
+will change, and as such its minimum relaxation time will evolve.
+This, of course, means that the best choice of $\tau^*$ can change over the course of a simulation.
+If $\tau_\mathrm{min}$ does not change significantly, the initial estimate can be fine.
+Otherwise, one can periodically check the evolution and redetermine $\tau_\mathrm{min}$ by 
+solving~\eqref{eq:standard_eigenvalue} during the model run.
+
+In section \label{sec:results} we show examples of the numerical solution of $\tau_\mathrm{min}$
+and its evolution in time.
 
 \subsection{Connection with Dynamic Relaxation}
 \label{sec:dynamic_relaxation}
