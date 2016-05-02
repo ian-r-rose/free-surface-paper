@@ -1,8 +1,8 @@
 set Dimension = 2
-set CFL number                             = 1.
-set Maximum time step                       = 500.
+set CFL number                             = 0.2
+#set Maximum time step                       = 500.
 set End time                               = 1e7
-set Output directory                       = output_nsfd_adaptive_small_tstep
+set Output directory                       = output_nsfd_static_loose
 set Resume computation                     = false
 set Start time                             = 0
 set Adiabatic surface temperature          = 0
@@ -95,7 +95,7 @@ end
 
 subsection Free surface
   set Free surface stabilization theta = 0.0
-  set Relaxation time = 0.0
+  set Relaxation time = 4000.0
   set Use nonstandard finite difference scheme = true
   set Surface velocity projection = vertical
 end
