@@ -7,3 +7,4 @@ free-surface-paper.pdf
 *.log
 *.h5
 *.vtu
+*.out

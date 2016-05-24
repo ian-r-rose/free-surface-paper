@@ -811,7 +811,8 @@ a_i(\Delta t) - a_i^{1} = - a_i{(0)} \left[ \left(\frac{\Delta t}{\tau_i}\right)
 \begin{equation}
 a_i(\Delta t) - a_i^{1} = {a_i{(0)} } \left( \frac{\Delta t}{\tau_i} \right)^2 \left( 1 - \frac{\tau_i}{\tau^*} \right) + O(\Delta t^3).
 \end{equation}
-Summing this error over many timesteps results in a factor of $\Delta t^{-1}$, demonstrating the first-order accuracy~\citep[e.g.][]{leveque2007finite}.
+The local truncation error is quadratic in $\Delta t$, similar to the forward Euler, and summing this error over 
+many timesteps results in a factor of $\Delta t^{-1}$, demonstrating the first-order global accuracy~\citep[e.g.][]{leveque2007finite}.
 The choice of $\tau^*$ controls the size of the coefficient on the truncation error for the scheme.
 The error for a given mode becomes considerably smaller when $\tau^*$ is close to its natural relaxation times.
 
@@ -1057,8 +1058,10 @@ we use the wrong value by a factor of two in either direction.
 
 Overall the course of the Rayleigh-Taylor benchmark, $\tau_\mathrm{min}$ varies by about 25\%, as shown in Figure~\ref{fig:rayleigh_taylor_tau_choice}b.
 The case where we use the initial value of $\tau_\mathrm{min}$ for $\tau^*$ gives nearly identical results,
-whereas the cases where we choose values $\sim$50\% off in either direction give different (though not wildly so) results.
-In this case, using the initial value for $\tau^*$ gives sufficiently accurate results over the course of the simulation.
+whereas the cases where we choose values $\sim$50\% off in either direction give significantly different (though not wildly so) results.
+
+In many simulations we expect that the geometry, density and viscosity structure of the model will not change so significantly
+that the $\tau^*$ would need to be updated frequently (if ever).
 
 \begin{figure*}
 \includegraphics[width=0.9\textwidth]{figures/rayleigh_taylor_tau_choice.pdf}
