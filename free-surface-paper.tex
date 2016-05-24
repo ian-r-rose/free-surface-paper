@@ -212,7 +212,7 @@ most free surface calculations have preferred to use explicit timestepping metho
 surface. \citet{kaus2010stabilization} proposed a quasi-implicit scheme which modifies the discretized 
 Stokes matrix, giving it better stability properties.  \citet{popov2008slim3d}, \citet{kramer2012implicit}, and \citet{furuichi2015implicit}
 explored methods for solving the transport of the free surface implicitly.
-
+ and benchmarks
 
 
 The paper is organized as follows.
@@ -224,8 +224,8 @@ In Section~\ref{sec:kmm} we use this approach to look at the
 quasi-implicit stabilization proposed in \citet{kaus2010stabilization}.
 Then, we propose a new time marching scheme for free surface computations with 
 good stability properties (Section~\ref{sec:newscheme}).
-Finally, we describe the implementation of a free surface in the mantle convection software \texttt{ASPECT} in Section~\ref{sec:implementation}, before showing numerical results
-in Section~\ref{sec:results}. 
+Finally, we describe the implementation of a free surface in the mantle convection software \texttt{ASPECT} in Section~\ref{sec:implementation}, 
+before showing some numerical results and benchmarks in Section~\ref{sec:results}. 
 
 
 \section{Governing equations}
@@ -840,7 +840,7 @@ to be calculated or estimated first.  There are several possible ways to determi
 
 \begin{itemize}
 \item Direct solution of Equation~\eqref{eq:generalized_eigenvalue}. Solution of the whole spectrum is expensive,
-however only the minimum relaxation time is required. For certain geometries a simple power iteration on 
+however only the minimum relaxation time is required, which means that power iteration on 
 the standard eigenvalue problem (Equation~\eqref{eq:standard_eigenvalue}) can be enough.
 \item Analytical formulae. Several geometry and viscosity model combinations have analytical solutions
 for relaxation spectra. Even if the user's model is not precisely the same (e.g., has some lateral viscosity
@@ -865,12 +865,10 @@ If $\tau_\mathrm{min}$ does not change significantly, the initial estimate can b
 Otherwise, one can periodically check the evolution and redetermine $\tau_\mathrm{min}$ by 
 solving~\eqref{eq:standard_eigenvalue} during the model run.
 
-In section \label{sec:results} we show examples of the numerical solution of $\tau_\mathrm{min}$
+In section \label{sec:results} we show an examples the numerical solution of $\tau_\mathrm{min}$
 and its evolution in time.
 
-\subsection{Connection with Dynamic Relaxation}
 \label{sec:dynamic_relaxation}
-
 
 \section{Implementation in \texttt{ASPECT} }
 \label{sec:implementation}
@@ -1023,20 +1021,49 @@ those due to rotational or tidal deformation.
 
 \begin{figure*}
 \includegraphics[width=0.9\textwidth]{figures/rayleigh_taylor_setup.pdf}
-\caption{}
-\label{fig:rayleigh_taylor}
+\caption{Setup for the Rayleigh-Taylor test. A denser, more viscous layer of lies on top of the mantle. The overlying layer has a thickness of 100 km, and a sinusoidal perturbation on its base with and amplitude of 5 km.}
+\label{fig:rayleigh_taylor_setup}
 \end{figure*}
+
+We also consider the time evolution of the Rayleigh-Taylor benchmark described in \citet{kaus2010stabilization}.
+The benchmark setup is shown in Figure~\ref{fig:rayleigh_taylor_setup}.
+In all cases we use adaptive mesh refinement with five global refinement levels and four adaptive refinement levels,
+corresponding to $\sim$1 km cells at the most refined level. We refine according to compositional gradients, as well as
+near to the free surface.
+
+Figure~\ref{fig:rayleigh_taylor} shows the maximum depth of the interface between the dense and light fluid through time.
+The blue line shows the results using forward Euler timestepping with a very small timestep of 500 yrs, and is used as a reference solution.
+Nonstandard finite difference timestepping and quasi-implicit timestepping both converge to the reference solution,
+though from different directions.
+For the nonstandard finite difference simulations we recomputed the value of the minimum relaxation time $\tau_\mathrm{min}$ 
+every 50 timesteps using power iteration, and reset the value of $\tau^*$ to $\tau_\mathrm{min}$.
+
+The behavior of the two schemes is similar, though at the same CFL number quasi-implicit timestepping is slightly more accurate.
+On the other hand, with our implementation we have found that nonstandard finite difference timestepping can allow for larger timesteps 
+than quasi-implicit timestepping while remaining stable.
 
 \begin{figure*}
 \includegraphics[width=0.9\textwidth]{figures/rayleigh_taylor.pdf}
-\caption{Rayleigh-Taylor test. (a) Maximum depth of the drip. The blue line is the result using forward Euler (FE) integration of the free surface with a small 500 yr timestep, and is used as a reference solution. The symbols are for several different runs with different timestepping parameters, using both quasi-implicit (QI) and nonstandard finite difference (NSFD) schemes. As the timestepping gets smaller, both schemes converge to the reference solution (though from different directions). (b) Evolution of the minimum relaxation timescale over the course of the simulation. Every 50 timesteps we calculate the minimum relaxation timescale to observe how much it changes during the simulation. It does experience significant changes, but not by orders of magnitude, so an initial estimate is likely sufficient for this case.}
+\caption{Rayleigh-Taylor test. (a) Maximum depth of the drip. The blue line is the result using forward Euler (FE) integration of the free surface with a small 500 yr timestep, and is used as a reference solution. The symbols are for several different runs with different timestepping parameters, using both quasi-implicit (QI) and nonstandard finite difference (NSFD) schemes. As the timestepping gets smaller, both schemes converge to the reference solution (though from different directions).}
 \label{fig:rayleigh_taylor}
 \end{figure*}
 
+We also used the Rayleigh-Taylor benchmark to investigate the effect of making a poor choice for $\tau^*$, shown in Figure~\ref{fig:rayleigh_taylor_tau_choice}.
+We include four cases, all using adaptive timestepping with CFL=0.2.
+As a reference solution we include the case where we update $\tau^*$ to be equal to $\tau_\mathrm{min}$ every 50 timesteps,
+allowing for time variations in the viscosity and density structure to change the minimum relaxation time.
+We also show the case where we do not update $\tau^*$ over the course of the simulation, and two cases where
+we use the wrong value by a factor of two in either direction.
+
+Overall the course of the Rayleigh-Taylor benchmark, $\tau_\mathrm{min}$ varies by about 25\%, as shown in Figure~\ref{fig:rayleigh_taylor_tau_choice}b.
+The case where we use the initial value of $\tau_\mathrm{min}$ for $\tau^*$ gives nearly identical results,
+whereas the cases where we choose values $\sim$50\% off in either direction give different (though not wildly so) results.
+In this case, using the initial value for $\tau^*$ gives sufficiently accurate results over the course of the simulation.
+
 \begin{figure*}
 \includegraphics[width=0.9\textwidth]{figures/rayleigh_taylor_tau_choice.pdf}
-\caption{}
-\label{fig:rayleigh_taylor}
+\caption{Effect of the choice of $\tau^*$ on the Rayleigh-Taylor test. (a) Maximum depth of the drip. In all cases adaptive timestepping is used with CFL=0.2. The blue line serves as a reference solution, and shows the result when the smallest relaxation timescale $\tau_{\mathrm{min}}$ is recalculated every 50 timesteps, and then the stabilization timescale $\tau^*$ is set to that value. The red hexagons show the result when we do not update $\tau^*$, instead keeping it at the inital value of $\tau_{\mathrm{min}}$. The results are indistinguishable from those of the first case. The triangles show the results when we make a poor choice of $\tau^*$, by a factor of two in either direction. In these cases there is a significant difference from the reference solution. (b) Evolution of the minimum relaxation timescale over the course of the simulation. It does experience significant changes, but not by orders of magnitude, so it is unsurprising that using the initial value is sufficient for this case.}
+\label{fig:rayleigh_taylor_tau_choice}
 \end{figure*}
 
 
@@ -1051,13 +1078,13 @@ Figure~\ref{fig:amr} shows the convergence of the maximum topography at 3 Myr to
 both with and without adaptive mesh refinement.
 
 For the uniform refinement cases each point is generated by running the benchmark with a different global refinement level.
-For the adaptive case each point is generated by allowing the mesh to be refined, where the maximum refinement level
-is limited to the same refinement level of the corresponding global refinement simulation.
+For the adaptive case each point is generated by allowing the mesh to be refined according to gradients in density and composition,
+where the maximum refinement level is limited to the same refinement level of the corresponding global refinement simulation.
 In both the uniform and the adaptive cases, the smallest cell size in the most refined case is $\sim$1 km.
 We refine every ten timesteps according to gradients in the density and compositional fields.
 
 We have chosen a very small timestep for this test of 500 yr (note that this is significantly smaller than the smallest
-relaxation time of $\sim$ 14 kyr), so most timestepping schemes should be stable, including forward Euler.
+relaxation time of $\sim$ 14 kyr), so most timestepping schemes should be stable and accurate, including forward Euler.
 We choose this step for two reasons: (1) The primary purpose of this test is to investigate the savings
 due to using adaptive mesh refinement with a free surface, and (2) It was found in \citet{crameri2012comparison}
 that in order for this test to fully converge, a small timestep of several hundred years must be used.
@@ -1088,8 +1115,10 @@ maximum allowable timestep is correspondingly lengthened.
 
 It is not clear that the non-standard finite difference scheme is superior to 
 the quasi-implicit scheme. For $\theta=0.5$ the quasi-implicit scheme is more accurate,
-but is only conditionally stable. For $\theta=1$ the two schemes are comparably accurate 
-in the tests we ran.
+but has a smaller stability region. For $\theta=1$ the two schemes are comparably accurate,
+with a slight advantage to the quasi-implicit scheme. However, we have found that
+the nonstandard finite difference scheme allows for larger stable timesteps, if the modeler 
+is willing to pay the price of reduced accuracy for a particular simulation.
 
 Finally, we have described the implementation of free surface boundary conditions in 
 the open source mantle convection software \texttt{ASPECT}. Both the quasi-implicit 
