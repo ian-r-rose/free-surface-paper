@@ -11,7 +11,7 @@ rho = 1.0 # density
 eta = 1.0 #viscosity
 g = 1.0 #gravity
 
-k_s = 2.0*np.pi/L;  #wavenumber
+k_s = 2.0*np.pi*order/L;  #wavenumber
 k = 2.0*np.pi*order/L;  #wavenumber
 
 tau_0 = 2. * k * eta /rho / g  #reference relaxation time
@@ -79,7 +79,7 @@ for r in relaxation_times:
     print "Running with time step %f, relaxation time %f\n"%(t, r)
     generate_prm(t, r)
     os.system('mpirun -n 4 /home/ian/aspect/build/aspect tmp.prm')
-    #plot_topography()
+#    plot_topography()
     outputfile.write("%f %f %f \n" % (r/tau_s, t/tau_s, calculate_error()) )
     outputfile.flush()
 

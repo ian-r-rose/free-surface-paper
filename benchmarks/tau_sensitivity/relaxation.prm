@@ -99,6 +99,7 @@ end
 
 subsection Free surface
   set Free surface stabilization theta = 0.0
+  set Use nonstandard finite difference scheme = true
   set Relaxation time = 0.0
 end
 

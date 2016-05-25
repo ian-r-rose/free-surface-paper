@@ -6,12 +6,12 @@ from scipy.integrate import trapz
 initial_topography = 0.005
 L = 1.0  #domain length
 D = 1.0  # domain depth
-order = 1.0 # order of perturbation
+order = 0.5 # order of perturbation
 rho = 1.0 # density
 eta = 1.0 #viscosity
 g = 1.0 #gravity
 
-k_s = 2.0*np.pi/L;  #wavenumber
+k_s = 2.0*np.pi*order/L;  #wavenumber
 k = 2.0*np.pi*order/L;  #wavenumber
 
 tau_0 = 2. * k * eta /rho / g  #reference relaxation time

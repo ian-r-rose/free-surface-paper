@@ -11,7 +11,7 @@ rho = 1.0 # density
 eta = 1.0 #viscosity
 g = 1.0 #gravity
 
-k_s = 2.0*np.pi/L;  #wavenumber
+k_s = 2.0*np.pi*order/L;  #wavenumber
 k = 2.0*np.pi*order/L;  #wavenumber
 
 tau_0 = 2. * k * eta /rho / g  #reference relaxation time

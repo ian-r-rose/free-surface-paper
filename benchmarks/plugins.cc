@@ -86,7 +86,7 @@ namespace aspect
 
       private:
 
-        unsigned int order;  //Order of the perturbation
+        double order;  //Order of the perturbation
         double amplitude;  //amplitude of the perturbation
 
     };
