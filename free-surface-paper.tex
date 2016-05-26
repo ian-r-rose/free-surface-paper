@@ -212,8 +212,6 @@ most free surface calculations have preferred to use explicit timestepping metho
 surface. \citet{kaus2010stabilization} proposed a quasi-implicit scheme which modifies the discretized 
 Stokes matrix, giving it better stability properties.  \citet{popov2008slim3d}, \citet{kramer2012implicit}, and \citet{furuichi2015implicit}
 explored methods for solving the transport of the free surface implicitly.
- and benchmarks
-
 
 The paper is organized as follows.
 After introducing the problem in Section~\ref{sec:governing},
@@ -261,8 +259,8 @@ velocity $\mathbf{u}$ is zero:
 \end{equation}
 where $p_0$ is the reference hydrostatic pressure and $\rho_0$ is a reference density profile (which may vary with depth).
 The total pressure and density can then be decomposed into variations about their 
-reference values: $\rho = \rho_0 + \rho^\prime$, $p = p_0 + p^\prime$,
-and the hydrostatic reference state (Equation~\eqref{eq:hydrostatic_stokes}) may be subtracted from Equation~\eqref{eq:stokes}.
+reference values: $\rho = \rho_0 + \rho^\prime$, $p = p_0 + p^\prime$.
+Using this the hydrostatic reference state (Equation~\eqref{eq:hydrostatic_stokes}) may be subtracted from Equation~\eqref{eq:stokes}.
 
 This gives rise to the following time dependent, coupled system with unknowns $\mathbf{u}(t)$ and $\mathbf{p}(t)$:
 \begin{equation}
@@ -273,7 +271,7 @@ This gives rise to the following time dependent, coupled system with unknowns $\
 \label{eq:final_system}
 \end{equation}
 defined on the bounded, moving domain $\Omega(t)\subset \mathbb{R}^d$ with boundary $\partial \Omega = \Gamma_0 \cup \Gamma_F$
-split into a fixed (Dirichlet) and free surface part $\Gamma_0$ and $\Gamma_F$, respectively.
+split into fixed (Dirichlet) and free surface parts $\Gamma_0$ and $\Gamma_F$, respectively.
 The boundary conditions are given by
 \begin{equation}
 \begin{aligned}
@@ -377,7 +375,7 @@ are continuous forms of the governing equations which must be discretized in spa
 In particular, we must decide at which timestep (or combination of timesteps) we will integrate over the domain $\Omega(t)$.
 We denote discrete times by $t^n$, where $n$ is the timestep number, and $t^{n+1} = t^n+\Delta t$.
 It is most convenient to integrate over the domain at the current timestep $\Omega^n \equiv \Omega(t^n)$ instead of 
-the at this point unknown $\Omega^{n+1} \equiv \Omega(t^{n}+\Delta t)$. This corresponds to an explicit scheme.
+the unknown $\Omega^{n+1} \equiv \Omega(t^{n}+\Delta t)$. This corresponds to an explicit scheme.
 However, as we will see, the implicit scheme of integrating over the (unknown) domain at the next timestep $\Omega^{n+1}$ will
 give a stable timestepping scheme, at the cost of making the problem nonlinear \citep{furuichi2015implicit}.
 
@@ -647,7 +645,7 @@ where $D$ is the layer depth, $\eta$ is the viscosity, $\rho$ is the density, an
 
 \begin{figure*}
 \includegraphics[width=0.9\textwidth]{figures/benchmark_setup.pdf}
-\caption{Setup for the power iteration test (Section~\ref{sec:numerical_determination}), as well as for the free surface relaxation benchmark (Section~\ref{sec:topography_relaxation}). A 2D box with an isoviscous fluid has sinusoidal initial topography, with amplitude $\zeta_0$ and wavenumber $n$. The box has depth $D$ and length $L$. For our tests $\rho = \eta = g = D = L = 1$, and $n=1/2$. For the power iteration test there is no initial perturbation ($\zeta_0 = 0.0$), and for the surface relaxation benchmark $\zeta_0 = 0.005$.}
+\caption{Setup for the power iteration test (Section~\ref{sec:numerical_determination}) and for the free surface relaxation benchmark (Section~\ref{sec:topography_relaxation}). A 2D box with an isoviscous fluid has sinusoidal initial topography, with amplitude $\zeta_0$ and wavenumber $n$. The box has depth $D$ and length $L$. For our tests $\rho = \eta = g = D = L = 1$, and $n=1/2$. For the power iteration test there is no initial perturbation ($\zeta_0 = 0.0$), and for the surface relaxation benchmark $\zeta_0 = 0.005$.}
 \label{fig:benchmark_setup}
 \end{figure*}
 The eigenvector with the minimum relaxation time for this system $\tau_{\min}$ corresponds to $n=1/2$ 
@@ -655,7 +653,7 @@ The eigenvector with the minimum relaxation time for this system $\tau_{\min}$ c
 Figure~\ref{fig:perturb_spectrum} shows the results of the power iteration, where colored circles indicate the numerical
 solution and black dots show the analytical solution using equation~\eqref{eq:spectrum_shift}.
 In most cases the iteration converges to better than $\sim10^{-5}$ relative accuaracy in about 20 iterations
-(and it can be fewer with a good initial guess).
+(and fewer with a good initial guess).
 
 
 \begin{figure*}
@@ -840,8 +838,8 @@ In order to use the nonstandard finite difference scheme, the value of $\tau^*$ 
 to be calculated or estimated first.  There are several possible ways to determine this value:
 
 \begin{itemize}
-\item Direct solution of Equation~\eqref{eq:generalized_eigenvalue}. Solution of the whole spectrum is expensive,
-however only the minimum relaxation time is required, which means that power iteration on 
+\item Direct solution of Equation~\eqref{eq:generalized_eigenvalue}. Solution of the whole spectrum is expensive
+when only the minimum relaxation time is required, which means that power iteration on 
 the standard eigenvalue problem (Equation~\eqref{eq:standard_eigenvalue}) can be enough.
 \item Analytical formulae. Several geometry and viscosity model combinations have analytical solutions
 for relaxation spectra. Even if the user's model is not precisely the same (e.g., has some lateral viscosity
@@ -1056,7 +1054,7 @@ allowing for time variations in the viscosity and density structure to change th
 We also show the case where we do not update $\tau^*$ over the course of the simulation, and two cases where
 we use the wrong value by a factor of two in either direction.
 
-Overall the course of the Rayleigh-Taylor benchmark, $\tau_\mathrm{min}$ varies by about 25\%, as shown in Figure~\ref{fig:rayleigh_taylor_tau_choice}b.
+Over the course of the Rayleigh-Taylor benchmark, $\tau_\mathrm{min}$ varies by about 25\%, as shown in Figure~\ref{fig:rayleigh_taylor_tau_choice}b.
 The case where we use the initial value of $\tau_\mathrm{min}$ for $\tau^*$ gives nearly identical results,
 whereas the cases where we choose values $\sim$50\% off in either direction give significantly different (though not wildly so) results.
 
@@ -1089,8 +1087,8 @@ We refine every ten timesteps according to gradients in the density and composit
 We have chosen a very small timestep for this test of 500 yr (note that this is significantly smaller than the smallest
 relaxation time of $\sim$ 14 kyr), so most timestepping schemes should be stable and accurate, including forward Euler.
 We choose this step for two reasons: (1) The primary purpose of this test is to investigate the savings
-due to using adaptive mesh refinement with a free surface, and (2) It was found in \citet{crameri2012comparison}
-that in order for this test to fully converge, a small timestep of several hundred years must be used.
+due to using adaptive mesh refinement with a free surface, and (2) \citet{crameri2012comparison}
+found that a timestep of several hundred years was required to achieve full convergence.
 
 The convergence with and without adaptive mesh refinement have essentially the same behavior, but the adaptive case requires 
 fewer degrees of freedom by a factor of approximately an order of magnitude. More complex models will have
