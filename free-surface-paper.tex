@@ -281,17 +281,13 @@ The boundary conditions are given by
 \end{equation}
 For the sake of economy we neglect inhomogeneous stress boundary conditions, though it would be straightforward to include them.
 We also defer discussion of free slip boundary conditions.
-The domain at time $t$ is defined by advecting a reference configuration $\Omega_0$ by a mesh velocity $\mathbf{u}_{\mathrm{mesh}}(t)$
+The domain at time $t$ is defined by advecting a reference configuration $\Omega_0$ by the domain velocity $\mathbf{u}(t)$
 \begin{equation}
- \Omega(t) = \Omega_0 + \int_{t_0}^t \mathbf{u}_{\mathrm{mesh}}(t) \text{ d}t.
+ \Omega(t) = \Omega_0 + \int_{t_0}^t \mathbf{u}(t) \text{ d}t.
+ \label{eq:domain_evolution}
 \end{equation}
-The mesh velocity in normal direction (with unit normal $\mathbf{n}$) is given by the velocity $\mathbf{u}(t)$ on the free surface
-\begin{equation}
- \mathbf{u}_\mathrm{mesh}(t) \cdot \mathbf{n} = \mathbf{u}(t) \cdot \mathbf{n} \quad \text{on} \quad \Gamma_F
-\end{equation}
-and set to zero on the rest of the boundary. We defer the discussion of the velocity $\mathbf{u}_\mathrm{mesh}$ in the interior of the domain
-to Section~\ref{sec:remeshing}.
-Finally, we denote the displacement at time $t$ by $\zeta = \int_{t_0}^t \mathbf{u}_\mathrm{mesh}(t)\cdot \mathbf{n} \text{ d}t$, leading to the evolution
+We defer the discussion of the velocity of the discretized domain to Section~\ref{sec:remeshing}.
+Finally, we denote the displacement at time $t$ by $\zeta = \int_{t_0}^t \mathbf{u}_\mathrm{surface}(t)\cdot \mathbf{n} \text{ d}t$, leading to the evolution
 equation
 \begin{equation}
 \frac{\text{d} \zeta}{\text{d}t} = \mathbf{u \cdot \mathbf{n}} \quad \textrm{on  }  \Gamma_F.
@@ -402,8 +398,10 @@ p^h_i
 \label{eq:generalized_eigenvalue}
 \end{equation}
 where $\mathbf{u}^h_i$ and $p^h_i$ are finite-dimensional representations of $\mathbf{u}_i$ and $p^\prime_i$,
-and $M$ is the discretization of the bilinear form on the right-hand side of Equation~\eqref{eq:weak_eigen}.
-The form of Equation~\eqref{eq:generalized_eigenvalue} does not depend on whether we choose $\Omega^n$ or $\Omega^{n+1}$
+and the domain integrals are performed over a discrete approximation of the domain shape
+(such as a linear finite element basis) which we denote by $\hat{\Omega}$.
+$M$ is the discretization of the bilinear form on the right-hand side of Equation~\eqref{eq:weak_eigen}.
+The form of Equation~\eqref{eq:generalized_eigenvalue} does not depend on whether we choose $\hat{\Omega}^n$ or $\hat{\Omega}^{n+1}$
 for the domain integration.
 
 Equation~\eqref{eq:generalized_eigenvalue} is a generalized eigenvalue problem for the normal modes of the system.
@@ -483,14 +481,14 @@ topography unknowns \citep[e.g.][]{kramer2012implicit}.
 
 \citet{kaus2010stabilization} proposed a scheme whereby the body forces on the domain are 
 evaluated on a prediction of the shape of the domain at a later time.
-The weak form of the right-hand-side body forces in the finite element discretization is then
+The continuous weak form of the right-hand-side body forces in is then
 \begin{equation}
 \mathbf{f}_{\mathrm{body}} = \int_{\Omega^n + \Delta \Omega} \rho \mathbf{w} \cdot \mathbf{g}.
 \label{eq:predict}
 \end{equation}
-The shape prediction can be approximated by integration of the velocity:
+We can approximate the shape prediction by time integrating the domain evolution equation (Equation~\eqref{eq:domain_evolution}):
 \begin{equation}
-\Delta \Omega \approx \theta \Delta t \mathbf{u},
+  \Delta \Omega \approx \theta \Delta t \mathbf{u},
 \end{equation}
 where $\theta$ is a free parameter that corresponds to the magnitude of the 
 correction, where zero is no stabilization and one is fully (quasi) implicit.
@@ -817,7 +815,8 @@ The error for a given mode becomes considerably smaller when $\tau^*$ is close t
 It is helpful to take a closer look at the pseudo-timestep introduced in Equation~\eqref{eq:nsfd}: $\tau^*(1-e^{-\Delta t/\tau^*})$.
 As the timestep $\Delta t$ goes to zero, the pseudo timestep approaches $\Delta t$, recovering 
 the forward Euler scheme. However, as $\Delta t$ gets larger, the pseudo-timestep does not 
-increase as quickly, reflecting the decaying nature of the normal modes.
+increase as quickly, reflecting the decaying nature of the normal modes
+(in fact, the pseudo-timestep is bounded between $\Delta t$ and $\tau^*$).
 Likewise, as the stabilization timescale $\tau^*$ goes to infinity, we also recover the 
 forward Euler scheme, in what is essentially the unstabilized problem. But as $\tau^*$
 goes to zero, the pseudo-timestep also goes to zero. This corresponds to over-stabilizing the
@@ -891,6 +890,11 @@ when the free surface slope is steep to allow for accurate interface tracking.
 \subsection{Remeshing}
 \label{sec:remeshing}
 
+The mesh velocity in normal direction at the free surface (with unit normal $\mathbf{n}$) has to be
+consistent with the velocity of the Stokes velocity solution $\mathbf{u}(t)$:
+\begin{equation}
+ \mathbf{u}_\mathrm{mesh}(t) \cdot \mathbf{n} = \mathbf{u}(t) \cdot \mathbf{n} \quad \text{on} \quad \Gamma_F
+\end{equation}
 In ALE calculations the internal mesh velocity is undetermined.
 In general, one wants to smoothly deform the mesh so as to preserve its regularity, 
 avoiding inverted or otherwise poorly conditioned cells.
