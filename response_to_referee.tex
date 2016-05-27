@@ -1,0 +1,161 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage[utf8]{inputenc}
+
+%opening
+\title{Response to referees}
+\author{Ian Rose, Bruce Buffett, and Timo Heister}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+We thank referees Fabio Crameri and Dave May for their thoughtful and constructive reviews,
+which are appended to this document for convenience.
+
+\subsection*{Response to reviewer 1}
+
+Fabio Crameri provided a number of helpful comments and suggestions for clarification,
+which we summarize here:
+
+\begin{itemize}
+  \item We have identified $\mathbf{I}$ as the identity tensor.
+  \item We have itentified $\mathbf{n}$ as the unit normal.
+  \item We have clarified lines 154-155, 174 and 460-463.
+  \item We have improved the caption for Figure 5.
+\end{itemize}
+
+
+\subsection*{Response to reviewer 2}
+
+Dave May gave a very thorough review with substantial suggestions for 
+improvements and additions to the manuscript, which we address in detail here.
+
+\subsubsection*{Summary}
+
+May's review has two main criticisms:
+\begin{enumerate}
+\item That we do not provide sufficient non-trivial examples of the usage of our new 
+  time integratior, especially making detailed comparisons with the existing quasi implicit (QI)
+  time integrator of Kaus et. al. (2010), including a discussion of the relative advantages
+  and disadvantages of the scheme.
+\item That we have not provided enough information of how to determine the stabilization timescale ($\tau^*$)
+  which is required to use the nonstandard finite difference (NSFD) time integrator, including
+  a discussion of the consequences of making a poor choice for $\tau^*$.
+\end{enumerate}
+
+In order to address these we have made two major additions to the manuscript:
+
+First, we have added a more lengthy discussion of how to numerically determine the minimum relaxation time of
+a given geodynamic simulation, which is the best choice for $\tau^*$. Our favored method
+is using power iteration, which finds the dominant eigenvector/eigenvalue pair of the system.
+Each iteration involves a solution of a Stokes system, and we find good approximation of the minimum
+relaxation time in 5-20 iterations, depending on how good the initial guess is.
+
+This estimate of the minimum relaxation time is not only useful for the NSFD scheme,
+as it can also be used to determine appropriate timesteps for quasi-implicit time integration,
+or even forward Euler time integration. 
+We provide several numerical examples of using power iteration, including to confirm our analysis
+of the effect of the quasi-implicit stabilization term on the spectrum of the system (Equation 29).
+The results of this test are shown in Figure 2.
+
+Our second major addition is an investigation of the Rayleigh-Taylor instability with a free surface
+which was considered in Kaus et. al. (2010). We found that the QI and NSFD schemes are comparably
+accurate at the same adaptive timestepping (with a slight advantage to QI). However, we have found
+that the NSFD scheme is able to take larger stable timesteps (though at the cost of lower accuracy).
+
+We have also used the Rayleigh-Taylor benchmark to investigate the effect of different choices of 
+the stabilization parameter $\tau^*$. We considered four cases: 
+\begin{enumerate}
+  \item recomputing the minimum relaxation timescale every 50 timesteps and setting $\tau^*$ to that value 
+    (this allows for changes in the viscosity and density structure with time). This is used as the reference case.
+  \item Using the initial value of the minimum relaxation time for the whole simulation.
+  \item Using a value that is about a factor of two too large.
+  \item Using a value that is about a facator of two too small.
+\end{enumerate}
+The first two cases are almost identical, while the third and fourth have significant differences with the reference case. 
+
+We also have specific responses to the ``General Comments'' and ``Detailed Corrections'' sections
+May's review, detailed below.
+
+\subsubsection*{General comments}
+\begin{enumerate}
+  \item The manuscript is no numbered.
+  \item We have made equation referencing consistent.
+  \item Equations are now punctuated.
+  \item Section headings now all use sentence case.
+  \item ``timestep'' is now used uniformly.
+  \item The point about the title is well-taken, though we would argue that our analysis of the stability of the
+system and the effect of QI stabilization on the spectrum are at least as important as our new time integrator.
+We have retitled the manuscript ``Stability and accuracy of free surface time integration in viscous flows.''
+  \item We have added a detailed look at the time dependence of $\tau^*$. In many cases its time variation is
+probably not large enough to merit recomputing it during the course of a simulation.
+  \item We have provided new numerical experiments investigating the numerical determination of $\tau^*$, and have
+taken a detailed look at a Rayleigh-Taylor benchmark. In the Rayleigh-Taylor case we have QI and NSFD schemes,
+investigated the time dependence of $\tau_\mathrm{min}$, and demonstrated the effects of a poor choice for $\tau_\mathrm{min}$.
+We ran experiments for the Schmeling et. al. (2008) benchmark, but have ultimately not included them because 
+(1) they did not provide new insight over the Rayleigh-Taylor benchmark, and 
+(2) this particular benchmark has not proved to be particularly useful due to its extremely sensitive dependence 
+on model parameters and viscosity averaging schemes, making the results difficult to interpret.
+  \item We have added a treatment of using power iteration to calculate the minimum relaxation time, which is
+useful not just for determining $\tau^*$, but can also be of use for analysis of timestepping with other schemes.
+  \item We have added some discussion of direct comparision of the QI and NSFD schemes. We agree that the benefits
+    of spatial adapdivity are less connected with the preceding discussion on timestepping, however we still felt
+    that demonstrating the savings of combining AMR with a free surface had some value.
+\end{enumerate}
+
+\subsubsection*{Detailed corrections}
+\begin{enumerate}
+  \item We have reworded the abstract to emphasize time integration of the free surface.
+  \item We have cited Jarvis and Peltier (1982) for an early dynamic topography calculation.
+  \item We have given an additional reference for the sticky air method.
+  \item The surface of Earth is not truly stress free, since there are stresses due to oceans and atmopheres.
+    We would argue that ``more closely matches'' is appropriate.
+  \item We have cited Popov and Sobolev (2008) for another implicit approach to free surfaces.
+  \item We have explicitly given the conditions for free-slip, free surface, and Dirichlet boundary conditions.
+  \item We agree that discussion of the discrete mesh is more appropriate in Section 7, and have reorganized accordingly.
+  \item This is a good suggestion. We have reorganized Section 3 to put all the information dealing with
+    the time evolution of $\Omega(t)$ in one place.
+  \item We have introduced a new notation $\hat{\Omega}$ for when we are dealing with a spatially discretized domain.
+However, for most of the analysis of Sections 2-5 the equations are agnostic to whether we are using a discretized
+or continuous domain, so we have retained the continuous notation when appropriate. We have also tried to clarify
+what is meant by the prediction of the shape at a later time $\Delta \Omega$ as an approximate integration of the
+domain evolution equation (Eq. 7).
+  \item We have changed line 178 to ``become unstable''.
+  \item We have clarified the approximations under which the QI stabilization term is identical to
+the $M$ matrix in the homogeneous problem. Specifically, they are approximately the same when the slope is small,
+and density variations are small compared to the reference value.
+  \item We have added a note to this effect.
+  \item It is true that our ALE formulation involves assembly of a surface mass matrix, as does the solution of
+    the generalized eigenvalue problem. However, not every implementation need have the same approach. That being
+    said, it is a good point that the modifications to the Stokes system matrix are overall not very difficult to apply.
+  \item We have rephrased this point.
+  \item $x$ and $y$ axes are now italicized.
+  \item We have clarified this point.
+  \item This has been fixed.
+  \item We mean Equation (16), which can be reorganized to Equation (18), so either are appropriate here.
+  \item We have clarified this point in the text, as well as explored by how much $\tau_\mathrm{min}$ might change.
+  \item Equation (19) involves the inverse of $\tau_i$, so finding the largest eigenvalue of this system
+is equivalent to finding the minimum relaxation time.
+  \item Boundary conditions are now all defined mathematically.
+  \item Absolutely right, this is now rephrased.
+  \item This is now clarified to an ``$L_2$ projection of $u \cdot n$ onto $\Gamma_F$''.
+  \item Changed to say ``cheap''.
+  \item Line 267 now says ``acceleration due to gravity''.
+  \item L2  $\rightarrow L_2$.
+  \item We now use the symbol $E$ for the error. 
+  \item Line 472-473 has been rephrased.
+  \item We now give more information about the parameters used to run this simulation, including refinement schemes, 
+    maximum spatial resolution, and timestepping schemes.
+  \item It is true that 500 years is a very small timestep, and that forward Euler timestepping would be stable for this.
+We use this timestep because Crameri et. al. (2012) found that a timestep of several hundred years was needed
+for the solution to fully converge. The purpose of this test is less to investigate the time integration schemes
+than to demonstrate the effectiveness of combining adaptive mesh refinement with a free surface treatment.
+To a certain extent we agree that this is not the primary point of the manuscript. However, we still think it
+is valuable to demonstrate that our implementation, which is open source and freely available, has this capability.
+  \item QI is now defined.
+  \item The caption now reads ``significantly fewer unknowns''.
+\end{enumerate}
+
+
+\end{document}
