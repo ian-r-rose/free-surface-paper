@@ -1087,7 +1087,8 @@ where the maximum refinement level is limited to the same refinement level of th
 In both the uniform and the adaptive cases, the smallest cell size in the most refined case is $\sim$1 km.
 We refine every ten timesteps according to gradients in the density and compositional fields.
 
-We have chosen a very small timestep for this test of 500 yr (note that this is significantly smaller than the smallest
+We run simulations using both quasi-implicit and nonstandard finite difference schemes for the free surface.
+We use a very small timestep for this test of 500 yr (note that this is significantly smaller than the smallest
 relaxation time of $\sim$ 14 kyr), so most timestepping schemes should be stable and accurate, including forward Euler.
 We choose this step for two reasons: (1) The primary purpose of this test is to investigate the savings
 due to using adaptive mesh refinement with a free surface, and (2) \citet{crameri2012comparison}
