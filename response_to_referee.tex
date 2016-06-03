@@ -47,21 +47,21 @@ May's review has two main criticisms:
 In order to address these we have made two major additions to the manuscript:
 
 First, we have added a more lengthy discussion of how to numerically determine the minimum relaxation time of
-a given geodynamic simulation, which is the best choice for $\tau^*$. Our favored method
-is using power iteration, which finds the dominant eigenvector/eigenvalue pair of the system.
-Each iteration involves a solution of a Stokes system, and we find good approximation of the minimum
+a given geodynamic simulation, which is the best choice for $\tau^*$ (see Section 6.4). Our favored method
+is using a power iteration, which finds the dominant eigenvector/eigenvalue pair of the system.
+Each iteration involves a solution of a Stokes system, and we find good a approximation for the minimum
 relaxation time in 5-20 iterations, depending on how good the initial guess is.
 
 This estimate of the minimum relaxation time is not only useful for the NSFD scheme,
 as it can also be used to determine appropriate timesteps for quasi-implicit time integration,
 or even forward Euler time integration. 
-We provide several numerical examples of using power iteration, including to confirm our analysis
+We provide several numerical examples of using power iteration, which confirm our analysis
 of the effect of the quasi-implicit stabilization term on the spectrum of the system (Equation 29).
 The results of this test are shown in Figure 2.
 
-Our second major addition is an investigation of the Rayleigh-Taylor instability with a free surface
+Our second major addition is an investigation of the Rayleigh-Taylor instability with a free surface (Section 8.2),
 which was considered in Kaus et. al. (2010). We found that the QI and NSFD schemes are comparably
-accurate at the same adaptive timestepping (with a slight advantage to QI). However, we have found
+accurate the same (adaptive chosen) timestep (with a slight advantage to QI). However, we have found
 that the NSFD scheme is able to take larger stable timesteps (though at the cost of lower accuracy).
 
 We have also used the Rayleigh-Taylor benchmark to investigate the effect of different choices of 
@@ -75,12 +75,12 @@ the stabilization parameter $\tau^*$. We considered four cases:
 \end{enumerate}
 The first two cases are almost identical, while the third and fourth have significant differences with the reference case. 
 
-We also have specific responses to the ``General Comments'' and ``Detailed Corrections'' sections
+We also have specific responses to the ``General Comments'' and ``Detailed Corrections'' sections of
 May's review, detailed below.
 
 \subsubsection*{General comments}
 \begin{enumerate}
-  \item The manuscript is no numbered.
+  \item The manuscript is now numbered.
   \item We have made equation referencing consistent.
   \item Equations are now punctuated.
   \item Section headings now all use sentence case.
@@ -109,7 +109,7 @@ useful not just for determining $\tau^*$, but can also be of use for analysis of
   \item We have reworded the abstract to emphasize time integration of the free surface.
   \item We have cited Jarvis and Peltier (1982) for an early dynamic topography calculation.
   \item We have given an additional reference for the sticky air method.
-  \item The surface of Earth is not truly stress free, since there are stresses due to oceans and atmopheres.
+  \item The surface of Earth is not truly stress free, since there are stresses due to oceans and atmospheres.
     We would argue that ``more closely matches'' is appropriate.
   \item We have cited Popov and Sobolev (2008) for another implicit approach to free surfaces.
   \item We have explicitly given the conditions for free-slip, free surface, and Dirichlet boundary conditions.

@@ -260,7 +260,7 @@ velocity $\mathbf{u}$ is zero:
 where $p_0$ is the reference hydrostatic pressure and $\rho_0$ is a reference density profile (which may vary with depth).
 The total pressure and density can then be decomposed into variations about their 
 reference values: $\rho = \rho_0 + \rho^\prime$, $p = p_0 + p^\prime$.
-Using this the hydrostatic reference state (Equation~\eqref{eq:hydrostatic_stokes}) may be subtracted from Equation~\eqref{eq:stokes}.
+Using this, the hydrostatic reference state (Equation~\eqref{eq:hydrostatic_stokes}) may be subtracted from Equation~\eqref{eq:stokes}.
 
 This gives rise to the following time dependent, coupled system with unknowns $\mathbf{u}(t)$ and $\mathbf{p}(t)$:
 \begin{equation}
@@ -453,12 +453,12 @@ then the time evolution of the free surface is given by
 Of course, most finite element (or finite difference, or finite volume) geodynamic simulations do not resolve 
 the solution and surface topography into its normal modes and integrate those separately. 
 Indeed, analytical solutions for the normal modes are only known for simple geometries and rheologies.
-Instead, they obtain a velocity solution and simply advect the free surface with the local velocity.
+Instead, one typically obtains a velocity solution and then advect the free surface with the local velocity.
 The normal mode solution is instructive, however. 
 Each mode has the form of a decay equation with characteristic decay time $\tau_i$.
 The decay equation is the archetypical example of a stiff ordinary differential equation.
 If we were to numerically integrate this in time with a forward Euler method, we would find the 
-time-step criterion for stability \citep[e.g.][]{leveque2007finite} to be
+timestep criterion for stability \citep[e.g.][]{leveque2007finite} to be
 \begin{equation}
 \Delta t  \le 2 \tau_{\mathrm{min}},
 \label{eq:cfl_euler}
@@ -516,9 +516,9 @@ Furthermore, in Equation~\eqref{eq:weak_eigen} we considered response of the sur
 while Equation~\eqref{eq:kmm} uses the total density.
 In most geodynamic simulations lateral density variations are small compared to the total density.
 For the purposes of stabilization we may approximate $\rho \approx \rho_0$.
-Inserting these two approximations, we find that the stabilization term may be written
+Inserting these two approximations, we find that the stabilization term may be written as
 \begin{equation}
--\theta \Delta t \int_{\Gamma_F^n} \rho_0 g ( \mathbf{w \cdot n}) (\mathbf{u \cdot n} )
+-\theta \Delta t \int_{\Gamma_F^n} \rho_0 g ( \mathbf{w \cdot n}) (\mathbf{u \cdot n} ),
 \label{eq:kmm_stabilization}
 \end{equation}
 where the integral is now identical to that which discretizes to $M$.
@@ -1061,7 +1061,7 @@ Over the course of the Rayleigh-Taylor benchmark, $\tau_\mathrm{min}$ varies by 
 The case where we use the initial value of $\tau_\mathrm{min}$ for $\tau^*$ gives nearly identical results,
 whereas the cases where we choose values $\sim$50\% off in either direction give significantly different (though not wildly so) results.
 
-In many simulations we expect that the geometry, density and viscosity structure of the model will not change so significantly
+In many simulations we expect that the geometry, density, and viscosity structure of the model will not change so significantly
 that the $\tau^*$ would need to be updated frequently (if ever).
 
 \begin{figure*}
