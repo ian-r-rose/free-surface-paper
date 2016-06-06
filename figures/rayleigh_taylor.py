@@ -62,6 +62,7 @@ plt.ylim(-500., 1.8)
 plt.xlabel('$x$ (km)')
 plt.ylabel('Depth (km)')
 plt.title('(b)')
+plt.tight_layout()
 
 #plt.show()
 plt.savefig('rayleigh_taylor.pdf', dpi=600)
@@ -90,6 +91,7 @@ plt.legend(loc='lower left', prop={'size':10})
 
 plt.title('(a)')
 plt.xlim(0.,6.)
+plt.ylabel('Maximum interface depth (km)')
 plt.xlabel('Time (Myr)')
 
 #Plot relaxation tau with time
