@@ -36,9 +36,9 @@ with open(prefix+'output_nsfd_adaptive_cfl_02/log.txt') as f:
 relaxation_times = np.array(relaxation_times[3:])
 
 #Plot rayleigh taylor results
-plt.figure(figsize=(4,4) )
+plt.figure(figsize=(8,4) )
 
-plt.subplot(111)
+plt.subplot(121)
 
 marker = itertools.cycle( ('h', 'v', '^', '*', 'D', 's', 'o') )
 plt.plot( forward_euler[:,0]/1.e6, -forward_euler[:,1]/1.e3, label='FE dt = 500 yr' )
@@ -50,9 +50,21 @@ plt.legend(loc='lower left', prop={'size':10})
 plt.xlim(0.,6.)
 plt.xlabel('Time (Myr)')
 plt.ylabel('Maximum interface depth (km)')
+plt.title('(a)')
+
+plt.subplot(122)
+plt.gca().grid(False)
+result = mpimg.imread('rt_result2.png')
+mpimg.imread('rt_result.png')
+plt.imshow(result, extent=[0,500.,-500., 1.8], aspect='auto')
+plt.xlim(0.,500.)
+plt.ylim(-500., 1.8)
+plt.xlabel('$x$ (km)')
+plt.ylabel('Depth (km)')
+plt.title('(b)')
 
 #plt.show()
-plt.savefig('rayleigh_taylor.pdf')
+plt.savefig('rayleigh_taylor.pdf', dpi=600)
 plt.clf()
 
 #Load in data for testing the effect of different tau choices

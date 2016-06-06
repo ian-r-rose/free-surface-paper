@@ -18,8 +18,8 @@ interface = -thickness - amplitude*np.cos(2.*np.pi*x/x[-1.])
 
 #plot fluid
 ax.plot(x,interface, color='k')
-plt.fill_between(x, -L, interface, color='black', alpha=0.3)
-plt.fill_between(x, interface, 0., color='black', alpha=0.6)
+plt.fill_between(x, -L, interface, color='darkgray', alpha=1.0)
+plt.fill_between(x, interface, 0., color='dimgray', alpha=1.0)
 
 
 head_size = 10

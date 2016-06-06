@@ -1,4 +1,4 @@
-all: stability_region.pdf timestep_convergence.pdf benchmark_setup.pdf tau_sensitivity.pdf amr.pdf rayleigh_taylor.pdf
+all: stability_region.pdf timestep_convergence.pdf benchmark_setup.pdf tau_sensitivity.pdf amr.pdf rayleigh_taylor.pdf rayleigh_taylor_setup.pdf
 
 stability_region.pdf: stability_region.py
 	python stability_region.py
@@ -17,6 +17,9 @@ amr.pdf: amr.py
 
 rayleigh_taylor.pdf: rayleigh_taylor.py
 	python rayleigh_taylor.py
+
+rayleigh_taylor_setup.pdf: rayleigh_taylor_setup.py
+	python rayleigh_taylor_setup.py
 
 .PHONY: clean
 clean:
