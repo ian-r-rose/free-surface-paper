@@ -1,8 +1,4 @@
-free-surface-paper.pdf: free-surface-paper.tex free-surface-paper.bib figures
-	pdflatex free-surface-paper
-	bibtex free-surface-paper
-	pdflatex free-surface-paper
-	pdflatex free-surface-paper
+texargs = -interaction nonstopmode -halt-on-error -file-line-error
 
 .PHONY: figures
 figures:
