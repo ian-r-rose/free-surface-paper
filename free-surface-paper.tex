@@ -645,7 +645,7 @@ where $D$ is the layer depth, $\eta$ is the viscosity, $\rho$ is the density, an
 
 \begin{figure*}
 \includegraphics[width=0.9\textwidth]{figures/benchmark_setup.pdf}
-\caption{Setup for the power iteration test (Section~\ref{sec:numerical_determination}) and for the free surface relaxation benchmark (Section~\ref{sec:topography_relaxation}). A 2D box with an isoviscous fluid has sinusoidal initial topography, with amplitude $\zeta_0$ and wavenumber $n$. The box has depth $D$ and length $L$. For our tests $\rho = \eta = g = D = L = 1$, and $n=1/2$. For the power iteration test there is no initial perturbation ($\zeta_0 = 0.0$), and for the surface relaxation benchmark $\zeta_0 = 0.005$.}
+\caption[Setup for the power iteration test (Section~\ref{sec:numerical_determination}) and for the free surface relaxation benchmark (Section~\ref{sec:topography_relaxation}).]{Setup for the power iteration test (Section~\ref{sec:numerical_determination}) and for the free surface relaxation benchmark (Section~\ref{sec:topography_relaxation}). A 2D box with an isoviscous fluid has sinusoidal initial topography, with amplitude $\zeta_0$ and wavenumber $n$. The box has depth $D$ and length $L$. For our tests $\rho = \eta = g = D = L = 1$, and $n=1/2$. For the power iteration test there is no initial perturbation ($\zeta_0 = 0.0$), and for the surface relaxation benchmark $\zeta_0 = 0.005$.}
 \label{fig:benchmark_setup}
 \end{figure*}
 The eigenvector with the minimum relaxation time for this system $\tau_{\min}$ corresponds to $n=1/2$ 
@@ -658,7 +658,7 @@ In most cases the iteration converges to better than $\sim10^{-5}$ relative accu
 
 \begin{figure*}
 \includegraphics[width=0.9\textwidth]{figures/perturb_spectrum.pdf}
-\caption{The effect of quasi-implicit stabilization on the minimum relaxation time of a fluid in a 2D Cartesian box with a free surface (see Figure~\ref{fig:benchmark_setup}), as well as the result of power iteration to find the minimum relaxation time. The $x$-axis shows the timestep normalized by minimum relaxation time of the unstabilized problem $\tau_\mathrm{\min}$. The $y$-axis shows the stabilized relaxation time $\tau_S$, also normalized by $\tau_\mathrm{min}$. Colored circles show the relaxation times found by numerical solution of Equation~\eqref{eq:stabilized_standard_eigenvalue} with different values of the stabilization parameter $\theta$. Black dots show the relaxation times calculated using Equation~\eqref{eq:spectrum_shift}. The stabilized timescale is lengthened for larger timesteps and for larger values of $\theta$. For this test case, power iteration typically attains better than 1\% accuracy in 5-10 iterations.}
+\caption[The effect of quasi-implicit stabilization on the minimum relaxation time of a fluid in a 2D Cartesian box with a free surface (see Figure~\ref{fig:benchmark_setup}), as well as the result of power iteration to find the minimum relaxation time.]{The effect of quasi-implicit stabilization on the minimum relaxation time of a fluid in a 2D Cartesian box with a free surface (see Figure~\ref{fig:benchmark_setup}), as well as the result of power iteration to find the minimum relaxation time. The $x$-axis shows the timestep normalized by minimum relaxation time of the unstabilized problem $\tau_\mathrm{\min}$. The $y$-axis shows the stabilized relaxation time $\tau_S$, also normalized by $\tau_\mathrm{min}$. Colored circles show the relaxation times found by numerical solution of Equation~\eqref{eq:stabilized_standard_eigenvalue} with different values of the stabilization parameter $\theta$. Black dots show the relaxation times calculated using Equation~\eqref{eq:spectrum_shift}. The stabilized timescale is lengthened for larger timesteps and for larger values of $\theta$. For this test case, power iteration typically attains better than 1\% accuracy in 5-10 iterations.}
 \label{fig:perturb_spectrum}
 \end{figure*}
 
@@ -782,7 +782,7 @@ The stability region is plotted in Figure~\ref{fig:stability_region}.
 
 \begin{figure*}
 \includegraphics[width=0.9\textwidth]{figures/stability_region.pdf}
-\caption{(a) Stability region for the nonstandard finite difference scheme (green, Equations~\eqref{eq:nsfd_unconditional} and~\eqref{eq:nsfd_conditional}). On the x-axis is the value of the stabilization timescale, in units of the minimum relaxation time $\tau_{\mathrm{min}}$.  On the y-axis is the value of the timestep, also in units of the minimum relaxation time. For $\tau^*\le 2 \tau_{\mathrm{min}}$ the nonstandard finite difference scheme is unconditionally stable.  (b) Stability region for the quasi-implicit scheme (green, Equation~\eqref{eq:cfl_euler_stabilized}).  Again, the y axis is in units of the minimum relaxation time.  The x-axis shows the value of the stabilization parameter $\theta$. For $\theta = 1$ the quasi-implicit scheme is unconditionally stable. In both cases the stability region for the forward Euler scheme (Equation~\eqref{eq:cfl_euler}) is also shown in blue.}
+\caption[Stability regions for the nonstandard finite difference and quasi-implicit timestepping schemes.]{(a) Stability region for the nonstandard finite difference scheme (green, Equations~\eqref{eq:nsfd_unconditional} and~\eqref{eq:nsfd_conditional}). On the x-axis is the value of the stabilization timescale, in units of the minimum relaxation time $\tau_{\mathrm{min}}$.  On the y-axis is the value of the timestep, also in units of the minimum relaxation time. For $\tau^*\le 2 \tau_{\mathrm{min}}$ the nonstandard finite difference scheme is unconditionally stable.  (b) Stability region for the quasi-implicit scheme (green, Equation~\eqref{eq:cfl_euler_stabilized}).  Again, the y axis is in units of the minumum relaxation time.  The x-axis shows the value of the stabilization parameter $\theta$. For $\theta = 1$ the quasi-implicit scheme is unconditionally stable. In both cases the stability region for the forward Euler scheme (Equation~\eqref{eq:cfl_euler}) is also shown in blue.}
 \label{fig:stability_region}
 \end{figure*}
 
@@ -1012,13 +1012,13 @@ those due to rotational or tidal deformation.
 
 \begin{figure*}
 \includegraphics[width=0.95\textwidth]{figures/timestep_convergence.pdf}
-\caption{Convergence tests for the benchmark shown in Figure~\ref{fig:benchmark_setup}. (a) Convergence test with timestep size for the nonstandard finite difference scheme. Comparison with the slope-one line confirms that it is first-order in time. In the case that the stabilization timescale $\tau^*$ is equal to the analytic relaxation time the error becomes very small, as the time integration scheme becomes exact \citep{mickens2002nonstandard}. (b) Convergence test with timestep size for the quasi-implicit scheme. For $\theta = 1$ and $\theta = 0$ the scheme is first-order accurate (though the latter is just an unstabilized forward-Euler scheme). For $\theta=0.5$ the scheme appears second order accurate on this benchmark.}
+\caption[Convergence tests for the topography relaxation benchmark.]{Convergence tests for the benchmark shown in Figure~\ref{fig:benchmark_setup}. (a) Convergence test with timestep size for the nonstandard finite difference scheme. Comparison with the slope-one line confirms that it is first-order in time. In the case that the stabilization timescale $\tau^*$ is equal to the analytic relaxation time the error becomes very small, as the time integration scheme becomes exact \citep{mickens2002nonstandard}. (b) Convergence test with timestep size for the quasi-implicit scheme. For $\theta = 1$ and $\theta = 0$ the scheme is first-order accurate (though the latter is just an unstabilized forward-Euler scheme). For $\theta=0.5$ the scheme appears second order accurate on this benchmark.}
 \label{fig:timestep_convergence}
 \end{figure*}
 
 \begin{figure*}
 \includegraphics[width=0.9\textwidth]{figures/tau_sensitivity.pdf}
-\caption{Sensitivity of the nonstandard finite difference scheme to $\tau^*$. As the relaxation parameter $\tau^*$ approaches the relaxation time of the benchmark case the error reduces. The sharp cusp at $\tau^* = \tau_\mathrm{min}$ corresponds to the almost spectral accuracy of the time marching scheme for that case.}
+\caption[Sensitivity of the nonstandard finite difference scheme to $\tau$.]{Sensitivity of the nonstandard finite difference scheme to $\tau^*$. As the relaxation parameter $\tau^*$ approaches the relaxation time of the benchmark case the error reduces. The sharp cusp at $\tau^* = \tau_\mathrm{min}$ corresponds to the almost spectral accuracy of the time marching scheme for that case.}
 \label{fig:tau_sensitivity}
 \end{figure*}
 
@@ -1027,7 +1027,7 @@ those due to rotational or tidal deformation.
 
 \begin{figure*}
 \includegraphics[width=0.9\textwidth]{figures/rayleigh_taylor_setup.pdf}
-\caption{Setup for the Rayleigh-Taylor test. A denser, more viscous layer of lies on top of the mantle. The overlying layer has a thickness of 100 km, and a sinusoidal perturbation on its base with and amplitude of 5 km.}
+\caption[Setup for the Rayleigh-Taylor test.]{Setup for the Rayleigh-Taylor test. A denser, more viscous layer of lies on top of the mantle. The overlying layer has a thickness of 100 km, and a sinusoidal perturbation on its base with and amplitude of 5 km.}
 \label{fig:rayleigh_taylor_setup}
 \end{figure*}
 
@@ -1051,7 +1051,7 @@ than quasi-implicit timestepping while remaining stable.
 
 \begin{figure*}
 \includegraphics[width=0.9\textwidth]{figures/rayleigh_taylor.pdf}
-\caption{Rayleigh-Taylor test. (a) Maximum depth of the drip. The blue line is the result using forward Euler (FE) integration of the free surface with a small 500 yr timestep, and is used as a reference solution. The symbols are for several different runs with different timestepping parameters, using both quasi-implicit (QI) and nonstandard finite difference (NSFD) schemes. As the timestepping gets smaller, both schemes converge to the reference solution (though from different directions). (b) Result of the small timestep forward Euler simulation after 5 Myr, including the adaptive mesh.}
+\caption[Results of the Rayleigh-Taylor test.]{Rayleigh-Taylor test. (a) Maximum depth of the drip. The blue line is the result using forward Euler (FE) integration of the free surface with a small 500 yr timestep, and is used as a reference solution. The symbols are for several different runs with different timestepping parameters, using both quasi-implicit (QI) and nonstandard finite difference (NSFD) schemes. As the timestepping gets smaller, both schemes converge to the reference solution (though from different directions). (b) Result of the small timestep forward Euler simulation after 5 Myr, including the adaptive mesh.}
 \label{fig:rayleigh_taylor}
 \end{figure*}
 
@@ -1071,7 +1071,7 @@ enough that the $\tau^*$ would need to be updated frequently (if ever).
 
 \begin{figure*}
 \includegraphics[width=0.9\textwidth]{figures/rayleigh_taylor_tau_choice.pdf}
-\caption{Effect of the choice of $\tau^*$ on the Rayleigh-Taylor test. (a) Maximum depth of the drip. In all cases adaptive timestepping is used with CFL=0.2. The blue line serves as a reference solution, and shows the result when the smallest relaxation timescale $\tau_{\mathrm{min}}$ is recalculated every 50 timesteps, and then the stabilization timescale $\tau^*$ is set to that value. The red hexagons show the result when we do not update $\tau^*$, instead keeping it at the initial value of $\tau_{\mathrm{min}}$. The results are indistinguishable from those of the first case. The triangles show the results when we make a poor choice of $\tau^*$, by a factor of two in either direction. In these cases there is a significant difference from the reference solution. (b) Evolution of the minimum relaxation timescale over the course of the simulation. It does experience significant changes, but not by orders of magnitude, so it is unsurprising that using the initial value is sufficient for this case.}
+\caption[Effect of the choice of $\tau^*$ on the Rayleigh-Taylor test.] {Effect of the choice of $\tau^*$ on the Rayleigh-Taylor test. (a) Maximum depth of the drip. In all cases adaptive timestepping is used with CFL=0.2. The blue line serves as a reference solution, and shows the result when the smallest relaxation timescale $\tau_{\mathrm{min}}$ is recalculated every 50 timesteps, and then the stabilization timescale $\tau^*$ is set to that value. The red hexagons show the result when we do not update $\tau^*$, instead keeping it at the inital value of $\tau_{\mathrm{min}}$. The results are indistinguishable from those of the first case. The triangles show the results when we make a poor choice of $\tau^*$, by a factor of two in either direction. In these cases there is a significant difference from the reference solution. (b) Evolution of the minimum relaxation timescale over the course of the simulation. It does experience significant changes, but not by orders of magnitude, so it is unsurprising that using the initial value is sufficient for this case.}
 \label{fig:rayleigh_taylor_tau_choice}
 \end{figure*}
 
@@ -1106,7 +1106,7 @@ will result in significant computational savings.
 
 \begin{figure*}
 \includegraphics[width=0.9\textwidth]{figures/amr.pdf}
-\caption{Convergence with degrees of freedom (DoFs) for the \citet{crameri2012comparison} Case 2 benchmark, for both uniform and adaptive mesh refinement. The timestep $\Delta t$ is 500 yr. We compare the maximum topography at 3 Myr with its value at high resolution ($\sim$398 m). For the adaptive cases we perform mesh refinement according to the sum of density and composition gradients. Quasi-implicit (QI) and nonstandard finite difference (NSFD) timestepping converge similarly, but the adaptive mesh refinement simulations require significantly fewer unknowns. For NSFD timestepping we used a $\tau^*$ of 14.825 kyr, as determined by an analytical solution of the long-wavelength relaxation time of the free surface for this particular model setup \citep{crameri2012comparison}.}
+\caption[Convergence with degrees of freedom (DoFs) for the \citet{crameri2012comparison} Case 2 benchmark, for both uniform and adaptive mesh refinement.]{Convergence with degrees of freedom (DoFs) for the \citet{crameri2012comparison} Case 2 benchmark, for both uniform and adaptive mesh refinement. The timestep $\Delta t$ is 500 yr. We compare the maximum topography at 3 Myr with its value at high resolution ($\sim$398 m). For the adaptive cases we perform mesh refinement according to the sum of density and composition gradients. Quasi-implicit (QI) and nonstandard finite difference (NSFD) timestepping converge similarly, but the adaptive mesh refinement simulations require significantly fewer unknowns. For NSFD timestepping we used a $\tau^*$ of 14.825 kyr, as determined by an analytical solution of the long-wavelength relaxation time of the free surface for this particular model setup \citep{crameri2012comparison}.}
 \label{fig:amr}
 \end{figure*}
 
