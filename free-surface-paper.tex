@@ -41,6 +41,7 @@
 \usepackage{amsmath}
 \usepackage{color, soul}
 \usepackage{url}
+\usepackage{appendix}
 
 \newif\ifdetail
 \detailfalse
@@ -731,41 +732,8 @@ a_i^{n+1} = a_i^{n} \left[ 1 - \frac{\tau^*}{\tau_i} \left(1-e^{-\Delta t/\tau^*
 In order for the scheme to be stable, the quantity in brackets must remain bounded as it is repeatedly multiplied by itself, or 
 \begin{equation}
 \left| 1 - \frac{\tau^*}{\tau_i} \left(1-e^{-\Delta t/\tau^*} \right) \right| \le 1.
+\label{eq:stability_condition}
 \end{equation}
-
-\ifdetail
-Taking the positive value of the absolute value yields the criterion of 
-\begin{equation}
-- \frac{\tau^*}{\tau_i} \left(1-e^{-\Delta t/\tau^*} \right) \le 0,
-\end{equation}
-which can be rearranged to find
-\begin{equation}
-e^{-\Delta t/\tau^*} \le 1,
-\end{equation}
-which is simply a statement that the timestep must be positive.
-
-Taking the negative value of the absolute value yields
-\begin{equation}
-  \frac{\tau^*}{\tau_i} \left(1-e^{-\Delta t/\tau^*} \right)  \le 2
-\end{equation}
-\begin{equation}
- 1 - 2 \frac{\tau_i}{\tau^*} \le e^{-\Delta t/\tau^*}
-\end{equation}
-if the left hand side is less than zero, then this is true regardless of step size, or
-\begin{equation}
-\tau^* \le 2 \tau_i
-\end{equation}
-if the left hand side is between zero and one, the expression is more complicated. 
-Taking the log of both sides:
-\begin{equation}
-\Delta t \le -\tau^* \log \left(1 - 2 \frac{\tau_i}{\tau^*} \right).
-\end{equation}
-It is convenient to write this in terms of dimensionless times $\Delta t/ \tau_i$ and $\tau^*/\tau_i$:
-\begin{equation}
-\frac{\Delta t}{\tau_i} \le -\frac{\tau^*}{\tau_i} \log \left(1 - 2 \frac{\tau_i}{\tau^*} \right).
-\end{equation}
-
-\fi
 
 The stability of this scheme is determined by the choice of $\tau^*$.  
 It has a region of unconditional stability, where
@@ -778,7 +746,8 @@ Otherwise, the scheme is conditionally stable, with the timestep limited by
 \Delta t \le -\tau^* \log \left(1 - 2 \frac{\tau_i}{\tau^*} \right).
 \label{eq:nsfd_conditional}
 \end{equation}
-The stability region is plotted in Figure~\ref{fig:stability_region}. 
+The stability region is plotted in Figure~\ref{fig:stability_region}. Equations~\eqref{eq:nsfd_unconditional} and~\eqref{eq:nsfd_conditional}
+are derived in Appendix~\ref{appendix:stability}.
 
 \begin{figure*}
 \includegraphics[width=0.9\textwidth]{figures/stability_region.pdf}
@@ -1135,6 +1104,54 @@ the open source mantle convection software \texttt{ASPECT}. Both the quasi-impli
 scheme and the nonstandard finite difference scheme are available. The implementation is 
 sufficiently general to accommodate many different geometries, rheologies, and 
 gravity models. Furthermore, it runs in parallel and with adaptive mesh refinement.
+
+\begin{subappendices}
+
+\section{Stability criterion of the NSFD scheme}
+\label{appendix:stability}
+We begin from Equation~\eqref{eq:stability_condition}:
+\begin{equation}
+\left| 1 - \frac{\tau^*}{\tau_i} \left(1-e^{-\Delta t/\tau^*} \right) \right| \le 1.
+\end{equation}
+Timestepping involves repeated multiplication by this quantity. In order for
+the scheme to be stable, this repeated multiplication must not tend to infinity.
+Taking the positive value of the absolute value yields the criterion of 
+\begin{equation}
+- \frac{\tau^*}{\tau_i} \left(1-e^{-\Delta t/\tau^*} \right) \le 0,
+\end{equation}
+which can be rearranged to find
+\begin{equation}
+e^{-\Delta t/\tau^*} \le 1,
+\end{equation}
+which is simply a statement that the timestep must be postive.
+
+Taking the negative value of the absolute value yields
+\begin{equation}
+  \frac{\tau^*}{\tau_i} \left(1-e^{-\Delta t/\tau^*} \right)  \le 2
+\end{equation}
+which can be rearranged to find
+\begin{equation}
+ 1 - 2 \frac{\tau_i}{\tau^*} \le e^{-\Delta t/\tau^*}.
+\label{eq:negative_branch}
+\end{equation}
+For positive $\tau_i$ and $\tau^*$ the left hand side is strictly less than one.
+If the left hand side of Equation~\eqref{eq:negative_branch} is less than zero, 
+then the stability criterion is true regardless of step size, which occurs when
+\begin{equation}
+\tau^* \le 2 \tau_i.
+\end{equation}
+This is Equation~\eqref{eq:nsfd_unconditional}.
+If the left hand side of Equation~\eqref{eq:negative_branch} is between zero and one, 
+the expression is more complicated. Taking the log of both sides:
+\begin{equation}
+\Delta t \le -\tau^* \log \left(1 - 2 \frac{\tau_i}{\tau^*} \right).
+\end{equation}
+This is Equation~\eqref{eq:nsfd_conditional}.
+It can be convenient to express this in terms of the dimensionless quantities $\Delta t/ \tau_i$ and $\tau^*/\tau_i$:
+\begin{equation}
+\frac{\Delta t}{\tau_i} \le -\frac{\tau^*}{\tau_i} \log \left(1 - 2 \frac{\tau_i}{\tau^*} \right).
+\end{equation}
+\end{subappendices}
 
 %%ENDCLIP
 
