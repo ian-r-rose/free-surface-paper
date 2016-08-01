@@ -117,13 +117,13 @@
 \address{}
 
 \begin{abstract}
-Geodynamic simulations increasingly rely on simulations with a true free surface to 
+Geodynamic simulations increasingly rely on models with a true free surface to 
 investigate questions of dynamic topography, tectonic deformation, gravity perturbations, and
 global mantle convection. However, implementations of free surface boundary conditions 
 have proven challenging from a standpoint of accuracy, robustness, and stability.
 In particular, time integration of a free surface tends to suffer from a numerical instability
 that manifests as sloshing surface motions, also known as the ``drunken sailor'' instability.
-This instability severely limits stable timestep sizes to those much smaller than could be used
+This instability severely limits stable timestep sizes to those much smaller than can be used
 in geodynamic simulations without a free surface. 
 Several schemes have been proposed in the literature to deal with these instabilities.
 
@@ -192,7 +192,7 @@ on the dynamics of the slab, affecting both the shape and the timing of sinking.
 participating codes in that benchmark used the sticky air approximation.
 They found that the specific properties of the sticky air layer controlled the shape and timing of the slab.
 Furthermore, the viscosity averaging scheme for areas of transitional
-composition was extremely important, as the subducting slab entrained significant amounts of the sticky air.
+composition was extremely important, as the simulation of the subducting slab entrained significant amounts of the sticky air.
 \citet{crameri2012comparison} conducted comparisons between sticky air and true free surface models, 
 demonstrating a range of parameters for sticky air which can mitigate some of the difficulties that it introduces.
 A study by \citet{quinquis2011role} found that free surface boundary conditions have a large effect on 
@@ -279,7 +279,7 @@ The boundary conditions are given by
 \mathbf{T}\cdot \mathbf{n} &= 0 &\qquad \text{on } &\Gamma_F.
 \end{aligned}
 \end{equation}
-For the sake of economy we neglect inhomogeneous stress boundary conditions, though it would be straightforward to include them.
+For the sake of economy, we neglect inhomogeneous stress boundary conditions, though it would be straightforward to include them.
 We also defer discussion of free slip boundary conditions.
 The domain at time $t$ is defined by advecting a reference configuration $\Omega_0$ by the domain velocity $\mathbf{u}(t)$
 \begin{equation}
@@ -299,7 +299,7 @@ equation
 \section{Eigenvalue analysis}
 \label{sec:eigenvalue}
 
-In order to better understand the time evolution of the system in Equation~\eqref{eq:final_system}
+In order to better understand the time evolution of the system in Equation~\eqref{eq:final_system},
 we will consider the eigenvalues of a simplified homogeneous system where we neglect variations in density ($\rho^\prime = 0$):
 \begin{equation}
 \begin{aligned}
@@ -726,7 +726,7 @@ Applying the nonstandard finite difference scheme, we find
 a_i^{n+1} = a_i^{n} \left[ 1 - \frac{\tau^*}{\tau_i} \left(1-e^{-\Delta t/\tau^*} \right) \right].
 \label{eq:recursion}
 \end{equation}
-In order for the scheme to be stable, the quantity in brackets must not blow up as it is repeatedly multiplied by itself, or 
+In order for the scheme to be stable, the quantity in brackets must remain bounded as it is repeatedly multiplied by itself, or 
 \begin{equation}
 \left| 1 - \frac{\tau^*}{\tau_i} \left(1-e^{-\Delta t/\tau^*} \right) \right| \le 1.
 \end{equation}
@@ -769,16 +769,18 @@ The stability of this scheme is determined by the choice of $\tau^*$.
 It has a region of unconditional stability, where
 \begin{equation}
 \tau^* \le 2 \tau_i.
+\label{eq:nsfd_unconditional}
 \end{equation}
 Otherwise, the scheme is conditionally stable, with the timestep limited by 
 \begin{equation}
 \Delta t \le -\tau^* \log \left(1 - 2 \frac{\tau_i}{\tau^*} \right).
+\label{eq:nsfd_conditional}
 \end{equation}
 The stability region is plotted in Figure~\ref{fig:stability_region}. 
 
 \begin{figure*}
 \includegraphics[width=0.9\textwidth]{figures/stability_region.pdf}
-\caption{(a) Stability region for the nonstandard finite difference scheme (green). On the x-axis is the value of the stabilization timescale, in units of the minimum relaxation time $\tau_{\mathrm{min}}$.  On the y-axis is the value of the timestep, also in units of the minimum relaxation time. For $\tau^*\le 2 \tau_{\mathrm{min}}$ the nonstandard finite difference scheme is unconditionally stable.  (b) Stability region for the quasi-implicit scheme (green).  Again, the y axis is in units of the minumum relaxation time.  The x-axis shows the value of the stabilization parameter $\theta$. For $\theta = 1$ the quasi-implicit scheme is unconditionally stable. In both cases the stability region for the forward Euler scheme is also shown in blue.}
+\caption{(a) Stability region for the nonstandard finite difference scheme (green, Equations~\eqref{eq:nsfd_unconditional} and~\eqref{eq:nsfd_conditional}). On the x-axis is the value of the stabilization timescale, in units of the minimum relaxation time $\tau_{\mathrm{min}}$.  On the y-axis is the value of the timestep, also in units of the minimum relaxation time. For $\tau^*\le 2 \tau_{\mathrm{min}}$ the nonstandard finite difference scheme is unconditionally stable.  (b) Stability region for the quasi-implicit scheme (green, Equation~\eqref{eq:cfl_euler_stabilized}).  Again, the y axis is in units of the minumum relaxation time.  The x-axis shows the value of the stabilization parameter $\theta$. For $\theta = 1$ the quasi-implicit scheme is unconditionally stable. In both cases the stability region for the forward Euler scheme (Equation~\eqref{eq:cfl_euler}) is also shown in blue.}
 \label{fig:stability_region}
 \end{figure*}
 
@@ -860,9 +862,9 @@ will change, and as such its minimum relaxation time will evolve.
 This, of course, means that the best choice of $\tau^*$ can change over the course of a simulation.
 If $\tau_\mathrm{min}$ does not change significantly, the initial estimate can be fine.
 Otherwise, one can periodically check the evolution and redetermine $\tau_\mathrm{min}$ by 
-solving~\eqref{eq:standard_eigenvalue} during the model run.
+solving Equation~\eqref{eq:standard_eigenvalue} during the model run.
 
-In section \label{sec:results} we show an examples the numerical solution of $\tau_\mathrm{min}$
+In Section~\ref{sec:results} we show examples the numerical solution of $\tau_\mathrm{min}$
 and its evolution in time.
 
 \label{sec:dynamic_relaxation}
@@ -951,8 +953,8 @@ surface part of the boundary, we find
 \int_{\Gamma_F} \left( \mathbf{w \cdot n } \right) \left( \mathbf{u \cdot n} \right).
 \end{equation}
 When discretized, this forms a linear system which can be solved for the mesh velocity $\mathbf{u}_\mathrm{mesh}$ at the 
-free surface. Of course, a new system to solve is not ideal, but this system, being nonzero 
-over only the free surface, is relatively cheap to solve.
+free surface. A new system to solve is not ideal, but this system, being nonzero 
+over only the free surface, is relatively computationally inexpensive to solve.
 
 This weak solution to the boundary conditions (Equation~\eqref{eq:laplacian_bcs}) is able to borrow
 the accuracy of the Stokes solve for Equation~\eqref{eq:weak_incompressible}, and we have 
@@ -990,7 +992,7 @@ Figure~\ref{fig:timestep_convergence}a shows the convergence of the nonstandard 
 with respect to timestep size. The scheme is first order in time, with improving accuracy as the value of $\tau^*$ approaches
 the relaxation time of the relevant mode $\tau_i$. Interestingly, if $\tau^* = \tau_i$ the advection scheme
 becomes exact \citep{mickens2002nonstandard}. At this point the magnitude of the error plummets and is no longer 
-a strong function of the timestep. The remaining error is likely due to error in the linear approxmation for 
+a strong function of the timestep. The remaining error is likely due to error in the linear approximation for 
 the analytical solution, the spatial discretization, or the linear solver tolerance. 
 
 Figure~\ref{fig:timestep_convergence}b shows the convergence of the quasi-implicit scheme as a function of timestep $\Delta t$.
@@ -1028,6 +1030,7 @@ those due to rotational or tidal deformation.
 \end{figure*}
 
 We also consider the time evolution of the Rayleigh-Taylor benchmark described in \citet{kaus2010stabilization}.
+In this benchmark a dense, viscous layer with a sinusoidal initial perturbation drips into a less dense, less viscous mantle.
 The benchmark setup is shown in Figure~\ref{fig:rayleigh_taylor_setup}.
 In all cases we use adaptive mesh refinement with five global refinement levels and four adaptive refinement levels,
 corresponding to $\sim$1 km cells at the most refined level. We refine according to compositional gradients, as well as
@@ -1061,8 +1064,8 @@ Over the course of the Rayleigh-Taylor benchmark, $\tau_\mathrm{min}$ varies by 
 The case where we use the initial value of $\tau_\mathrm{min}$ for $\tau^*$ gives nearly identical results,
 whereas the cases where we choose values $\sim$50\% off in either direction give significantly different (though not wildly so) results.
 
-In many simulations we expect that the geometry, density, and viscosity structure of the model will not change so significantly
-that the $\tau^*$ would need to be updated frequently (if ever).
+In many simulations we expect that the geometry, density, and viscosity structure of the model will not change
+enough that the $\tau^*$ would need to be updated frequently (if ever).
 
 \begin{figure*}
 \includegraphics[width=0.9\textwidth]{figures/rayleigh_taylor_tau_choice.pdf}
@@ -1077,7 +1080,7 @@ that the $\tau^*$ would need to be updated frequently (if ever).
 We also investigate the advantages of combining adaptive mesh refinement with free surface computations.
 \citet{crameri2012comparison} performed a community benchmark of a setup for which there is no analytic
 solution. In this benchmark, a buoyant blob rises beneath a viscous lid with a free surface, deflecting the
-boundary upwards (for the full setup, see \citet{crameri2012comparison}). 
+boundary upwards, reminiscent of the dynamic topography due to a rising plume (for the full setup, see \citet{crameri2012comparison}). 
 Figure~\ref{fig:amr} shows the convergence of the maximum topography at 3 Myr to its value in a high resolution simulation,
 both with and without adaptive mesh refinement.
 
@@ -1110,7 +1113,7 @@ We have analyzed stability of free surface boundary conditions in geodynamic sim
 demonstrated the cause of sloshing instabilities using a normal mode analysis.
 This perspective on the problem allowed us to construct an explicit finite difference 
 scheme which is first order accurate in time and is unconditionally stable.
-The nonstandard finite difference scheme is extremely simple to implement, and 
+The nonstandard finite difference scheme is simple to implement, and 
 requires no modifications to the system matrix.
 
 The normal mode perspective on the problem also provides insights into the effect of 
