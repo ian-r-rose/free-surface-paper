@@ -315,8 +315,8 @@ work for other discrete methods.
 We transform the governing equations into the weak form amenable to finite elements via standard operations \citep[e.g.][]{zienkiewicz1977finite} to get
 
 \begin{equation}
--\int_{\Omega(t)} 2 \eta \varepsilon( \mathbf{w} ) \colon \varepsilon( \mathbf{u} ) + \int_{\Omega(t)} p^\prime \nabla \cdot \mathbf{w} 
-+ \int_{\Gamma_F(t)} \mathbf{w} \cdot \mathbf{T} \cdot \mathbf{n} = 0 
+\int_{\Omega(t)} 2 \eta \varepsilon( \mathbf{w} ) \colon \varepsilon( \mathbf{u} ) - \int_{\Omega(t)} p^\prime \nabla \cdot \mathbf{w} 
+- \int_{\Gamma_F(t)} \mathbf{w} \cdot \mathbf{T} \cdot \mathbf{n} = 0 
 \label{eq:weak_stokes}
 \end{equation}
 \begin{equation}
@@ -339,13 +339,13 @@ On the reference surface the gravity vector is opposite the direction of the sur
 The stress on this reference surface can be approximated by using the first order Taylor series
 expansion of the hydrostatic pressure profile:
 \begin{equation}
-\mathbf{T} \approx \frac{\partial \mathbf{T}}{\partial \mathbf{n} } \cdot \mathbf{n} \zeta = \rho_0 g \zeta \mathbf{I}.
+\mathbf{T} \approx \frac{\partial \mathbf{T}}{\partial \mathbf{n} } \cdot \mathbf{n} \zeta = -\rho_0 g \zeta \mathbf{I}.
 \label{eq:hydrostatic}
 \end{equation}
 Equation~\eqref{eq:weak_stokes} then becomes
 
 \begin{equation}
--\int_{\Omega(t)} 2 \eta \varepsilon( \mathbf{w} ) \colon \varepsilon( \mathbf{u} ) + \int_{\Omega(t)} p^\prime \nabla \cdot \mathbf{w} 
+\int_{\Omega(t)} 2 \eta \varepsilon( \mathbf{w} ) \colon \varepsilon( \mathbf{u} ) - \int_{\Omega(t)} p^\prime \nabla \cdot \mathbf{w} 
 + \int_{\Gamma_F(t)} \rho_0 g \zeta  \mathbf{w} \cdot \mathbf{n} = 0.
 \end{equation}
 
@@ -361,7 +361,7 @@ The equations decouple for the normal modes, and Equation~\eqref{eq:surface_evol
 \end{equation}
 This can then be used to eliminate $\zeta$ from the Stokes system:
 \begin{equation}
--\int_{\Omega(t)} 2 \eta \varepsilon( \mathbf{w} ) \colon \varepsilon( \mathbf{u}_i ) + \int_{\Omega(t)} p^\prime_i \nabla \cdot \mathbf{w} 
+\int_{\Omega(t)} 2 \eta \varepsilon( \mathbf{w} ) \colon \varepsilon( \mathbf{u}_i ) - \int_{\Omega(t)} p^\prime_i \nabla \cdot \mathbf{w} 
 = \tau_i \int_{\Gamma_F(t)} \rho_0 g (\mathbf{u}_i \cdot \mathbf{n} ) (\mathbf{w} \cdot \mathbf{n}).
 \label{eq:weak_eigen}
 \end{equation}
