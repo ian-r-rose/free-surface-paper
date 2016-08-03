@@ -408,6 +408,7 @@ The form of Equation~\eqref{eq:generalized_eigenvalue} does not depend on whethe
 for the domain integration.
 
 Equation~\eqref{eq:generalized_eigenvalue} is a generalized eigenvalue problem for the normal modes of the system.
+It has strictly positive eigenvalues (see Appendix~\ref{app:positive_definite}).
 It is rather more difficult to solve than a standard eigenvalue problem because the matrix on the right-hand-side 
 is not invertible. It may, however, be transformed into a standard eigenvalue problem.
 By defining
@@ -676,9 +677,9 @@ at larger timesteps it overshoots its equilibrium position. This overshoot cause
 to the \emph{other} side of equilibrium, overshooting even more.
 We would like to construct an explicit scheme that accounts for following properties which we know the system has:
 \begin{itemize}
-\item In the absence of forcing, topography always decreases.
-\item Relaxation of small amplitude topography takes the form of exponential decay.
-\item The decay mode with the shortest relaxation time is the least stable.
+\item In the absence of forcing, topography always decreases (Appendix~\ref{app:positive_definite}).
+\item Relaxation of small amplitude topography takes the form of exponential decay (Section~\ref{sec:eigenvalue}).
+\item The decay mode with the shortest relaxation time is the least stable (Section~\ref{sec:timestepping}).
 \end{itemize}
 
 \subsection{Nonstandard finite-differences}
@@ -1106,6 +1107,54 @@ sufficiently general to accommodate many different geometries, rheologies, and
 gravity models. Furthermore, it runs in parallel and with adaptive mesh refinement.
 
 \begin{subappendices}
+
+\section{The relaxation spectrum is positive definite}
+\label{app:positive_definite}
+On physical grounds, we expect the relaxation spectrum described in Section~\ref{sec:eigenvalue}
+to have only positive eigenvalues $\tau_i$.
+An imaginary eigenvalue would have an oscillitory component,
+which we do not expect in creeping flows (oscillation being usually due to inertia). 
+A negative eigenvalue would grow exponentially, which would violate conservation of energy.
+Here we demonstrate the positivity of the relaxation time spectrum.
+We could proceed with either the continuous or the discretized version of the governing
+equations, but choose the continuous form here.
+We begin with the homogeneous Stokes equation (Equation~\eqref{eq:stokes}):
+\begin{equation}
+\nabla \cdot \left( 2 \eta \varepsilon( \mathbf{u} ) \right) - \nabla p = \rho \mathbf{g}.
+\label{eq:homogeneous_stokes}
+\end{equation}
+We can transform this into the mechanical energy equation by multiplying it by $\mathbf{u}$
+and integrating over the domain:
+\begin{equation}
+\int_{\Omega(t)} \mathbf{u} \cdot \nabla \cdot \left( 2 \eta \varepsilon( \mathbf{u} ) \right) - \int_{\Omega(t)} \mathbf{u}\cdot \nabla p = 0.
+\end{equation}
+Integrating by parts and applying boundary conditions yields
+\begin{equation}
+-\int_{\Omega(t)} 2 \eta \varepsilon(\mathbf{u}) : \varepsilon(\mathbf{u})  + \int_{\Omega(t)}p \nabla \cdot \mathbf{u} - \int_{\Gamma_F(t)} \mathbf{u} \cdot \mathbf{T} \cdot \mathbf{n} = 0.
+\end{equation}
+Where the integrals correspond to the viscous dissipation, the work done by pressure, and the work done by boundary stresses, respectively.
+Since we are using the incompressible approximation, the second integral is zero.
+On a true free surface the boundary stresses are zero, but we make the same approximation
+used in Equation~\eqref{eq:hydrostatic} and map the stress onto the reference surface, finding
+\begin{equation}
+-\int_{\Omega(t)} 2 \eta \varepsilon(\mathbf{u}) : \varepsilon(\mathbf{u})  + \int_{\Gamma_F(t)} \rho_0 g \zeta \mathbf{u} \cdot \mathbf{n} = 0.
+\end{equation}
+We can now eliminate $\zeta$ from the equation in the same way that was used in Equation~\eqref{eq:weak_eigen},
+thereby introducing the relaxation time $\tau_i$:
+\begin{equation}
+-\int_{\Omega(t)} 2 \eta \varepsilon(\mathbf{u}) : \varepsilon(\mathbf{u})  + \tau_i \int_{\Gamma_F(t)} \rho_0 g (\mathbf{u} \cdot \mathbf{n})^2 = 0.
+\end{equation}
+This equation may be solved for $i\tau_i$:
+\begin{equation}
+\tau_i = \frac{\int_{\Omega(t)} 2 \eta \varepsilon(\mathbf{u}) : \varepsilon(\mathbf{u})}{ \int_{\Gamma_F(t)} \rho_0 g (\mathbf{u} \cdot \mathbf{n})^2}.
+\end{equation}
+The top and bottom of the right hand side are both strictly positive numbers so the $\tau_i$ must also be positive,
+demonstrating the positive definiteness of the system. A similar analysis can be performed for the discrete system.
+There is the possibility for velocities which do not move the free surface at all, in which case the bottom
+integral goes to zero, and the relaxation time becomes infinite. One example of this is the case of shear flow with
+a free upper surface and periodic horizontal boundary conditions. Since we are usually interested in the smallest
+relaxation times, these infinite eigenvalues are not usually a problem.
+
 
 \section{Stability criterion of the NSFD scheme}
 \label{appendix:stability}
