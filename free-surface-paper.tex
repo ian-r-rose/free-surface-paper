@@ -163,7 +163,7 @@ Geodynamics
 
 %% main text
 \section{Introduction}
-\label{sec:intro}
+\label{sec:introduce}
 
 Surface topography in simulations of mantle convection and other geodynamic processes is an important observable,
 allowing insights into Earth's internal density structure, rheology, and geoid perturbations \citep[e.g.][]{richards1984geoid, hager1985lower, baumann2014constraining}.
@@ -343,7 +343,7 @@ The stress on this reference surface can be approximated by using the first orde
 expansion of the hydrostatic pressure profile:
 \begin{equation}
 \mathbf{T} \approx \frac{\partial \mathbf{T}}{\partial \mathbf{n} } \cdot \mathbf{n} \zeta = -\rho_0 g \zeta \mathbf{I}.
-\label{eq:hydrostatic}
+\label{eq:hydrostat}
 \end{equation}
 Equation~\eqref{eq:weak_stokes} then becomes
 
@@ -1127,7 +1127,6 @@ equations, but choose the continuous form here.
 We begin with the homogeneous Stokes equation (Equation~\eqref{eq:stokes}):
 \begin{equation}
 \nabla \cdot \left( 2 \eta \varepsilon( \mathbf{u} ) \right) - \nabla p = \rho \mathbf{g}.
-\label{eq:homogeneous_stokes}
 \end{equation}
 We can transform this into the mechanical energy equation by multiplying it by $\mathbf{u}$
 and integrating over the domain:
@@ -1141,7 +1140,7 @@ Integrating by parts and applying boundary conditions yields
 Where the integrals correspond to the viscous dissipation, the work done by pressure, and the work done by boundary stresses, respectively.
 Since we are using the incompressible approximation, the second integral is zero.
 On a true free surface the boundary stresses are zero, but we make the same approximation
-used in Equation~\eqref{eq:hydrostatic} and map the stress onto the reference surface, finding
+used in Equation~\eqref{eq:hydrostat} and map the stress onto the reference surface, finding
 \begin{equation}
 -\int_{\Omega(t)} 2 \eta \varepsilon(\mathbf{u}) : \varepsilon(\mathbf{u})  + \int_{\Gamma_F(t)} \rho_0 g \zeta \mathbf{u} \cdot \mathbf{n} = 0.
 \end{equation}
