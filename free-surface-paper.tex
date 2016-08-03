@@ -186,7 +186,7 @@ Finally, one can use a true free surface, where a stress-free boundary condition
 of the domain. In this case, there can be flow in and out of the domain, so the boundary must move in time.
 A true free surface has mathematical elegance in that the boundary condition of the domain more closely 
 matches the boundary conditions which one is trying to model, but it typically requires a deformable 
-domain with frequent remeshing to avoid ill-conditioned cells. 
+domain with frequent remeshing to avoid ill-conditioned cells (i.e., cells that are inverted or have large aspect ratios).
 
 Recently, the nature of surface boundary conditions have been shown to be important for controlling the 
 dynamics of subduction zone modeling.  In a benchmark study \citet{schmeling2008benchmark} performed extensive testing on the effect
@@ -353,7 +353,8 @@ Equation~\eqref{eq:weak_stokes} then becomes
 \end{equation}
 
 We would like to analyze the time evolution of the normal modes of this system: each mode 
-is the relaxation of topography with a characteristic relaxation time.  
+corresponds to the relaxation of topography with a characteristic wavelength and relaxation time.  
+These times are determined by the model geometry, gravity, viscosity structure, and density structure.
 We denote the normal modes by $\left[ \mathbf{u}_i, p^\prime_i, \zeta_i \right]^T$, with
 relaxation times $\tau_i$, where the subscript corresponds to the $i$th normal mode.
 
@@ -759,7 +760,7 @@ are derived in Appendix~\ref{appendix:stability}.
 \subsection{Accuracy and asymptotics of the scheme}
 It is important to note that even though we derived the nonstandard finite difference scheme assuming a decaying exponential
 for $\mathbf{u}$, it is formally a first-order accurate scheme. As such, it is capable of capturing arbitrary motions 
-of the free surface, while allowing larger timesteps than forward Euler schemes.
+of the free surface, while allowing larger timesteps than the forward Euler scheme.
 
 Again we may take one of the normal modes as an example and inspect the difference between the nonstandard finite-difference
 scheme and the analytical solution after one timestep:
@@ -780,8 +781,8 @@ a_i(\Delta t) - a_i^{1} = - a_i{(0)} \left[ \left(\frac{\Delta t}{\tau_i}\right)
 \begin{equation}
 a_i(\Delta t) - a_i^{1} = {a_i{(0)} } \left( \frac{\Delta t}{\tau_i} \right)^2 \left( 1 - \frac{\tau_i}{\tau^*} \right) + O(\Delta t^3).
 \end{equation}
-The local truncation error is quadratic in $\Delta t$, similar to the forward Euler, and summing this error over 
-many timesteps results in a factor of $\Delta t^{-1}$, demonstrating the first-order global accuracy~\citep[e.g.][]{leveque2007finite}.
+The local truncation error is quadratic in $\Delta t$, similar to the forward Euler schem.
+Summing this error over many timesteps results in a factor of $\Delta t^{-1}$, which results in a global truncation error that is linear in $\Delta t$ \citep[e.g.][]{leveque2007finite}, demonstrating the first-order accuracy.
 The choice of $\tau^*$ controls the size of the coefficient on the truncation error for the scheme.
 The error for a given mode becomes considerably smaller when $\tau^*$ is close to its natural relaxation times.
 
@@ -1105,6 +1106,11 @@ the open source mantle convection software \texttt{ASPECT}. Both the quasi-impli
 scheme and the nonstandard finite difference scheme are available. The implementation is 
 sufficiently general to accommodate many different geometries, rheologies, and 
 gravity models. Furthermore, it runs in parallel and with adaptive mesh refinement.
+
+The improved understanding of free surface boundary conditions in geodynamic models
+will allow for modelers to make more informed choices about timestepping and free
+surface stabilization techniques for use in simulations related to dynamic topography,
+active tectonics, gravity anomalies, and geomorphologic processes.
 
 \begin{subappendices}
 
