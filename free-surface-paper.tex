@@ -333,7 +333,7 @@ Rather than analyzing finite deformation to the free surface (a nonlinear proble
 we will make the analytically useful approximation of small deformations about the hydrostatic 
 reference surface and analyze their stability.
 We will therefore  evaluate the integrals in Equation~\eqref{eq:weak_stokes} 
-over the hydrostatic reference surface and introduce a temporary auxilliary variable $\zeta$ which 
+over the hydrostatic reference surface and introduce a temporary auxiliary variable $\zeta$ which 
 represents the (small) topography of the free surface relative to that reference surface.
 On the reference surface the gravity vector is opposite the direction of the surface normal $\mathbf{g} = -g \mathbf{n}$.
 The stress on this reference surface can be approximated by using the first order Taylor series
@@ -463,7 +463,7 @@ timestep criterion for stability \citep[e.g.][]{leveque2007finite} to be
 \Delta t  \le 2 \tau_{\mathrm{min}},
 \label{eq:cfl_euler}
 \end{equation}
-where $\tau_{\mathrm{min}}$ is this minumum decay time.
+where $\tau_{\mathrm{min}}$ is this minimum decay time.
 The maximum stable timestep is limited by the minimum relaxation timescale.
 If a larger timestep than this is taken then those modes will become unstable.
 The modes with the smallest relaxation times are usually those with the largest lengthscales \citep{schubert2001mantle}, 
@@ -650,7 +650,7 @@ The eigenvector with the minimum relaxation time for this system $\tau_{\min}$ c
 (which, as expected, has the form of the fluid sloshing back and forth).
 Figure~\ref{fig:perturb_spectrum} shows the results of the power iteration, where colored circles indicate the numerical
 solution and black dots show the analytical solution using equation~\eqref{eq:spectrum_shift}.
-In most cases the iteration converges to better than $\sim10^{-5}$ relative accuaracy in about 20 iterations
+In most cases the iteration converges to better than $\sim10^{-5}$ relative accuracy in about 20 iterations
 (and fewer with a good initial guess).
 
 
@@ -740,7 +740,7 @@ which can be rearranged to find
 \begin{equation}
 e^{-\Delta t/\tau^*} \le 1,
 \end{equation}
-which is simply a statement that the timestep must be postive.
+which is simply a statement that the timestep must be positive.
 
 Taking the negative value of the absolute value yields
 \begin{equation}
@@ -780,7 +780,7 @@ The stability region is plotted in Figure~\ref{fig:stability_region}.
 
 \begin{figure*}
 \includegraphics[width=0.9\textwidth]{figures/stability_region.pdf}
-\caption{(a) Stability region for the nonstandard finite difference scheme (green, Equations~\eqref{eq:nsfd_unconditional} and~\eqref{eq:nsfd_conditional}). On the x-axis is the value of the stabilization timescale, in units of the minimum relaxation time $\tau_{\mathrm{min}}$.  On the y-axis is the value of the timestep, also in units of the minimum relaxation time. For $\tau^*\le 2 \tau_{\mathrm{min}}$ the nonstandard finite difference scheme is unconditionally stable.  (b) Stability region for the quasi-implicit scheme (green, Equation~\eqref{eq:cfl_euler_stabilized}).  Again, the y axis is in units of the minumum relaxation time.  The x-axis shows the value of the stabilization parameter $\theta$. For $\theta = 1$ the quasi-implicit scheme is unconditionally stable. In both cases the stability region for the forward Euler scheme (Equation~\eqref{eq:cfl_euler}) is also shown in blue.}
+\caption{(a) Stability region for the nonstandard finite difference scheme (green, Equations~\eqref{eq:nsfd_unconditional} and~\eqref{eq:nsfd_conditional}). On the x-axis is the value of the stabilization timescale, in units of the minimum relaxation time $\tau_{\mathrm{min}}$.  On the y-axis is the value of the timestep, also in units of the minimum relaxation time. For $\tau^*\le 2 \tau_{\mathrm{min}}$ the nonstandard finite difference scheme is unconditionally stable.  (b) Stability region for the quasi-implicit scheme (green, Equation~\eqref{eq:cfl_euler_stabilized}).  Again, the y axis is in units of the minimum relaxation time.  The x-axis shows the value of the stabilization parameter $\theta$. For $\theta = 1$ the quasi-implicit scheme is unconditionally stable. In both cases the stability region for the forward Euler scheme (Equation~\eqref{eq:cfl_euler}) is also shown in blue.}
 \label{fig:stability_region}
 \end{figure*}
 
@@ -899,7 +899,7 @@ consistent with the velocity of the Stokes velocity solution $\mathbf{u}(t)$:
 In ALE calculations the internal mesh velocity is undetermined.
 In general, one wants to smoothly deform the mesh so as to preserve its regularity, 
 avoiding inverted or otherwise poorly conditioned cells.
-The mesh deformation can be calcluated in many different ways, including algebraic \citep[e.g.][]{thieulot2011fantom} 
+The mesh deformation can be calculated in many different ways, including algebraic \citep[e.g.][]{thieulot2011fantom} 
 and PDE based approaches.
 
 We choose to implement remeshing based on solving Laplace's equation for the mesh velocity.
@@ -1069,7 +1069,7 @@ enough that the $\tau^*$ would need to be updated frequently (if ever).
 
 \begin{figure*}
 \includegraphics[width=0.9\textwidth]{figures/rayleigh_taylor_tau_choice.pdf}
-\caption{Effect of the choice of $\tau^*$ on the Rayleigh-Taylor test. (a) Maximum depth of the drip. In all cases adaptive timestepping is used with CFL=0.2. The blue line serves as a reference solution, and shows the result when the smallest relaxation timescale $\tau_{\mathrm{min}}$ is recalculated every 50 timesteps, and then the stabilization timescale $\tau^*$ is set to that value. The red hexagons show the result when we do not update $\tau^*$, instead keeping it at the inital value of $\tau_{\mathrm{min}}$. The results are indistinguishable from those of the first case. The triangles show the results when we make a poor choice of $\tau^*$, by a factor of two in either direction. In these cases there is a significant difference from the reference solution. (b) Evolution of the minimum relaxation timescale over the course of the simulation. It does experience significant changes, but not by orders of magnitude, so it is unsurprising that using the initial value is sufficient for this case.}
+\caption{Effect of the choice of $\tau^*$ on the Rayleigh-Taylor test. (a) Maximum depth of the drip. In all cases adaptive timestepping is used with CFL=0.2. The blue line serves as a reference solution, and shows the result when the smallest relaxation timescale $\tau_{\mathrm{min}}$ is recalculated every 50 timesteps, and then the stabilization timescale $\tau^*$ is set to that value. The red hexagons show the result when we do not update $\tau^*$, instead keeping it at the initial value of $\tau_{\mathrm{min}}$. The results are indistinguishable from those of the first case. The triangles show the results when we make a poor choice of $\tau^*$, by a factor of two in either direction. In these cases there is a significant difference from the reference solution. (b) Evolution of the minimum relaxation timescale over the course of the simulation. It does experience significant changes, but not by orders of magnitude, so it is unsurprising that using the initial value is sufficient for this case.}
 \label{fig:rayleigh_taylor_tau_choice}
 \end{figure*}
 
