@@ -48,7 +48,7 @@ for tstep in tsteps:
   for theta in thetas:
     print "Running with time step %f, theta %f\n"%(tstep, theta)
     generate_prm(tstep, theta)
-    os.system('mpirun -n 1 /home/ian/aspect/build/aspect tmp.prm')
+    os.system('mpirun -n 1 ../../aspect/build/aspect tmp.prm')
     analytic_relaxation_time, power_iteration_relaxation_time = get_relaxation_times(tstep, theta)
     outputfile.write("%f %f %f %f \n" % (tstep, theta, analytic_relaxation_time, power_iteration_relaxation_time) )
     outputfile.flush()

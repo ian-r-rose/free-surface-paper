@@ -1,0 +1,3 @@
+[submodule "aspect"]
+	path = aspect
+	url = git@github.com:ian-r-rose/aspect.git

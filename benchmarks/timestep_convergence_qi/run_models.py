@@ -78,7 +78,7 @@ for theta in thetas:
   for t in tsteps:
     print "Running with time step %f, theta %f\n"%(t, theta)
     generate_prm(t, theta)
-    os.system('mpirun -n 4 /home/ian/aspect/build/aspect tmp.prm')
+    os.system('mpirun -n 4 ../../aspect/build/aspect tmp.prm')
     #plot_topography()
     outputfile.write("%f %f %f \n" % (theta, t/tau_s, calculate_error()) )
     outputfile.flush()

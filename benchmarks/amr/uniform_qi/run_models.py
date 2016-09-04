@@ -31,7 +31,7 @@ refine = range(4,9)
 for r in refine:
   print "Running uniform mesh with %i refinements\n"%(r)
   generate_prm(r)
-  os.system('mpirun /home/ian.rose/aspect/build/aspect tmp.prm')
+  os.system('mpirun -n 4 ../../../aspect/build/aspect tmp.prm')
   outputfile.write("%i %f \n" % (r, grab_topography()) )
   outputfile.flush()
 

@@ -78,7 +78,7 @@ for r in relaxation_times:
   for t in tsteps:
     print "Running with time step %f, relaxation time %f\n"%(t, r)
     generate_prm(t, r)
-    os.system('mpirun -n 4 /home/ian/aspect/build/aspect tmp.prm')
+    os.system('mpirun -n 4 ../../aspect/build/aspect tmp.prm')
     #plot_topography()
     outputfile.write("%f %f %f \n" % (r/tau_s, t/tau_s, calculate_error()) )
     outputfile.flush()
