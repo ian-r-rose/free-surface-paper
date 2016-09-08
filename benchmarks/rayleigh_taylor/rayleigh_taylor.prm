@@ -11,7 +11,7 @@ set Pressure normalization = no
 set Linear solver tolerance = 1.e-6
 set Use years in output instead of seconds = true
 set Nonlinear solver scheme                = IMPES
-set Additional shared libraries = ../libplugins.so
+set Additional shared libraries = ../plugin/libplugins.so
 
 subsection Boundary temperature model
   set Model name = box
@@ -117,7 +117,7 @@ subsection Postprocess
   subsection Visualization
     set List of output variables = 
     set Number of grouped files       = 1
-    set Output format                 = hdf5
+    set Output format                 = vtu
     set Time between graphical output = 1.e6
     set Output mesh velocity          = true
   end
