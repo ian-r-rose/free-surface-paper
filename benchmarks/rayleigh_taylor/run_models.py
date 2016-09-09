@@ -25,20 +25,24 @@ def generate_prm( output_dir_name, cfl, max_tstep, use_nsfd, relaxation_time, th
 models = []
 models.append( ('output_nsfd_adaptive_cfl_02', 0.2, 5.e300, True, 0.0, 0.0) )
 models.append( ('output_nsfd_adaptive_cfl_05', 0.5, 5.e300, True, 0.0, 0.0) )
-models.append( ('output_nsfd_adaptive_cfl_08', 0.8, 5.e300, True, 0.0, 0.0) )
-models.append( ('output_nsfd_adaptive_small_tstep', 1.0, 500., True, 0.0, 0.0) )
+#models.append( ('output_nsfd_adaptive_cfl_08', 0.8, 5.e300, True, 0.0, 0.0) )
+#models.append( ('output_nsfd_adaptive_small_tstep', 1.0, 500., True, 0.0, 0.0) )
 
 models.append( ('output_nsfd_static', 0.2, 5.e300, True, 1991.0, 0.0) )
 models.append( ('output_nsfd_static_aggressive', 0.2, 5.e300, True, 1000.0, 0.0) )
 models.append( ('output_nsfd_static_loose', 0.2, 5.e300, True, 4000.0, 0.0) )
 
-models.append( ('output_theta_05_cfl_02', 0.2, 5.e300, False, 0.0, 0.5) )
+#models.append( ('output_theta_05_cfl_02', 0.2, 5.e300, False, 0.0, 0.5) )
 models.append( ('output_theta_10_cfl_02', 0.2, 5.e300, False, 0.0, 1.0) )
-models.append( ('output_theta_10_small_tstep', 1.0, 500., False, 0.0, 1.0) )
+#models.append( ('output_theta_10_small_tstep', 1.0, 500., False, 0.0, 1.0) )
 
 models.append( ('output_small_time_step', 1.0, 500., False, 0.0, 0.0) )
 
+import os
 for m in models:
-  print "Running model %s\n"%(m[0])
-  generate_prm(*m)
-  os.system('mpirun -n 4 ../../aspect/build/aspect tmp.prm')
+  if os.path.exists(m[0]+'/statistics') is False or os.path.getmtime(m[0]+'/statistics') < os.path.getmtime('rayleigh_taylor.prm'):
+      print "Running model %s\n"%(m[0])
+      generate_prm(*m)
+      os.system('mpirun -n 4 ../../aspect/build/aspect tmp.prm')
+  else:
+      print "Skipping model %s\n"%(m[0])

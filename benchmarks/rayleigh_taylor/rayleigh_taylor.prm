@@ -1,7 +1,7 @@
 set Dimension = 2
 set CFL number                             = 0.2
 #set Maximum time step                       = 500.
-set End time                               = 1e7
+set End time                               = 6e6
 set Output directory                       = output_nsfd_static_loose
 set Resume computation                     = false
 set Start time                             = 0
