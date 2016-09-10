@@ -13,6 +13,8 @@ def generate_prm( refine ):
       outfile.write('  set Free surface stabilization theta = 0.5\n')
     elif 'Relaxation time' in l:
       outfile.write('  set Relaxation time = 0.\n')
+    elif 'Use nonstandard finite difference scheme' in l:
+      outfile.write('  set Use nonstandard finite difference scheme = false\n')
     else:
       outfile.write(l)
   prmfile.close()

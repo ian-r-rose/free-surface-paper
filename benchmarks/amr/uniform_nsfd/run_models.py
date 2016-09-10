@@ -11,8 +11,10 @@ def generate_prm( refine ):
       outfile.write('  set Initial adaptive refinement = %i\n'%(0) )
     elif 'Free surface stabilization theta' in l:
       outfile.write('  set Free surface stabilization theta = 0.0\n')
+    elif 'Use nonstandard finite difference scheme' in l:
+      outfile.write('  set Use nonstandard finite difference scheme = true\n')
     elif 'Relaxation time' in l:
-      outfile.write('  set Relaxation time = 14825.\n')
+      outfile.write('  set Relaxation time = 0.\n')
     else:
       outfile.write(l)
   prmfile.close()
