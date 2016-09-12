@@ -7,7 +7,7 @@ def generate_prm( output_dir_name, cfl, max_tstep, use_nsfd, relaxation_time, th
   for l in prmfile.readlines():
     if 'Output directory' in l:
       outfile.write('  set Output directory = %s\n'%(output_dir_name))
-    elif 'CFL numer' in l:
+    elif 'CFL number' in l:
       outfile.write('  set CFL number = %f\n'%(cfl) )
     elif 'Maximum time step' in l:
       outfile.write('  set Maximum time step = %f\n'%(max_tstep) )
