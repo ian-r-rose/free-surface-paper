@@ -41,7 +41,7 @@ set Adiabatic surface temperature              = 0
 # the one chosen here, one can choose the time step as large as one wants (in
 # particular, one can choose $c>1$) though a CFL number significantly larger
 # than one will yield rather diffusive solutions. Units: None.
-set CFL number                                 = 0.2                                                                                                                                                                                                                                                                                                                  # default: 1.0
+set CFL number                                 = 0.500000                                                                                                                                                                                                                                                                                                             # default: 1.0
 
 # The relative tolerance up to which the linear system for the composition
 # system gets solved. See 'linear solver tolerance' for more details.
