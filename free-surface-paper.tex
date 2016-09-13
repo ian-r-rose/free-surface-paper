@@ -175,15 +175,23 @@ The pressure is determined by a first-order Taylor series approximation of the h
 predicted by the surface topography.
 
 A large number of studies have approximated free surfaces in the interior of the domain by using the 
-`sticky air' approximation (see \citet{crameri2012comparison} and references therein). In this approximation there is a low-viscosity, low-density layer in the fluid 
+`sticky air' approximation (\citet{matsumoto1983numerical}; for a comprehensive review see \citet{crameri2012comparison} and references therein). In this approximation there is a low-viscosity, low-density layer in the fluid 
 (termed `air', though its viscosity is much higher) above the free surface, effectively decoupling it from the boundary. 
 Typically a free-slip boundary condition is used above the sticky air, though an open boundary may be preferable \citep{hillebrand2014using}. 
 
-Finally, one can use a true free surface, where a stress-free boundary condition is applied on the boundary 
-of the domain. In this case, there can be flow in and out of the domain, so the boundary must move in time.
+Finally, one can use a true free surface, where a stress-free boundary condition is applied on the surface of the simulation. 
+With this setup there can be flow in and out of the free surface, so it must move in time.
+In many cases this is accomplished through a Lagrangian or arbitrary Lagrangain-Eulerian (ALE) scheme (see Section~\ref{sec:implementation}).
+\citet{duretz2016free} proposed an alternative scheme based on using an Eulerian staggered finite difference mesh
+with a modified stencil at the surface to capture the free surface boundary condition.
+
 A true free surface has mathematical elegance in that the boundary condition of the domain more closely 
 matches the boundary conditions which one is trying to model, but it typically requires a deformable 
 domain with frequent remeshing to avoid ill-conditioned cells. 
+In more complex geodynamic simulations there may be portions of the surface which
+correspond to regions below air (i.e. continental crust) and other portions that lie below water (i.e. oceanic crust).
+In these cases the density contrast at the surface will vary, requiring variations
+in the pressure boundary conditions (though viscous stresses should still be zero).
 
 Recently, the nature of surface boundary conditions have been shown to be important for controlling the 
 dynamics of subduction zone modeling.  In a benchmark study \citet{schmeling2008benchmark} performed extensive testing on the effect
@@ -206,7 +214,7 @@ internal density contrasts), severely limits the maximum stable timestep for fre
 Frequently, the maximum stable timestep is several orders of magnitude smaller than that for an otherwise 
 equivalent model with free-slip boundary conditions.
 
-Several studies have attempted to alleviate the timestepping requirements imposed by the sloshing 
+Several studies have attempted to alleviate the timestepping requirements imposed by the drunken sailor 
 instability. Since the most expensive part of geodynamic simulations is typically the Stokes solve,
 most free surface calculations have preferred to use explicit timestepping methods for the free 
 surface. \citet{kaus2010stabilization} proposed a quasi-implicit scheme which modifies the discretized 
@@ -1109,7 +1117,7 @@ will result in significant computational savings.
 
 \section{Conclusion}
 We have analyzed stability of free surface boundary conditions in geodynamic simulations and 
-demonstrated the cause of sloshing instabilities using a normal mode analysis.
+demonstrated the cause of the drunken sailor instability using a normal mode analysis.
 This perspective on the problem allowed us to construct an explicit finite difference 
 scheme which is first order accurate in time and is unconditionally stable.
 The nonstandard finite difference scheme is simple to implement, and 
