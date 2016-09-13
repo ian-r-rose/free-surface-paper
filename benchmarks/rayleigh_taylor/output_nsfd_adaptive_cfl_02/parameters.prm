@@ -41,7 +41,7 @@ set Adiabatic surface temperature              = 0
 # the one chosen here, one can choose the time step as large as one wants (in
 # particular, one can choose $c>1$) though a CFL number significantly larger
 # than one will yield rather diffusive solutions. Units: None.
-set CFL number                                 = 0.2                                                                                                                                                                                                                                                                                                                  # default: 1.0
+set CFL number                                 = 0.200000                                                                                                                                                                                                                                                                                                             # default: 1.0
 
 # The relative tolerance up to which the linear system for the composition
 # system gets solved. See 'linear solver tolerance' for more details.
@@ -56,7 +56,7 @@ set Dimension                                  = 2
 # number representable in floating point arithmetic. For all practical
 # purposes, this equals infinity. Units: Years if the 'Use years in output
 # instead of seconds' parameter is set; seconds otherwise.
-set End time                                   = 1e7                                                                                                                                                                                                                                                                                                                  # default: 5.69e+300
+set End time                                   = 6e6                                                                                                                                                                                                                                                                                                                  # default: 5.69e+300
 
 # A relative tolerance up to which the approximate inverse of the A block of
 # the Stokes system is computed. This approximate A is used in the
