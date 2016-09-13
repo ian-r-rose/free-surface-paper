@@ -232,7 +232,7 @@ before showing some numerical results and benchmarks in Section~\ref{sec:results
 We begin with the incompressible momentum conservation equations for creeping incompressible flow:
 \begin{equation}
 \begin{aligned}
-\nabla \cdot \mathbf{T} &= \rho \mathbf{g} \\
+\nabla \cdot \mathbf{T} &= - \rho \mathbf{g} \\
 \nabla \cdot \mathbf{u} &= 0,
 \end{aligned}
 \label{eq:momentum_mass_conservation}
@@ -247,14 +247,14 @@ where $\eta$ is the viscosity, $\varepsilon(\mathbf{u}) = \frac{1}{2}(\nabla \ma
 is the strain-rate tensor, and $\mathbf{I}$ is the identity tensor.
 Substituting the stress tensor into Equation~\eqref{eq:momentum_mass_conservation} gets the familiar form of the Stokes equation:
 \begin{equation}
-\nabla \cdot \left( 2 \eta \varepsilon( \mathbf{u} ) \right) - \nabla p = \rho \mathbf{g}.
+\nabla \cdot \left( 2 \eta \varepsilon( \mathbf{u} ) \right) - \nabla p = - \rho \mathbf{g}.
 \label{eq:stokes}
 \end{equation}
 
 For the purposes of this analysis it is useful to define a hydrostatic reference state where the 
 velocity $\mathbf{u}$ is zero:
 \begin{equation}
-- \nabla p_0 = \rho_0 \mathbf{g},
+\nabla p_0 = \rho_0 \mathbf{g},
 \label{eq:hydrostatic_stokes}
 \end{equation}
 where $p_0$ is the reference hydrostatic pressure and $\rho_0$ is a reference density profile (which may vary with depth).
@@ -265,7 +265,7 @@ Using this, the hydrostatic reference state (Equation~\eqref{eq:hydrostatic_stok
 This gives rise to the following time dependent, coupled system with unknowns $\mathbf{u}(t)$ and $\mathbf{p}(t)$:
 \begin{equation}
 \begin{aligned}
-\nabla \cdot \left( 2 \eta \varepsilon( \mathbf{u} ) \right) - \nabla p^\prime &= \rho^\prime \mathbf{g} \qquad &\text{in } &\Omega(t)\\
+\nabla \cdot \left( 2 \eta \varepsilon( \mathbf{u} ) \right) - \nabla p^\prime &= - \rho^\prime \mathbf{g} \qquad &\text{in } &\Omega(t)\\
 \nabla \cdot \mathbf{u} &= 0  \qquad &\text{in } &\Omega(t)
 \end{aligned}
 \label{eq:final_system}
