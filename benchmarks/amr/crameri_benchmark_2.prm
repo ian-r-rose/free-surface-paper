@@ -95,6 +95,7 @@ subsection Free surface
   # Theta from Kaus et al 2010
   set Free surface stabilization theta = 0.5
   set Relaxation time = 0.0
+  set Use nonstandard finite difference scheme = false
 end
 
 subsection Compositional fields
@@ -114,5 +115,6 @@ subsection Postprocess
   subsection Visualization
     set Time between graphical output = 0.3e6
     set Number of grouped files       = 1
+    set Output mesh velocity = true
   end
 end
