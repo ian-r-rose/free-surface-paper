@@ -833,6 +833,7 @@ problem. With too short of a stabilization timescale the free surface is never a
 at all (which is a very stable situation, if not very accurate!).
 
 \subsection{Choice of $\tau^*$}
+\label{sec:tau_choice}
 As discussed above, a full geodynamic simulation will have a spectrum of relaxation times.
 For complete stability, the parameter $\tau^*$ should be chosen such that every mode is stable.
 In practice, this means that a good choice is 
@@ -959,6 +960,7 @@ surface part of the boundary, we find
 \begin{equation}
 \int_{\Gamma_F} \mathbf{w} \cdot \mathbf{u}_\mathrm{mesh} = 
 \int_{\Gamma_F} \left( \mathbf{w \cdot n } \right) \left( \mathbf{u \cdot n} \right).
+  \label{eq:mesh_velocity_system}
 \end{equation}
 When discretized, this forms a linear system which can be solved for the mesh velocity $\mathbf{u}_\mathrm{mesh}$ at the 
 free surface. A new system to solve is not ideal, but this system, being nonzero 
@@ -968,6 +970,29 @@ This weak solution to the boundary conditions (Equation~\eqref{eq:laplacian_bcs}
 the accuracy of the Stokes solve for Equation~\eqref{eq:weak_incompressible}, and we have 
 found it to conserve mass more accurately than algebraic techniques for evaluating the mesh-normal velocity.
 Similar results were found by \citet{fullsack1995arbitrary}.
+
+\subsection{Summary of the implementation}
+We summarize this section by describing pseudocode for the implementation.
+There are two variations, one using the quasi-implicit scheme and one using nonstandard finite differences.
+
+For the quasi-implicit scheme:
+\begin{enumerate}
+  \item Solve the Stokes system, including the boundary term given in Equation~\eqref{eq:kmm}, 
+    which is a function of timestep $t^n$ and $\theta$.
+  \item Solve for the surface mesh velocity using Equation~\eqref{eq:mesh_velocity_system}.
+  \item Solve for the internal mesh velocity using Equations~\eqref{eq:laplacian_smoothing}~-~\eqref{eq:laplacian_bcs}.
+  \item Advect the mesh forward in time using displacements determined by the forward Euler scheme: $\mathbf{x}(t^{n+1}) = \mathbf{x}(t^n) + \mathbf{u}_\mathrm{mesh}\Delta t$.
+\end{enumerate}
+
+For the nonstandard finite difference scheme:
+\begin{enumerate}
+  \item Estimate $\tau_\mathrm{min}$ using one of the means described in Section~\ref{sec:tau_choice}.
+  \item Solve the Stokes system normally.
+  \item Solve for the surface mesh velocity using Equation~\eqref{eq:mesh_velocity_system}.
+  \item Solve for the internal mesh velocity using Equations~\eqref{eq:laplacian_smoothing}~-~\eqref{eq:laplacian_bcs}.
+  \item Advect the mesh forward in time using displacements determined by the nonstandard finite difference scheme (Equation~\eqref{eq:nsfd}).
+\end{enumerate}
+
 
 \section{Numerical results}
 \label{sec:results}
