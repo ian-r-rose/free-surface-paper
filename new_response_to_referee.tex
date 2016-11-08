@@ -94,4 +94,12 @@ These are now fixed.
 The authors mentioned that they did Schmeling et al. benchmark (2008) but do not show it since it is difficult to interpret and quantify. I would still recommend showing one-two figures with the progress of model evolution and surface development for this model. It will simply show that the developed algorithm does not break when treating more complex plate tectonics-like models with large viscosity contrasts and complex evolution and advection of the free surface.
 \end{quotation}
 
+We investigated the subduction benchmark of Schmeling et al. 2008, but do not report
+the results because the benchmark is not well designed to test our time-stepping scheme.
+The chief difficulty is sharp corners in the shape of the initial slab. While the initial condition
+is easy to implement, it introduces singularities into the problem. These singularities are
+resolved indirectly by limiting the spatial resolution. Moreover the viscosity contrast in this
+subduction benchmark is only a factor of 100. Relatively little is gained over the (smaller)
+factor of 10 viscosity increase in the Rayleigh-Taylor benchmark.
+
 \end{document}
