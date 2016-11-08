@@ -41,6 +41,10 @@
 \usepackage{amsmath}
 \usepackage{color, soul}
 \usepackage{url}
+\usepackage{subcaption}
+\usepackage{xcolor}
+\usepackage{mdframed}
+
 
 \newif\ifdetail
 \detailfalse
@@ -974,20 +978,27 @@ the accuracy of the Stokes solve for Equation~\eqref{eq:weak_incompressible}, an
 found it to conserve mass more accurately than algebraic techniques for evaluating the mesh-normal velocity.
 Similar results were found by \citet{fullsack1995arbitrary}.
 
-\subsection{Summary of the implementation}
-We summarize this section by describing pseudocode for the implementation.
-There are two variations, one using the quasi-implicit scheme and one using nonstandard finite differences.
+Figure~\ref{fig:pseudocode} shows pseudocode descriptions of the free surface implementation described in this section.
 
-For the quasi-implicit scheme:
+\begin{figure}
+\centering
+\begin{subfigure}[b]{0.43\textwidth}
+\begin{mdframed}[backgroundcolor=gray!20]
+{\small
 \begin{enumerate}
   \item Solve the Stokes system, including the boundary term given in Equation~\eqref{eq:kmm}, 
     which is a function of timestep $t^n$ and $\theta$.
   \item Solve for the surface mesh velocity using Equation~\eqref{eq:mesh_velocity_system}.
   \item Solve for the internal mesh velocity using Equations~\eqref{eq:laplacian_smoothing}~-~\eqref{eq:laplacian_bcs}.
   \item Advect the mesh forward in time using displacements determined by the forward Euler scheme: $\mathbf{x}(t^{n+1}) = \mathbf{x}(t^n) + \mathbf{u}_\mathrm{mesh}\Delta t$.
-\end{enumerate}
-
-For the nonstandard finite difference scheme:
+\end{enumerate} 
+}
+\end{mdframed}
+\caption{Quasi-implicit}
+\end{subfigure}
+\begin{subfigure}[b]{0.43\textwidth}
+\begin{mdframed}[backgroundcolor=gray!20]
+{\small
 \begin{enumerate}
   \item Estimate $\tau_\mathrm{min}$ using one of the means described in Section~\ref{sec:tau_choice}.
   \item Solve the Stokes system normally.
@@ -995,6 +1006,14 @@ For the nonstandard finite difference scheme:
   \item Solve for the internal mesh velocity using Equations~\eqref{eq:laplacian_smoothing}~-~\eqref{eq:laplacian_bcs}.
   \item Advect the mesh forward in time using displacements determined by the nonstandard finite difference scheme (Equation~\eqref{eq:nsfd}).
 \end{enumerate}
+\vspace{1.4mm}
+}
+\end{mdframed}
+\caption{Nonstandard finite differences}
+\end{subfigure}
+\caption{Pseudocode descriptions of the our free surface implementations.}
+\label{fig:pseudocode}
+\end{figure}
 
 
 \section{Numerical results}
