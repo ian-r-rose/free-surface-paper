@@ -978,7 +978,7 @@ the accuracy of the Stokes solve for Equation~\eqref{eq:weak_incompressible}, an
 found it to conserve mass more accurately than algebraic techniques for evaluating the mesh-normal velocity.
 Similar results were found by \citet{fullsack1995arbitrary}.
 
-Figure~\ref{fig:pseudocode} shows pseudocode descriptions of the free surface implementation described in this section.
+Figure~\ref{fig:pseudocode} shows pseudocode descriptions of the two free surface algorithms described in this section.
 
 % \begin{figure}
 % \centering
@@ -1034,7 +1034,8 @@ Figure~\ref{fig:pseudocode} shows pseudocode descriptions of the free surface im
 \end{mdframed}
 
 %\caption
-{Nonstandard finite differences:}
+\vspace{1em}
+{Nonstandard finite difference scheme:}
 
 \begin{mdframed}[backgroundcolor=gray!20]
 {\small
@@ -1045,11 +1046,9 @@ Figure~\ref{fig:pseudocode} shows pseudocode descriptions of the free surface im
   \item Solve for the internal mesh velocity using Equations~\eqref{eq:laplacian_smoothing}~-~\eqref{eq:laplacian_bcs}.
   \item Advect the mesh forward in time using displacements determined by the nonstandard finite difference scheme (Equation~\eqref{eq:nsfd}).
 \end{enumerate}
-\vspace{1.4mm}
+%\vspace{1.4mm}
 }
 \end{mdframed}
-
-
 \caption{Pseudocode for a single timestep of the free surface algorithms.}
 \label{fig:pseudocode}
 \end{figure}
