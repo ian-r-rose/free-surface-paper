@@ -31,7 +31,7 @@ I find it helpful to have a pseudo-code explanation of any implementation. There
 \end{quotation}
 
 We agree that this is a useful summary of our implementation.
-We have added a new section (Section 7.3) which describes a pseduo-code implementation
+We have added Figure 4 which describes a pseudocode implementation
 of both the quasi-implicit and nonstandard finite difference scheme.
 
 \begin{quotation}
@@ -42,10 +42,10 @@ This point is well taken. We now note that this instability has been called the 
 but in the bulk of the text we refer to it as the ``drunken sailor'' instability.
 
 \begin{quotation}
-Another example I can think of where this stabilization might be useful is at an inflow boundary where the inflow condition is used to balance a global contraint (e.g. volume / mass conservation). An example of where this arises is in modeling of extensional systems where isostasy sets the lower boundary to have a constant (average) pressure through time. There are plenty of spurious modes that can arise in the inflow condition but one instability that is often important is similar to the drunken-sailor and can be supressed by small timesteps.
+Another example I can think of where this stabilization might be useful is at an inflow boundary where the inflow condition is used to balance a global constraint (e.g. volume / mass conservation). An example of where this arises is in modeling of extensional systems where isostasy sets the lower boundary to have a constant (average) pressure through time. There are plenty of spurious modes that can arise in the inflow condition but one instability that is often important is similar to the drunken-sailor and can be supressed by small timesteps.
 \end{quotation}
 This sounds like an interesting application.
-Indeed, there are several applications that exhibit similar instabilities, 
+Indeed, there are several situations that exhibit similar instabilities, 
 and may be good targets for similar stabilization methods 
 (including fluid-structure-interactions and elastoplastic deformation).
 That being said, we have not analyzed those applications in this context,
@@ -59,7 +59,7 @@ Following on, we sometimes fix those sorts of problems by under-relaxing the bou
 
 We would suggest that under-relaxing boundary deformation is indeed a poor-man's equivalent to our NSFD scheme,
 and would love to hear more about this practice.
-However, we are not aware of discussion of this in the literature or open-souce codebases, and so can't comment further.
+However, we are not aware of discussion of this in the literature or open-source codebases, and so can't comment further or address it in the manuscript.
 
 \begin{quotation}
    Your method remains formally 1st order. Are higher-order discretisations of the mesh deformation helpful in this case or do they suffer the same / worse problems ?
