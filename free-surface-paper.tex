@@ -185,7 +185,7 @@ Typically a free-slip boundary condition is used above the sticky air, though an
 
 Finally, one can use a true free surface, where a stress-free boundary condition is applied on the surface of the simulation. 
 With this setup there can be flow in and out of the free surface, so it must move in time.
-In many cases this is accomplished through a Lagrangian or arbitrary Lagrangain-Eulerian (ALE) scheme (see Section~\ref{sec:implementation}).
+In many cases this is accomplished through a Lagrangian or arbitrary Lagrangian-Eulerian (ALE) scheme (see Section~\ref{sec:implementation}).
 \citet{duretz2016free} proposed an alternative scheme based on using an Eulerian staggered finite difference mesh
 with a modified stencil at the surface to capture the free surface boundary condition.
 
@@ -1142,6 +1142,7 @@ On the other hand, with our implementation we have found that nonstandard finite
 than quasi-implicit timestepping while remaining stable.
 
 \begin{figure*}
+\centering
 \includegraphics[width=0.9\textwidth]{figures/rayleigh_taylor.pdf}
 \caption{Rayleigh-Taylor test. (a) Maximum depth of the drip. The blue line is the result using forward Euler (FE) integration of the free surface with a small 500 yr timestep, and is used as a reference solution. The symbols are for several different runs with different timestepping parameters, using both quasi-implicit (QI) and nonstandard finite difference (NSFD) schemes. As the timestepping gets smaller, both schemes converge to the reference solution (though from different directions). (b) Result of the small timestep forward Euler simulation after 5 Myr, including the adaptive mesh.}
 \label{fig:rayleigh_taylor}
@@ -1162,6 +1163,7 @@ In many simulations we expect that the geometry, density, and viscosity structur
 enough that the $\tau^*$ would need to be updated frequently (if ever).
 
 \begin{figure*}
+\centering
 \includegraphics[width=0.9\textwidth]{figures/rayleigh_taylor_tau_choice.pdf}
 \caption{Effect of the choice of $\tau^*$ on the Rayleigh-Taylor test. (a) Maximum depth of the drip. In all cases adaptive timestepping is used with CFL=0.2. The blue line serves as a reference solution, and shows the result when the smallest relaxation timescale $\tau_{\mathrm{min}}$ is recalculated every 50 timesteps, and then the stabilization timescale $\tau^*$ is set to that value. The red hexagons show the result when we do not update $\tau^*$, instead keeping it at the initial value of $\tau_{\mathrm{min}}$. The results are indistinguishable from those of the first case. The triangles show the results when we make a poor choice of $\tau^*$, by a factor of two in either direction. In these cases there is a significant difference from the reference solution. (b) Evolution of the minimum relaxation timescale over the course of the simulation. It does experience significant changes, but not by orders of magnitude, so it is unsurprising that using the initial value is sufficient for this case.}
 \label{fig:rayleigh_taylor_tau_choice}
